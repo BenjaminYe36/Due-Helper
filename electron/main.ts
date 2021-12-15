@@ -4,8 +4,7 @@ import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-insta
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    show: false,
     webPreferences: {
       // contextIsolation: false,
       preload: path.join(__dirname, 'preload.js')
@@ -18,7 +17,7 @@ function createWindow() {
   } else {
     win.loadURL('http://localhost:3000/index.html');
 
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     // Hot Reloading on 'node_modules/.bin/electronPath'
     require('electron-reload')(__dirname, {
@@ -32,6 +31,9 @@ function createWindow() {
       hardResetMethod: 'exit'
     });
   }
+  // maximize window
+  win.maximize();
+  win.show();
 }
 
 app.whenReady().then(() => {
