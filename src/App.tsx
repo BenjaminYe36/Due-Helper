@@ -1,46 +1,80 @@
-import React, {Component, ReactNode} from 'react';
-import {Layout, Menu} from 'antd';
+import React, {Component} from 'react';
+import {Input, Layout, message} from 'antd';
 import './App.css';
 import 'antd/dist/antd.css';
+import SideBar from "./Components/SideBar";
+import NewCatPopup from "./Components/NewCatPopup";
 
 
 interface AppStates {
-    category: string[]; // array of strings that represents the names of the menu items on the left
+    category: string[]; // array of strings that represents the user added categories for the tasks
+    catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
+    catValue: string; // string representing the input of category name from user
 }
 
-const {Header, Content, Footer, Sider} = Layout;
+const {Header, Content, Footer} = Layout;
 
 class App extends Component<{}, AppStates> {
+    private readonly catInput: React.RefObject<Input>;
 
     constructor(props: any) {
         super(props);
         this.state = {
-            category: ["CSE 331", "MUSIC 116", "测试"],
+            category: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+            catModalVisible: false,
+            catValue: "",
         };
+        this.catInput = React.createRef();
     }
+
+    // NewCatModal callback related functions
+
+    showNewCatModal = () => {
+        this.setCatModalVisible(true);
+        setTimeout(() => {
+            this.catInput.current!.focus({
+                cursor: 'end',
+            });
+        }, 200);
+    }
+
+    handleCatModalOk = () => {
+        if (this.state.catValue.trim() !== "") {
+            this.setState({
+                category: this.state.category.concat(this.state.catValue),
+                catValue: "",
+            });
+            this.setCatModalVisible(false);
+        } else {
+            message.warning("Can't use empty category names!");
+        }
+    }
+
+    handleCatModalCancel = () => {
+        this.setState({
+            catValue: "",
+        });
+        this.setCatModalVisible(false);
+    }
+
+    setCatModalVisible = (visible: boolean) => {
+        this.setState({
+            catModalVisible: visible,
+        });
+    }
+
+    updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            catValue: event.target.value,
+        });
+    }
+
+    //
 
     render() {
         return (
-            <Layout style={{height: "100vh"}}>
-                <Sider
-                    breakpoint="lg"
-                    collapsedWidth="0"
-                    onBreakpoint={broken => {
-                        console.log(broken);
-                    }}
-                    onCollapse={(collapsed, type) => {
-                        console.log(collapsed, type);
-                    }}
-                >
-                    <div className="logo" style={{
-                        height: "32px",
-                        margin: "16px",
-                        background: "rgba(255, 255, 255, 0.2)",
-                    }}/>
-                    <Menu theme="dark" mode="inline">
-                        {this.getMenuItems()}
-                    </Menu>
-                </Sider>
+            <Layout style={{height: "100vh", overflow: "auto"}}>
+                <SideBar category={this.state.category} onNewCat={this.showNewCatModal}/>
                 <Layout>
                     <Header className="site-layout-sub-header-background" style={{padding: 0}}/>
                     <Content style={{margin: '24px 16px 0'}}>
@@ -48,20 +82,19 @@ class App extends Component<{}, AppStates> {
                             content
                         </div>
                     </Content>
-                    <Footer style={{textAlign: 'center'}}>Due Helper Dev Build</Footer>
+                    {/*<Footer style={{textAlign: 'center'}}>Due Helper Dev Build</Footer>*/}
                 </Layout>
+                <NewCatPopup catModalVisible={this.state.catModalVisible}
+                             catValue={this.state.catValue}
+                             catInput={this.catInput}
+                             handleCatModalOk={this.handleCatModalOk}
+                             handleCatModalCancel={this.handleCatModalCancel}
+                             updateInput={this.updateInput}/>
             </Layout>
-
         );
     }
 
-    getMenuItems(): ReactNode {
-        return this.state.category.map((name) =>
-            <Menu.Item key={name}>
-                {name}
-            </Menu.Item>
-        );
-    }
+
 }
 
 

@@ -5,6 +5,8 @@ import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-insta
 function createWindow() {
   const win = new BrowserWindow({
     show: false,
+    minWidth: 800,
+    minHeight: 600,
     webPreferences: {
       // contextIsolation: false,
       preload: path.join(__dirname, 'preload.js')
