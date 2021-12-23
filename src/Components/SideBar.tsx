@@ -1,9 +1,14 @@
 import React, {ReactNode} from 'react';
 import {Button, Layout, Menu} from 'antd';
+import ModelAPI from "../ModelAPI";
+import {DeleteOutlined} from "@ant-design/icons";
+import EditableTextCat from "./EditableTextCat";
 
 
 interface SiderProps {
     category: string[]; // array of strings that represents the user added categories for the tasks
+    model: ModelAPI; // Reference to the fake backend Api
+    refreshModel(): void; // callback to refresh from backend after modifying
     onNewCat(): void; // callback called when a new category needs to be added
 }
 
@@ -25,7 +30,22 @@ class SideBar extends React.Component<SiderProps, SiderState> {
     getMenuItems(): ReactNode {
         return this.props.category.map((name) =>
             <Menu.Item key={"Cat-" + name}>
-                {name}
+                <div>
+                <Button icon={<DeleteOutlined/>}
+                        shape="circle"
+                        ghost={true}
+                        size="small"
+                        onClick={() => {
+                            this.props.model.deleteCat(name);
+                            this.props.refreshModel();
+                        }}/>
+
+                <EditableTextCat
+                    value={name}
+                    model={this.props.model}
+                    refreshModel={this.props.refreshModel}
+                />
+            </div>
             </Menu.Item>
         );
     }
