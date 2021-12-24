@@ -5,6 +5,7 @@ import ModelAPI from "../ModelAPI";
 interface EditableTextCatProps {
     value: string; // initial value in this editable text element
     model: ModelAPI;
+
     refreshModel(): void;
 }
 
@@ -34,22 +35,30 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
 
     handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter' || event.key === 'Escape') {
+            let isInvalid = false;
             this.setState({
                 toggle: true,
             });
-            // doesn't allow empty category names
-            if (this.state.value.trim() !== "") {
+            // doesn't allow empty or duplicated category names
+            if (this.state.value.trim() === "") {
+                message.warning("Can't use empty category names!");
+                isInvalid = true;
+
+            } else if (this.props.model.hasCat(this.state.value)) {
+                message.warning("No duplicated names allowed!");
+                isInvalid = true;
+            } else {
                 this.props.model.replaceCat(this.props.value, this.state.value);
                 this.props.refreshModel();
-            } else {
-                message.warning("Can't use empty category names!");
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            if (isInvalid) {
                 // revert back to original text
                 this.setState({
                     value: this.props.value,
                 })
             }
-            event.preventDefault();
-            event.stopPropagation();
         }
     }
 

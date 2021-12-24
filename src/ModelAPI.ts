@@ -11,6 +11,10 @@ class ModelAPI {
         return this.category;
     }
 
+    public hasCat(cat: string): boolean {
+        return this.category.indexOf(cat) !== -1;
+    }
+
     public addCat(cat: string): void {
         if (this.category.indexOf(cat) === -1) {
             this.category = this.category.concat(cat);
@@ -21,13 +25,17 @@ class ModelAPI {
     }
 
     public replaceCat(oldCat: string, newCat: string): void {
-        let indexOfOld = this.category.indexOf(oldCat);
-        if (indexOfOld === -1) {
-            console.log("old category name not found, nothing is done in renaming");
-            return;
+        if (this.category.indexOf(newCat) === -1) {
+            let indexOfOld = this.category.indexOf(oldCat);
+            if (indexOfOld === -1) {
+                console.log("old category name not found, nothing is done in renaming");
+                return;
+            } else {
+                this.category[indexOfOld] = newCat;
+                console.log(this.category);
+            }
         } else {
-            this.category[indexOfOld] = newCat;
-            console.log(this.category);
+            message.warning("No duplicated names allowed!");
         }
     }
 

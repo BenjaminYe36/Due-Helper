@@ -31,16 +31,20 @@ class ReorderPopup extends React.Component<ReorderPopupProps, {}> {
                 zIndex={0}
                 onOk={this.props.handleReorderModalOk}
                 onCancel={this.props.handleReorderModalCancel}>
-                <List
-                    values={this.props.category}
-                    onChange={({oldIndex, newIndex}) => {
-                        console.log(oldIndex, newIndex);
-                        this.props.model.moveCat(oldIndex, newIndex);
-                        this.props.refreshModel();
-                    }}
-                    renderList={({children, props}) => <ul {...props}>{children}</ul>}
-                    renderItem={({value, props}) => <li {...props}>{value}</li>}
-                />
+                {this.props.category.length > 0 ?
+                    <List
+                        values={this.props.category}
+                        onChange={({oldIndex, newIndex}) => {
+                            console.log(oldIndex, newIndex);
+                            this.props.model.moveCat(oldIndex, newIndex);
+                            this.props.refreshModel();
+                        }}
+                        renderList={({children, props}) => <ul {...props}>{children}</ul>}
+                        renderItem={({value, props}) => <li {...props}>{value}</li>}
+                    />
+                    :
+                    <span style={{fontStyle: "italic", color:"dimgray"}}>Nothing Yet</span>
+                }
             </Modal>
         );
     }
