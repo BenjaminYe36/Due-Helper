@@ -1,7 +1,7 @@
 import React, {ReactNode} from 'react';
-import {Button, Layout, Menu} from 'antd';
+import {Button, Layout, Menu, Popconfirm} from 'antd';
 import ModelAPI from "../ModelAPI";
-import {DeleteOutlined} from "@ant-design/icons";
+import {DeleteOutlined, QuestionCircleOutlined} from "@ant-design/icons";
 import EditableTextCat from "./EditableTextCat";
 
 
@@ -10,6 +10,7 @@ interface SiderProps {
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying
     onNewCat(): void; // callback called when a new category needs to be added
+    onReorderCat(): void; // callback called when reordering of category names is needed
 }
 
 interface SiderState {
@@ -27,31 +28,40 @@ class SideBar extends React.Component<SiderProps, SiderState> {
         super(props);
     }
 
+    openNewCat = () => {
+        this.props.onNewCat();
+    }
+
+    openReorderCat = () => {
+        this.props.onReorderCat();
+    }
+
+    handleConfirm = (name: string) => {
+        this.props.model.deleteCat(name);
+        this.props.refreshModel();
+    }
+
     getMenuItems(): ReactNode {
         return this.props.category.map((name) =>
             <Menu.Item key={"Cat-" + name}>
                 <div>
-                <Button icon={<DeleteOutlined/>}
-                        shape="circle"
-                        ghost={true}
-                        size="small"
-                        onClick={() => {
-                            this.props.model.deleteCat(name);
-                            this.props.refreshModel();
-                        }}/>
-
-                <EditableTextCat
-                    value={name}
-                    model={this.props.model}
-                    refreshModel={this.props.refreshModel}
-                />
-            </div>
+                    <Popconfirm title="Are you sure?"
+                                icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
+                                onConfirm={() => this.handleConfirm(name)}
+                    >
+                        <Button icon={<DeleteOutlined/>}
+                                shape="circle"
+                                ghost={true}
+                                size="small"/>
+                    </Popconfirm>
+                    <EditableTextCat
+                        value={name}
+                        model={this.props.model}
+                        refreshModel={this.props.refreshModel}
+                    />
+                </div>
             </Menu.Item>
         );
-    }
-
-    handleClick = () => {
-        this.props.onNewCat();
     }
 
     render() {
@@ -59,6 +69,7 @@ class SideBar extends React.Component<SiderProps, SiderState> {
             <Sider
                 breakpoint="lg"
                 collapsedWidth="0"
+                width="250px"
                 onBreakpoint={broken => {
                     console.log(broken);
                 }}
@@ -67,8 +78,9 @@ class SideBar extends React.Component<SiderProps, SiderState> {
                 }}
             >
                 <div className="logo"/>
-                <div className="addCatButton" style={{textAlign: 'center'}}>
-                    <Button type="primary" onClick={this.handleClick}>New Categories</Button>
+                <div className="modifyCatButtons" style={{textAlign: 'center'}}>
+                    <Button type="primary" size="small" onClick={this.openNewCat}>New Categories</Button>
+                    <Button size="small" style={{marginLeft: "10px"}} onClick={this.openReorderCat}>Reorder</Button>
                 </div>
                 <Menu theme="dark" mode="inline">
                     {/*First part: All Tasks View*/}

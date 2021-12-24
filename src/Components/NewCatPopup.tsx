@@ -35,7 +35,6 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
                 <span>Category Name:</span>
                 <Input value={this.props.catValue}
                        onChange={this.props.updateInput}
-                       placeholder="Category Name..."
                        autoFocus
                        ref={this.props.catInput}
                        onKeyDown={(event) => {

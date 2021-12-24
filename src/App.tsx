@@ -6,12 +6,13 @@ import SideBar from "./Components/SideBar";
 import NewCatPopup from "./Components/NewCatPopup";
 import EditableTextCat from "./Components/EditableTextCat";
 import ModelAPI from "./ModelAPI";
-import Drag from "./Drag";
+import ReorderPopup from "./Components/ReorderPopup";
 
 
 interface AppStates {
     category: string[]; // array of strings that represents the user added categories for the tasks
     catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
+    reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
     catValue: string; // string representing the input of category name from user
 }
 
@@ -26,10 +27,11 @@ class App extends Component<{}, AppStates> {
         this.state = {
             category: [],
             catModalVisible: false,
+            reorderModalVisible: false,
             catValue: "",
         };
         this.catInput = React.createRef();
-        this.model = new ModelAPI(["1", "2", "3"]);
+        this.model = new ModelAPI(["1", "2", "3", "4"]);
     }
 
     componentDidMount() {
@@ -79,6 +81,18 @@ class App extends Component<{}, AppStates> {
         });
     }
 
+    // ReorderModal callback related functions
+
+    showReorderModal = () => {
+        this.setReorderModalVisible(true);
+    }
+
+    setReorderModalVisible = (visible: boolean) => {
+        this.setState({
+            reorderModalVisible: visible,
+        });
+    }
+
     // methods of calling the model to update view in this App
     testModel = () => {
         this.refreshModel();
@@ -96,6 +110,7 @@ class App extends Component<{}, AppStates> {
                 <SideBar category={this.state.category}
                          model={this.model}
                          onNewCat={this.showNewCatModal}
+                         onReorderCat={this.showReorderModal}
                          refreshModel={this.refreshModel}
                 />
                 <Layout>
@@ -104,9 +119,6 @@ class App extends Component<{}, AppStates> {
                         <div className="site-layout-background" style={{padding: 24, minHeight: 360}}>
                             <EditableTextCat value="abc" model={this.model} refreshModel={this.refreshModel}/>
                             <Button onClick={this.testModel}>Test</Button>
-                            <div>
-                                <Drag/>
-                            </div>
                         </div>
                     </Content>
                     {/*<Footer style={{textAlign: 'center'}}>Due Helper Dev Build</Footer>*/}
@@ -117,6 +129,12 @@ class App extends Component<{}, AppStates> {
                              handleCatModalOk={this.handleCatModalOk}
                              handleCatModalCancel={this.handleCatModalCancel}
                              updateInput={this.updateInput}/>
+                <ReorderPopup reorderModalVisible={this.state.reorderModalVisible}
+                              category={this.state.category}
+                              model={this.model}
+                              refreshModel={this.refreshModel}
+                              handleReorderModalOk={() => this.setReorderModalVisible(false)}
+                              handleReorderModalCancel={() => this.setReorderModalVisible(false)}/>
             </Layout>
         );
     }
