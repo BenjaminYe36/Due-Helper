@@ -6,6 +6,7 @@ import SideBar from "./Components/SideBar";
 import NewCatPopup from "./Components/NewCatPopup";
 import EditableTextCat from "./Components/EditableTextCat";
 import ModelAPI from "./ModelAPI";
+import Drag from "./Drag";
 
 
 interface AppStates {
@@ -18,7 +19,7 @@ const {Header, Content, Footer} = Layout;
 
 class App extends Component<{}, AppStates> {
     private readonly catInput: React.RefObject<Input>;
-    private model: ModelAPI;
+    private readonly model: ModelAPI;
 
     constructor(props: any) {
         super(props);
@@ -103,6 +104,9 @@ class App extends Component<{}, AppStates> {
                         <div className="site-layout-background" style={{padding: 24, minHeight: 360}}>
                             <EditableTextCat value="abc" model={this.model} refreshModel={this.refreshModel}/>
                             <Button onClick={this.testModel}>Test</Button>
+                            <div>
+                                <Drag/>
+                            </div>
                         </div>
                     </Content>
                     {/*<Footer style={{textAlign: 'center'}}>Due Helper Dev Build</Footer>*/}

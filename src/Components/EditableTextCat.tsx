@@ -33,6 +33,27 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
         });
     }
 
+    handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter' || event.key === 'Escape') {
+            this.setState({
+                toggle: true,
+            });
+            // doesn't allow empty category names
+            if (this.state.value.trim() !== "") {
+                this.props.model.replaceCat(this.props.value, this.state.value);
+                this.props.refreshModel();
+            } else {
+                message.warning("Can't use empty category names!");
+                // revert back to original text
+                this.setState({
+                    value: this.props.value,
+                })
+            }
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
     render() {
         return (
             this.state.toggle ?
@@ -53,26 +74,7 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
                             event.target.select();
                         }}
                         onChange={this.handleChange}
-                        onKeyDown={(event) => {
-                            if (event.key === 'Enter' || event.key === 'Escape') {
-                                this.setState({
-                                    toggle: true,
-                                });
-                                // doesn't allow empty category names
-                                if (this.state.value.trim() !== "") {
-                                    this.props.model.replaceCat(this.props.value, this.state.value);
-                                    this.props.refreshModel();
-                                } else {
-                                    message.warning("Can't use empty category names!");
-                                    // revert back to original text
-                                    this.setState({
-                                        value: this.props.value,
-                                    })
-                                }
-                                event.preventDefault();
-                                event.stopPropagation();
-                            }
-                        }}
+                        onKeyDown={this.handleKeyDown}
                 />)
         );
     }

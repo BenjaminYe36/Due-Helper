@@ -38,6 +38,11 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
                        placeholder="Category Name..."
                        autoFocus
                        ref={this.props.catInput}
+                       onKeyDown={(event) => {
+                           if (event.key === 'Enter') {
+                               this.props.handleCatModalOk();
+                           }
+                       }}
                 />
             </Modal>
         );
