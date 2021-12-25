@@ -1,5 +1,7 @@
 import {message} from "antd";
 
+const {ipcRenderer} = window.require("electron");
+
 class ModelAPI {
     private category: string[];
 
@@ -18,6 +20,7 @@ class ModelAPI {
     public addCat(cat: string): void {
         if (this.category.indexOf(cat) === -1) {
             this.category = this.category.concat(cat);
+            this.writeToJson();
         } else {
             message.warning("No duplicated names allowed!");
         }
@@ -32,6 +35,7 @@ class ModelAPI {
                 return;
             } else {
                 this.category[indexOfOld] = newCat;
+                this.writeToJson();
                 console.log(this.category);
             }
         } else {
@@ -51,6 +55,7 @@ class ModelAPI {
             }
         }
         this.category[newIndex] = tmp;
+        this.writeToJson();
         console.log(this.category);
     }
 
@@ -61,8 +66,16 @@ class ModelAPI {
             return;
         } else {
             this.category = this.category.filter((tmpCat) => tmpCat !== cat);
+            this.writeToJson();
             console.log(this.category);
         }
+    }
+
+    private writeToJson() {
+        let response =
+            ipcRenderer.sendSync('writing-json-synchronous', JSON.stringify({"category": this.category}));
+        console.log(response);
+        console.log(JSON.stringify({"category": this.category}));
     }
 }
 

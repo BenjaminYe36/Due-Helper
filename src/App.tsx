@@ -8,6 +8,8 @@ import EditableTextCat from "./Components/EditableTextCat";
 import ModelAPI from "./ModelAPI";
 import ReorderPopup from "./Components/ReorderPopup";
 
+const { ipcRenderer } = window.require("electron");
+
 
 interface AppStates {
     category: string[]; // array of strings that represents the user added categories for the tasks
@@ -16,11 +18,11 @@ interface AppStates {
     catValue: string; // string representing the input of category name from user
 }
 
-const {Header, Content, Footer} = Layout;
+const {Header, Content} = Layout;
 
 class App extends Component<{}, AppStates> {
     private readonly catInput: React.RefObject<Input>;
-    private readonly model: ModelAPI;
+    private model: ModelAPI;
 
     constructor(props: any) {
         super(props);
@@ -31,10 +33,13 @@ class App extends Component<{}, AppStates> {
             catValue: "",
         };
         this.catInput = React.createRef();
-        this.model = new ModelAPI(["1", "2", "3", "4"]);
+        this.model = new ModelAPI([]);
     }
 
     componentDidMount() {
+        let tmp = ipcRenderer.sendSync('reading-json-synchronous');
+        console.log(tmp);
+        this.model = new ModelAPI(JSON.parse(tmp).category);
         this.refreshModel();
     }
 
@@ -121,7 +126,6 @@ class App extends Component<{}, AppStates> {
                             <Button onClick={this.testModel}>Test</Button>
                         </div>
                     </Content>
-                    {/*<Footer style={{textAlign: 'center'}}>Due Helper Dev Build</Footer>*/}
                 </Layout>
                 <NewCatPopup catModalVisible={this.state.catModalVisible}
                              catValue={this.state.catValue}

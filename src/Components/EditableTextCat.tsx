@@ -34,31 +34,39 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
     }
 
     handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter' || event.key === 'Escape') {
-            let isInvalid = false;
+        if (event.key === 'Enter') {
+            this.saveEdit();
+        } else if (event.key === 'Escape') {
+            // revert back to original text
             this.setState({
                 toggle: true,
-            });
-            // doesn't allow empty or duplicated category names
-            if (this.state.value.trim() === "") {
-                message.warning("Can't use empty category names!");
-                isInvalid = true;
+                value: this.props.value,
+            })
+        }
+    }
 
-            } else if (this.props.model.hasCat(this.state.value)) {
-                message.warning("No duplicated names allowed!");
-                isInvalid = true;
-            } else {
-                this.props.model.replaceCat(this.props.value, this.state.value);
-                this.props.refreshModel();
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            if (isInvalid) {
-                // revert back to original text
-                this.setState({
-                    value: this.props.value,
-                })
-            }
+    saveEdit = () => {
+        let isInvalid = false;
+        this.setState({
+            toggle: true,
+        });
+        // doesn't allow empty or duplicated category names
+        if (this.state.value.trim() === "") {
+            message.warning("Can't use empty category names!");
+            isInvalid = true;
+
+        } else if (this.state.value !== this.props.value && this.props.model.hasCat(this.state.value)) {
+            message.warning("No duplicated names allowed!");
+            isInvalid = true;
+        } else if (this.state.value !== this.props.value) {
+            this.props.model.replaceCat(this.props.value, this.state.value);
+            this.props.refreshModel();
+        }
+        if (isInvalid) {
+            // revert back to original text
+            this.setState({
+                value: this.props.value,
+            })
         }
     }
 
@@ -81,6 +89,7 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
                         onFocus={(event) => {
                             event.target.select();
                         }}
+                        onBlur={this.saveEdit}
                         onChange={this.handleChange}
                         onKeyDown={this.handleKeyDown}
                 />)
