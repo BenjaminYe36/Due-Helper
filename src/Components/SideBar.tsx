@@ -84,19 +84,24 @@ class SideBar extends React.Component<SiderProps, SiderState> {
                 </div>
                 <Menu theme="dark" mode="inline">
                     {/*First part: All Tasks View*/}
-                    <Menu.Item key="1">All Tasks</Menu.Item>
+                    <Menu.Item key="all">All Tasks</Menu.Item>
                     {/*Second part: Time Filtered Views*/}
-                    <Menu.ItemGroup key="g1" title="[Tasks by Time]">
-                        <Menu.Item key="2">Urgent Tasks</Menu.Item>
-                        <Menu.Item key="3">Current (Includes Urgent) Tasks</Menu.Item>
-                        <Menu.Item key="4">Future</Menu.Item>
+                    <Menu.ItemGroup key="byTime" title="[Tasks by Time]">
+                        <Menu.Item key="urgent">Urgent Tasks</Menu.Item>
+                        <Menu.Item key="current">Current (Includes Urgent) Tasks</Menu.Item>
+                        <Menu.Item key="future">Future</Menu.Item>
                     </Menu.ItemGroup>
                     {/*Third part: user added Categories*/}
-                    <Menu.ItemGroup key="g2" title="[Categories]">
+                    <Menu.ItemGroup key="byUserCat" title="[Categories]">
                         {
                             this.props.category.length > 0 ?
                                 this.getMenuItems() :
-                                <Menu.Item style={{fontStyle: "italic"}} disabled={true}>Nothing Yet</Menu.Item>
+                                <Menu.Item
+                                    key="nothingYet"
+                                    style={{fontStyle: "italic"}}
+                                    disabled={true}>
+                                    Nothing Yet
+                                </Menu.Item>
                         }
                     </Menu.ItemGroup>
                 </Menu>

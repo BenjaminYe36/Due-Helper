@@ -4,9 +4,8 @@ import ModelAPI from "../ModelAPI";
 
 interface EditableTextCatProps {
     value: string; // initial value in this editable text element
-    model: ModelAPI;
-
-    refreshModel(): void;
+    model: ModelAPI; // Reference to the fake backend Api
+    refreshModel(): void; // callback to refresh from backend after modifying
 }
 
 interface EditableTextCatState {

@@ -7,8 +7,9 @@ import NewCatPopup from "./Components/NewCatPopup";
 import EditableTextCat from "./Components/EditableTextCat";
 import ModelAPI from "./ModelAPI";
 import ReorderPopup from "./Components/ReorderPopup";
+import Todo from "./Components/Todo";
 
-const { ipcRenderer } = window.require("electron");
+const {ipcRenderer} = window.require("electron");
 
 
 interface AppStates {
@@ -122,8 +123,24 @@ class App extends Component<{}, AppStates> {
                     <Header className="site-layout-sub-header-background" style={{padding: 0}}/>
                     <Content style={{margin: '24px 16px 0'}}>
                         <div className="site-layout-background" style={{padding: 24, minHeight: 360}}>
-                            <EditableTextCat value="abc" model={this.model} refreshModel={this.refreshModel}/>
-                            <Button onClick={this.testModel}>Test</Button>
+                            <ul style={{listStyleType:'none'}}>
+                            <Todo
+                                task={{
+                                    id: "hello",
+                                    description: "testing task testingtesting task testing tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting taskv",
+                                    availableDate: new Date('12/26/2021'),
+                                    dueDate: new Date('12/26/2021'),
+                                    completed: false
+                                }}/>
+                                <Todo
+                                    task={{
+                                        id: "hello",
+                                        description: "1. Read through instructions to run locally, add to weekly report, add to labLog (Done)",
+                                        availableDate: null,
+                                        dueDate: new Date('12/26/2021'),
+                                        completed: false
+                                    }}/>
+                            </ul>
                         </div>
                     </Content>
                 </Layout>

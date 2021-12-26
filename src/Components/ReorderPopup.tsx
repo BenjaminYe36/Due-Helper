@@ -43,7 +43,7 @@ class ReorderPopup extends React.Component<ReorderPopupProps, {}> {
                         renderItem={({value, props}) => <li {...props}>{value}</li>}
                     />
                     :
-                    <span style={{fontStyle: "italic", color:"dimgray"}}>Nothing Yet</span>
+                    <span style={{fontStyle: "italic", color: "dimgray"}}>Nothing Yet</span>
                 }
             </Modal>
         );
