@@ -53,3 +53,19 @@
 [data-theme="dark"] .site-layout-sub-header-background {
   background: #141414;
 }
+
+p.todo-p {
+  border: 2px solid #bfbfbf;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 15px;
+  overflow: hidden;
+}
+
+p.todo-p:hover {
+  border: 2px solid #597ef7;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 15px;
+  overflow: hidden;
+}

@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-import {Button, Input, Layout, message} from 'antd';
+import {Input, Layout, message} from 'antd';
 import './App.css';
 import 'antd/dist/antd.css';
 import SideBar from "./Components/SideBar";
 import NewCatPopup from "./Components/NewCatPopup";
-import EditableTextCat from "./Components/EditableTextCat";
 import ModelAPI from "./ModelAPI";
 import ReorderPopup from "./Components/ReorderPopup";
 import Todo from "./Components/Todo";
@@ -126,19 +125,21 @@ class App extends Component<{}, AppStates> {
                             <ul style={{listStyleType:'none'}}>
                             <Todo
                                 task={{
-                                    id: "hello",
+                                    id: "firstTODO",
+                                    category: "testing",
                                     description: "testing task testingtesting task testing tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting taskv",
-                                    availableDate: new Date('12/26/2021'),
+                                    availableDate: new Date('12/25/2021'),
                                     dueDate: new Date('12/26/2021'),
                                     completed: false
                                 }}/>
                                 <Todo
                                     task={{
-                                        id: "hello",
+                                        id: "secondTODO",
+                                        category: "Lab",
                                         description: "1. Read through instructions to run locally, add to weekly report, add to labLog (Done)",
                                         availableDate: null,
                                         dueDate: new Date('12/26/2021'),
-                                        completed: false
+                                        completed: true
                                     }}/>
                             </ul>
                         </div>

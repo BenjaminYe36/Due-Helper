@@ -13,20 +13,12 @@ interface SiderProps {
     onReorderCat(): void; // callback called when reordering of category names is needed
 }
 
-interface SiderState {
-
-}
-
 const {Sider} = Layout;
 
 /**
  * Side bar of the main app, consists of all tasks, Time filtered views, and user created categories
  */
-class SideBar extends React.Component<SiderProps, SiderState> {
-
-    constructor(props: any) {
-        super(props);
-    }
+class SideBar extends React.Component<SiderProps, {}> {
 
     openNewCat = () => {
         this.props.onNewCat();

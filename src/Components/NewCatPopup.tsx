@@ -19,10 +19,6 @@ interface NewCatPopupState {
  */
 class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
 
-    constructor(props: any) {
-        super(props);
-    }
-
     render() {
         return (
             <Modal

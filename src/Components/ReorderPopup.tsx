@@ -18,10 +18,6 @@ interface ReorderPopupProps {
  */
 class ReorderPopup extends React.Component<ReorderPopupProps, {}> {
 
-    constructor(props: any) {
-        super(props);
-    }
-
     render() {
         return (
             <Modal
