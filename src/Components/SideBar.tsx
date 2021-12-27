@@ -1,7 +1,14 @@
 import React, {ReactNode} from 'react';
-import {Button, Layout, Menu, Popconfirm} from 'antd';
+import {Button, Dropdown, Layout, Menu, Popconfirm} from 'antd';
 import ModelAPI from "../ModelAPI";
-import {DeleteOutlined, QuestionCircleOutlined} from "@ant-design/icons";
+import {
+    CarryOutTwoTone,
+    ClockCircleTwoTone, DeleteOutlined,
+    ExclamationCircleTwoTone,
+    FileSearchOutlined,
+    PlusOutlined,
+    QuestionCircleOutlined
+} from "@ant-design/icons";
 import EditableTextCat from "./EditableTextCat";
 
 
@@ -36,22 +43,31 @@ class SideBar extends React.Component<SiderProps, {}> {
     getMenuItems(): ReactNode {
         return this.props.category.map((name) =>
             <Menu.Item key={"Cat-" + name}>
-                <div>
-                    <Popconfirm title="Are you sure?"
-                                icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
-                                onConfirm={() => this.handleConfirm(name)}
-                    >
-                        <Button icon={<DeleteOutlined/>}
-                                shape="circle"
-                                ghost={true}
-                                size="small"/>
-                    </Popconfirm>
-                    <EditableTextCat
-                        value={name}
-                        model={this.props.model}
-                        refreshModel={this.props.refreshModel}
-                    />
-                </div>
+                <Dropdown overlay={
+                    <Menu>
+                        <Popconfirm
+                            title={`Irrecoverable action. Are you sure to delete category: [ ${name} ]?`}
+                            icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
+                            okText='Delete'
+                            okType='danger'
+                            onConfirm={() => this.handleConfirm(name)}
+                        >
+                            <Menu.Item key={'Context-Del'}
+                                       icon={<DeleteOutlined/>}
+                                       danger>
+                                Delete
+                            </Menu.Item>
+                        </Popconfirm>
+                    </Menu>
+                } trigger={['contextMenu']}>
+                    <div>
+                        <EditableTextCat
+                            value={name}
+                            model={this.props.model}
+                            refreshModel={this.props.refreshModel}
+                        />
+                    </div>
+                </Dropdown>
             </Menu.Item>
         );
     }
@@ -71,17 +87,31 @@ class SideBar extends React.Component<SiderProps, {}> {
             >
                 <div className="logo"/>
                 <div className="modifyCatButtons" style={{textAlign: 'center'}}>
-                    <Button type="primary" size="small" onClick={this.openNewCat}>New Categories</Button>
-                    <Button size="small" style={{marginLeft: "10px"}} onClick={this.openReorderCat}>Reorder</Button>
+                    <Button type="primary" shape="round"
+                            icon={<PlusOutlined/>}
+                            onClick={this.openNewCat}>New Category</Button>
+                    <Button style={{marginLeft: "10px"}} shape="round"
+                            onClick={this.openReorderCat}>Reorder</Button>
                 </div>
                 <Menu theme="dark" mode="inline">
                     {/*First part: All Tasks View*/}
-                    <Menu.Item key="all">All Tasks</Menu.Item>
+                    <Menu.Item key="all"
+                               icon={<FileSearchOutlined style={{color: '#d9d9d9'}}/>}>
+                        All Tasks</Menu.Item>
                     {/*Second part: Time Filtered Views*/}
                     <Menu.ItemGroup key="byTime" title="[Tasks by Time]">
-                        <Menu.Item key="urgent">Urgent Tasks</Menu.Item>
-                        <Menu.Item key="current">Current (Includes Urgent) Tasks</Menu.Item>
-                        <Menu.Item key="future">Future</Menu.Item>
+                        <Menu.Item key="urgent"
+                                   icon={<ExclamationCircleTwoTone twoToneColor='#cf1322'/>}>
+                            Urgent Tasks
+                        </Menu.Item>
+                        <Menu.Item key="current"
+                                   icon={<CarryOutTwoTone twoToneColor='#faad14'/>}>
+                            Current Tasks
+                        </Menu.Item>
+                        <Menu.Item key="future"
+                                   icon={<ClockCircleTwoTone twoToneColor='#a0d911'/>}>
+                            Future
+                        </Menu.Item>
                     </Menu.ItemGroup>
                     {/*Third part: user added Categories*/}
                     <Menu.ItemGroup key="byUserCat" title="[Categories]">
