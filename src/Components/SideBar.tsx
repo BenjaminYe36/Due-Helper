@@ -1,6 +1,6 @@
 import React, {ReactNode} from 'react';
 import {Button, Dropdown, Layout, Menu, Popconfirm} from 'antd';
-import ModelAPI from "../ModelAPI";
+import ModelAPI from "../Model & Util/ModelAPI";
 import {
     CarryOutTwoTone,
     ClockCircleTwoTone, DeleteOutlined,
@@ -95,22 +95,22 @@ class SideBar extends React.Component<SiderProps, {}> {
                 </div>
                 <Menu theme="dark" mode="inline">
                     {/*First part: All Tasks View*/}
-                    <Menu.Item key="all"
+                    <Menu.Item key="All Tasks"
                                icon={<FileSearchOutlined style={{color: '#d9d9d9'}}/>}>
                         All Tasks</Menu.Item>
                     {/*Second part: Time Filtered Views*/}
                     <Menu.ItemGroup key="byTime" title="[Tasks by Time]">
-                        <Menu.Item key="urgent"
+                        <Menu.Item key="Urgent Tasks"
                                    icon={<ExclamationCircleTwoTone twoToneColor='#cf1322'/>}>
                             Urgent Tasks
                         </Menu.Item>
-                        <Menu.Item key="current"
+                        <Menu.Item key="Current Tasks"
                                    icon={<CarryOutTwoTone twoToneColor='#faad14'/>}>
                             Current Tasks
                         </Menu.Item>
-                        <Menu.Item key="future"
+                        <Menu.Item key="Future Tasks"
                                    icon={<ClockCircleTwoTone twoToneColor='#a0d911'/>}>
-                            Future
+                            Future Tasks
                         </Menu.Item>
                     </Menu.ItemGroup>
                     {/*Third part: user added Categories*/}

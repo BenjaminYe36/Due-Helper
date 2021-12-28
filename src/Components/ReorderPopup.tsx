@@ -1,6 +1,6 @@
 import React from "react";
 import {Modal} from "antd";
-import ModelAPI from "../ModelAPI";
+import ModelAPI from "../Model & Util/ModelAPI";
 import {List} from "react-movable";
 
 interface ReorderPopupProps {

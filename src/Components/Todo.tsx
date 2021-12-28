@@ -2,34 +2,55 @@ import React from "react";
 import {Checkbox, Dropdown, Menu, Popconfirm, Tag} from "antd";
 import {MenuInfo} from "rc-menu/lib/interface";
 import {DeleteOutlined, EditTwoTone, QuestionCircleOutlined} from "@ant-design/icons";
+import ModelAPI from "../Model & Util/ModelAPI";
+import {CheckboxChangeEvent} from "antd/es/checkbox";
 
 interface TodoProps {
     task: TaskInfo; // an object contains all the information of a task (see interface for details)
+    model: ModelAPI; // Reference to the fake backend Api
+    refreshModel(): void; // callback to refresh from backend after modifying
+    onEdit(task: TaskInfo): void; // callback to show edit popup with prefilled task info
 }
 
 export interface TaskInfo {
-    id: string;
-    category: string;
-    description: string;
-    availableDate: Date | null;
-    dueDate: Date;
-    completed: boolean;
+    id: string; // unique id of this task
+    category: string; // Category this task is under
+    description: string; // Description of the task
+    availableDate: string | null; // Date string in ISO format for available date of this task
+    dueDate: string; // Date string in ISO format for due date of this task
+    completed: boolean; // the completed or not situation of this task (corresponds to checkbox)
 }
 
+/**
+ * A component that represents a single record of task
+ *  - contains checkbox to mark complete or not
+ *  - contains category, description, available date (if any) and due date
+ */
 class Todo extends React.Component<TodoProps, {}> {
 
     handleContextMenu = (menuInfo: MenuInfo, id: string) => {
         console.log(menuInfo);
         if (menuInfo.key === "Context-Edit") {
             console.log('should pop up edit');
+            this.props.onEdit(this.props.task);
         } else if (menuInfo.key === "Context-Del") {
             console.log('should do nothing and wait for Popconfirm to delete');
         }
         console.log(id);
     }
 
+    handleCheck = (e: CheckboxChangeEvent) => {
+        console.log(`handle check called: ${e.target.checked}`);
+        this.props.model.replaceTask(this.props.task.id, this.props.task.category,
+            this.props.task.description, this.props.task.availableDate,
+            this.props.task.dueDate, e.target.checked);
+        this.props.refreshModel();
+    }
+
     deleteTask = (id: string) => {
         console.log(`delete ${id} called`);
+        this.props.model.deleteTask(id);
+        this.props.refreshModel();
     }
 
     render() {
@@ -43,6 +64,7 @@ class Todo extends React.Component<TodoProps, {}> {
                                        icon={<EditTwoTone twoToneColor='#8c8c8c'/>}>
                                 Edit
                             </Menu.Item>
+                            {/*Popconfirm for delete*/}
                             <Popconfirm title='Are you sure?'
                                         icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
                                         okText='Delete'
@@ -62,17 +84,19 @@ class Todo extends React.Component<TodoProps, {}> {
                     {/*inner contents of task display*/}
 
                     <p className='todo-p'>
-                        <Checkbox checked={this.props.task?.completed} style={{paddingRight: '5px'}}/>
+                        <Checkbox checked={this.props.task?.completed}
+                                  style={{paddingRight: '5px'}}
+                                  onChange={this.handleCheck}/>
                         <Tag color='#85a5ff'>{this.props.task?.category}</Tag>
                         {this.props.task?.description}
                         <Tag color='green'
                              style={{float: 'right'}}>
-                            Due: {this.props.task?.dueDate.toLocaleDateString()}
+                            Due: {new Date(this.props.task?.dueDate).toLocaleDateString()}
                         </Tag>
                         {this.props.task?.availableDate === null ?
                             null :
                             <Tag color='orange' style={{float: 'right'}}>
-                                Not available until: {this.props.task?.availableDate.toLocaleDateString()}
+                                Not available until: {new Date(this.props.task?.availableDate).toLocaleDateString()}
                             </Tag>
                         }
                     </p>

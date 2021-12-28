@@ -1,6 +1,6 @@
 import React from 'react';
 import {Input, message} from "antd";
-import ModelAPI from "../ModelAPI";
+import ModelAPI from "../Model & Util/ModelAPI";
 
 interface EditableTextCatProps {
     value: string; // initial value in this editable text element

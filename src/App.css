@@ -47,9 +47,9 @@
   background: #fff;
 }
 
-.site-layout-background {
-  background: #fff;
-}
+/*.site-layout-background {*/
+/*  background: #fff;*/
+/*}*/
 [data-theme="dark"] .site-layout-sub-header-background {
   background: #141414;
 }
@@ -60,6 +60,7 @@ p.todo-p {
   padding: 10px;
   font-size: 15px;
   overflow: hidden;
+  background-color: #fff;
 }
 
 p.todo-p:hover {
@@ -68,4 +69,5 @@ p.todo-p:hover {
   padding: 10px;
   font-size: 15px;
   overflow: hidden;
+  background-color: #fff;
 }

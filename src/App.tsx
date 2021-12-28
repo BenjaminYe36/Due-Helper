@@ -4,21 +4,23 @@ import './App.css';
 import 'antd/dist/antd.css';
 import SideBar from "./Components/SideBar";
 import NewCatPopup from "./Components/NewCatPopup";
-import ModelAPI from "./ModelAPI";
+import ModelAPI from "./Model & Util/ModelAPI";
 import ReorderPopup from "./Components/ReorderPopup";
-import Todo from "./Components/Todo";
+import {TaskInfo} from "./Components/Todo";
+import MainContent from "./Components/MainContent";
 
 const {ipcRenderer} = window.require("electron");
 
 
 interface AppStates {
     category: string[]; // array of strings that represents the user added categories for the tasks
+    taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
     reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
     catValue: string; // string representing the input of category name from user
 }
 
-const {Header, Content} = Layout;
+const {Header} = Layout;
 
 class App extends Component<{}, AppStates> {
     private readonly catInput: React.RefObject<Input>;
@@ -28,18 +30,19 @@ class App extends Component<{}, AppStates> {
         super(props);
         this.state = {
             category: [],
+            taskList: [],
             catModalVisible: false,
             reorderModalVisible: false,
             catValue: "",
         };
         this.catInput = React.createRef();
-        this.model = new ModelAPI([]);
+        this.model = new ModelAPI([], []);
     }
 
     componentDidMount() {
         let tmp = ipcRenderer.sendSync('reading-json-synchronous');
         console.log(tmp);
-        this.model = new ModelAPI(JSON.parse(tmp).category);
+        this.model = new ModelAPI(JSON.parse(tmp).category, JSON.parse(tmp).taskList);
         this.refreshModel();
     }
 
@@ -99,13 +102,11 @@ class App extends Component<{}, AppStates> {
     }
 
     // methods of calling the model to update view in this App
-    testModel = () => {
-        this.refreshModel();
-    }
 
     refreshModel = () => {
         this.setState({
             category: this.model.getCat(),
+            taskList: this.model.getTaskList(),
         });
     }
 
@@ -120,30 +121,8 @@ class App extends Component<{}, AppStates> {
                 />
                 <Layout>
                     <Header className="site-layout-sub-header-background" style={{padding: 0}}/>
-                    <Content style={{margin: '24px 16px 0'}}>
-                        <div className="site-layout-background" style={{padding: 24, minHeight: 360}}>
-                            <ul style={{listStyleType:'none'}}>
-                            <Todo
-                                task={{
-                                    id: "firstTODO",
-                                    category: "testing",
-                                    description: "testing task testingtesting task testing tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting tasktesting taskv",
-                                    availableDate: new Date('12/25/2021'),
-                                    dueDate: new Date('12/26/2021'),
-                                    completed: false
-                                }}/>
-                                <Todo
-                                    task={{
-                                        id: "secondTODO",
-                                        category: "Lab",
-                                        description: "1. Read through instructions to run locally, add to weekly report, add to labLog (Done)",
-                                        availableDate: null,
-                                        dueDate: new Date('12/26/2021'),
-                                        completed: true
-                                    }}/>
-                            </ul>
-                        </div>
-                    </Content>
+                    <MainContent category={this.state.category} taskList={this.state.taskList}
+                                 model={this.model} refreshModel={this.refreshModel} selection={"All Tasks"}/>
                 </Layout>
                 <NewCatPopup catModalVisible={this.state.catModalVisible}
                              catValue={this.state.catValue}

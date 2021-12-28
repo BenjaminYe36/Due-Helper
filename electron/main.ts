@@ -68,7 +68,7 @@ app.whenReady().then(() => {
 // ipc handles reading json from existing local data (if there is one already)
 ipcMain.on('reading-json-synchronous', ((event, args) => {
     try {
-        let dir = path.join(__dirname, '../TaskData/category.json');
+        let dir = path.join(__dirname, '../TaskData/taskData.json');
         if (fs.existsSync(dir)) {
             console.log("file exists");
             event.returnValue = fs.readFileSync(dir, 'utf8');
@@ -86,9 +86,9 @@ ipcMain.on('writing-json-synchronous', ((event, args) => {
             fs.mkdirSync(dir);
             console.log("created dir");
         }
-        fs.writeFileSync(path.join(__dirname, '../TaskData/category.json'), args);
+        fs.writeFileSync(path.join(__dirname, '../TaskData/taskData.json'), args);
         console.log("write success");
-        console.log(path.join(__dirname, '../TaskData/category.json'));
+        console.log(path.join(__dirname, '../TaskData/taskData.json'));
         event.returnValue = 'write success';
     } catch (e) {
         console.log(e);
