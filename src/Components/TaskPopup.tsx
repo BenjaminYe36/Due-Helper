@@ -1,5 +1,5 @@
 import React from "react";
-import {Modal, Input, Select, Switch, DatePicker, message, Button} from "antd";
+import {Modal, Input, Select, Switch, DatePicker, Button} from "antd";
 import Util from "../Model & Util/Util";
 import ModelAPI from "../Model & Util/ModelAPI";
 import moment from "moment";
@@ -12,6 +12,7 @@ interface TaskPopupProps {
     createNew: boolean; // if true => show create new popup, if false => show edit popup
     model: ModelAPI; // Reference to the fake backend Api
     prefillTaskInfo: TaskInfo | null; // prefilled information if not null (for edit popup only)
+    prefillCat: string | null; // prefilled category name if not null (for new task popup under category only)
     refreshModel(): void; // callback to refresh from backend after modifying
     handleOk(): void; // callback for clicking ok
     handleCancel(): void; // callback for clicking cancel
@@ -55,6 +56,13 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                     dueDate: this.props.prefillTaskInfo.dueDate,
                 });
                 console.log('set prefilled state');
+            }
+        }
+        if (prevProps.prefillCat !== this.props.prefillCat) {
+            if (this.props.createNew) {
+                this.setState({
+                    categoryName: (this.props.prefillCat === null ? null : "Cat-" + this.props.prefillCat),
+                });
             }
         }
     }
@@ -109,26 +117,16 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
 
     handleSubmit = () => {
         // Shared validations
-        if (this.state.categoryName === null) {
-            message.warning("Category must be chosen!");
-            return;
-        }
-        if (this.state.description.trim().length === 0) {
-            message.warning("Empty description not allowed!");
-            return;
-        }
-        if (this.state.dueDate === null) {
-            message.warning("Due date must be chosen!");
-            return;
-        }
-        if (this.state.availableDate !== null &&
-            new Date(this.state.availableDate).getTime() > new Date(this.state.dueDate).getTime()) {
-            message.warning("Invalid dates, available date can't be later than due date!");
+        if (!Util.validateTaskInfo(this.state.categoryName, this.state.description,
+            this.state.availableDate, this.state.dueDate, this.state.completed)) {
+            // not valid should stop here
             return;
         }
 
         if (this.props.createNew) { // New task popup
-            this.props.model.addTask(this.state.categoryName.split('Cat-')[1], this.state.description,
+            // @ts-ignore
+            this.props.model.addTask(this.state.categoryName.substring(4), this.state.description,
+                // @ts-ignore
                 this.state.availableDate, this.state.dueDate, this.state.completed);
             this.props.refreshModel();
             this.reset();
@@ -136,7 +134,9 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
         } else { // Edit popup
             // @ts-ignore
             this.props.model.replaceTask(this.props.prefillTaskInfo.id,
-                this.state.categoryName.split('Cat-')[1], this.state.description,
+                // @ts-ignore
+                this.state.categoryName.substring(4), this.state.description,
+                // @ts-ignore
                 this.state.availableDate, this.state.dueDate, this.state.completed);
             this.props.refreshModel();
             this.reset();

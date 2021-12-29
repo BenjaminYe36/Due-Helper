@@ -1,9 +1,10 @@
 import React from "react";
-import {Checkbox, Dropdown, Menu, Popconfirm, Tag} from "antd";
+import {Checkbox, Dropdown, Menu, Popconfirm, Tag, Tooltip} from "antd";
 import {MenuInfo} from "rc-menu/lib/interface";
 import {DeleteOutlined, EditTwoTone, QuestionCircleOutlined} from "@ant-design/icons";
 import ModelAPI from "../Model & Util/ModelAPI";
 import {CheckboxChangeEvent} from "antd/es/checkbox";
+import Util from "../Model & Util/Util";
 
 interface TodoProps {
     task: TaskInfo; // an object contains all the information of a task (see interface for details)
@@ -54,6 +55,7 @@ class Todo extends React.Component<TodoProps, {}> {
     }
 
     render() {
+        let dueDateDiffInDays = Util.getDateDifferenceInDays(new Date().toISOString(), this.props.task.dueDate);
         return (
             // Context menu
             <li id={this.props.task?.id}>
@@ -86,18 +88,44 @@ class Todo extends React.Component<TodoProps, {}> {
                     <p className='todo-p'>
                         <Checkbox checked={this.props.task?.completed}
                                   style={{paddingRight: '5px'}}
-                                  onChange={this.handleCheck}/>
+                                  onChange={this.handleCheck}
+                                  disabled={!Util.isAvailable(this.props.task)}
+                        />
+
                         <Tag color='#85a5ff'>{this.props.task?.category}</Tag>
-                        {this.props.task?.description}
-                        <Tag color='green'
-                             style={{float: 'right'}}>
-                            Due: {new Date(this.props.task?.dueDate).toLocaleDateString()}
-                        </Tag>
+
+                        <span
+                            style={{
+                                color: this.props.task.completed || !Util.isAvailable(this.props.task)
+                                    ? '#aaaaaa' : 'black',
+                                textDecoration: this.props.task.completed ? 'line-through' : 'none',
+                            }}>
+                            {this.props.task?.description}
+                        </span>
+
+                        <Tooltip title={this.props.task.completed ? 'Already Done' :
+                            (dueDateDiffInDays >= 0) ? `Due in ${dueDateDiffInDays} day(s)` :
+                                `Past due ${-dueDateDiffInDays} day(s)`}>
+                            <Tag
+                                color={this.props.task.completed ? 'green' :
+                                    (Util.isUrgent(this.props.task) ? 'red' : 'cyan')}
+                                style={{float: 'right'}}>
+                                Due: {new Date(this.props.task?.dueDate).toLocaleDateString()}
+                            </Tag>
+                        </Tooltip>
                         {this.props.task?.availableDate === null ?
                             null :
-                            <Tag color='orange' style={{float: 'right'}}>
-                                Not available until: {new Date(this.props.task?.availableDate).toLocaleDateString()}
-                            </Tag>
+                            <Tooltip
+                                title={Util.isAvailable(this.props.task) ?
+                                    'Available Now' :
+                                    `Will be available in 
+                                    ${Util.getDateDifferenceInDays(new Date().toISOString(),
+                                        this.props.task.availableDate)} day(s)`}>
+                                <Tag color={Util.isAvailable(this.props.task) ? 'green' : 'orange'}
+                                     style={{float: 'right'}}>
+                                    Not available until: {new Date(this.props.task?.availableDate).toLocaleDateString()}
+                                </Tag>
+                            </Tooltip>
                         }
                     </p>
 

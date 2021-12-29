@@ -1,6 +1,6 @@
 import React from "react";
 import Todo, {TaskInfo} from "./Todo";
-import {Button, Layout, Tooltip} from "antd";
+import {Button, Empty, Layout, Tooltip} from "antd";
 import ModelAPI from "../Model & Util/ModelAPI";
 import {PlusOutlined} from "@ant-design/icons";
 import TaskPopup from "./TaskPopup";
@@ -16,7 +16,8 @@ interface MainContentProps {
 interface MainContentState {
     newTaskModalVisible: boolean;
     editTaskModalVisible: boolean;
-    prefillTaskInfo: TaskInfo | null;
+    prefillTaskInfo: TaskInfo | null; // prefilled task info for the task requested to be edited
+    prefillCat: string | null; // If a category is selected in the left side bar, add task should prefill category
 }
 
 const {Content} = Layout;
@@ -29,6 +30,19 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
             newTaskModalVisible: false,
             editTaskModalVisible: false,
             prefillTaskInfo: null,
+            prefillCat: null,
+        }
+    }
+
+    componentDidUpdate(prevProps: Readonly<MainContentProps>, prevState: Readonly<MainContentState>, snapshot?: any) {
+        if (prevProps.selection !== this.props.selection || prevProps.taskList.length !== this.props.taskList.length) {
+            let tmpCat: string | null = null;
+            if (this.props.selection.startsWith('Cat-')) {
+                tmpCat = this.props.selection.substring(4);
+            }
+            this.setState({
+                prefillCat: tmpCat,
+            });
         }
     }
 
@@ -81,7 +95,8 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                     {/*Header with selection marked*/}
                     <h1 style={{fontSize: '20px', marginLeft: '42px'}}>
                         {/*Big title*/}
-                        {this.props.selection}
+                        {this.props.selection.startsWith('Cat-') ?
+                            this.props.selection.substring(4) : this.props.selection}
                         {/*Button with tooltip*/}
                         <Tooltip title='New Task'>
                             <Button icon={<PlusOutlined/>}
@@ -93,14 +108,16 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                     </h1>
 
                     {/*List of Todos*/}
-                    <ul style={{listStyleType: 'none'}}>
-                        {this.props.taskList.map((task) =>
-                            <Todo key={task.id} task={task}
-                                  model={this.props.model}
-                                  refreshModel={this.props.refreshModel}
-                                  onEdit={this.showEditPopup}/>
-                        )}
-                    </ul>
+                    {this.props.taskList.length > 0 ?
+                        <ul style={{listStyleType: 'none'}}>
+                            {this.props.taskList.map((task) =>
+                                <Todo key={task.id} task={task}
+                                      model={this.props.model}
+                                      refreshModel={this.props.refreshModel}
+                                      onEdit={this.showEditPopup}/>
+                            )}
+                        </ul>
+                        : <Empty description={<span>No Task Yet</span>}/>}
                 </div>
                 {/*New Task Popup*/}
                 <TaskPopup taskModalVisible={this.state.newTaskModalVisible}
@@ -111,6 +128,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                            handleOk={this.handleNewTaskOk}
                            handleCancel={this.handleNewTaskCancel}
                            prefillTaskInfo={null}
+                           prefillCat={this.state.prefillCat}
                 />
                 {/*Edit Task Popup*/}
                 <TaskPopup category={this.props.category}
@@ -121,6 +139,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                            handleOk={this.handleEditTaskOk}
                            handleCancel={this.handleEditTaskCancel}
                            prefillTaskInfo={this.state.prefillTaskInfo}
+                           prefillCat={this.state.prefillCat}
                 />
             </Content>
         );

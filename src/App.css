@@ -25,7 +25,7 @@ p.todo-p {
 }
 
 p.todo-p:hover {
-  border: 2px solid #597ef7;
+  border: 2px solid #6a85ca;
   border-radius: 12px;
   padding: 10px;
   font-size: 15px;
@@ -34,7 +34,7 @@ p.todo-p:hover {
 }
 
 ::-webkit-scrollbar{
-  width: 10px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-track{

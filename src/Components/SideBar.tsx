@@ -15,9 +15,11 @@ import EditableTextCat from "./EditableTextCat";
 interface SiderProps {
     category: string[]; // array of strings that represents the user added categories for the tasks
     model: ModelAPI; // Reference to the fake backend Api
+    selectionKey: string; // Selected key in the side bar menu
     refreshModel(): void; // callback to refresh from backend after modifying
     onNewCat(): void; // callback called when a new category needs to be added
     onReorderCat(): void; // callback called when reordering of category names is needed
+    updateSelection(key: string): void; // callback for updating selected key value in the side menu
 }
 
 const {Sider} = Layout;
@@ -46,7 +48,9 @@ class SideBar extends React.Component<SiderProps, {}> {
                 <Dropdown overlay={
                     <Menu>
                         <Popconfirm
-                            title={`Irrecoverable action. ALL TASKS IN THIS CATEGORY WILL ALSO BE DELETED! Are you sure to delete category: [ ${name} ]?`}
+                            title={<span>Irrecoverable action. <br/>
+                                    ALL TASKS IN THIS CATEGORY WILL ALSO BE DELETED! <br/>
+                                    Are you sure to delete category: {`[ ${name} ]?`}</span>}
                             icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
                             okText='Delete'
                             okType='danger'
@@ -93,7 +97,9 @@ class SideBar extends React.Component<SiderProps, {}> {
                     <Button style={{marginLeft: "10px"}} shape="round"
                             onClick={this.openReorderCat}>Reorder</Button>
                 </div>
-                <Menu theme="dark" mode="inline">
+                <Menu theme="dark" mode="inline"
+                      selectedKeys={[this.props.selectionKey]}
+                      onClick={(item) => this.props.updateSelection(item.key)}>
                     {/*First part: All Tasks View*/}
                     <Menu.Item key="All Tasks"
                                icon={<FileSearchOutlined style={{color: '#d9d9d9'}}/>}>

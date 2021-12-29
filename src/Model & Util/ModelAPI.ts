@@ -1,6 +1,7 @@
 import {message} from "antd";
 import {TaskInfo} from "../Components/Todo";
 import {nanoid} from "nanoid";
+import Util from "./Util";
 
 const {ipcRenderer} = window.require("electron");
 
@@ -50,6 +51,7 @@ class ModelAPI {
                 if (task.category === oldCat) {
                     task.category = newCat;
                 }
+                return null;
             });
             this.writeToJson();
             console.log(this.category);
@@ -100,8 +102,7 @@ class ModelAPI {
             message.warning("Does not has this category, please recheck category of this task!");
             return;
         }
-        if (availableDate !== null && new Date(availableDate).getTime() > new Date(dueDate).getTime()) {
-            message.warning("Invalid dates, available date can't be later than due date!");
+        if (!Util.validateTaskInfo(category, description, availableDate, dueDate, completed)) {
             return;
         }
         let task: TaskInfo = {
@@ -122,6 +123,9 @@ class ModelAPI {
         let targetIndex = this.taskList.findIndex((t) => t.id === id);
         if (targetIndex === -1) {
             message.warning("Id not found, can't replace");
+            return;
+        }
+        if (!Util.validateTaskInfo(category, description, availableDate, dueDate, completed)) {
             return;
         }
         this.taskList[targetIndex] = {
