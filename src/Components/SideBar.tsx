@@ -46,7 +46,7 @@ class SideBar extends React.Component<SiderProps, {}> {
                 <Dropdown overlay={
                     <Menu>
                         <Popconfirm
-                            title={`Irrecoverable action. Are you sure to delete category: [ ${name} ]?`}
+                            title={`Irrecoverable action. ALL TASKS IN THIS CATEGORY WILL ALSO BE DELETED! Are you sure to delete category: [ ${name} ]?`}
                             icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
                             okText='Delete'
                             okType='danger'

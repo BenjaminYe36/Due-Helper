@@ -43,9 +43,17 @@ class ModelAPI {
             console.log("old category name not found, nothing is done in renaming");
             return;
         } else {
+            // replace name in category array
             this.category[indexOfOld] = newCat;
+            // replace name in existing tasks
+            this.taskList.map((task) => {
+                if (task.category === oldCat) {
+                    task.category = newCat;
+                }
+            });
             this.writeToJson();
             console.log(this.category);
+            console.log(this.taskList);
         }
     }
 
@@ -70,9 +78,13 @@ class ModelAPI {
             console.log("category not found, nothing is done in deleting");
             return;
         } else {
+            // Delete name in category array
             this.category = this.category.filter((tmpCat) => tmpCat !== cat);
+            // Delete tasks with this category name in task array
+            this.taskList = this.taskList.filter((task) => task.category !== cat);
             this.writeToJson();
             console.log(this.category);
+            console.log(this.taskList);
         }
     }
 

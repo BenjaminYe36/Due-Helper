@@ -112,7 +112,7 @@ class App extends Component<{}, AppStates> {
 
     render() {
         return (
-            <Layout style={{height: "100vh", overflow: "auto"}}>
+            <Layout style={{minHeight: "100vh", overflow: "auto"}}>
                 <SideBar category={this.state.category}
                          model={this.model}
                          onNewCat={this.showNewCatModal}
