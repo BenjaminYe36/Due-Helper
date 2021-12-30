@@ -10,14 +10,10 @@ interface NewCatPopupProps {
     updateInput(event: React.ChangeEvent<HTMLInputElement>): void; // callback to update the value in the input text box
 }
 
-interface NewCatPopupState {
-
-}
-
 /**
  * A Popup with an input box to enable users to add new categories for the tasks
  */
-class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
+class NewCatPopup extends React.Component<NewCatPopupProps, {}> {
 
     render() {
         return (

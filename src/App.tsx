@@ -18,15 +18,16 @@ const {ipcRenderer} = window.require("electron");
 interface AppStates {
     category: string[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
-    filteredList: TaskInfo[]; // filtered list that correspond to the selection on side bar menu
+    filteredList: TaskInfo[]; // filtered and ordered list that correspond to the selection on side bar menu
     catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
     reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
     catValue: string; // string representing the input of category name from user
-    selectionKey: string; // string representing the selected key in the side bar menu
+    selectionKey: string; // string representing the key of selected item in the side bar menu
 }
 
-const {Header} = Layout;
-
+/**
+ * The main application class of this task management software
+ */
 class App extends Component<{}, AppStates> {
     private readonly catInput: React.RefObject<Input>;
     private model: ModelAPI;
@@ -201,13 +202,15 @@ class App extends Component<{}, AppStates> {
                 />
 
                 <Layout>
-                    {/*<Header className="site-layout-sub-header-background" style={{padding: 0}}/>*/}
+
                     <Scrollbars>
                         <MainContent category={this.state.category} taskList={this.state.filteredList}
                                      model={this.model} refreshModel={this.refreshModel}
                                      selection={this.state.selectionKey}/>
                     </Scrollbars>
+
                 </Layout>
+
                 <NewCatPopup catModalVisible={this.state.catModalVisible}
                              catValue={this.state.catValue}
                              catInput={this.catInput}
@@ -220,6 +223,7 @@ class App extends Component<{}, AppStates> {
                               refreshModel={this.refreshModel}
                               handleReorderModalOk={() => this.setReorderModalVisible(false)}
                               handleReorderModalCancel={() => this.setReorderModalVisible(false)}/>
+
             </Layout>
         );
     }

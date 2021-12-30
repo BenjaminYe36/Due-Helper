@@ -14,14 +14,17 @@ interface MainContentProps {
 }
 
 interface MainContentState {
-    newTaskModalVisible: boolean;
-    editTaskModalVisible: boolean;
+    newTaskModalVisible: boolean; // visibility of the popup to add a new task
+    editTaskModalVisible: boolean; // visibility of the popup to edit an existing task
     prefillTaskInfo: TaskInfo | null; // prefilled task info for the task requested to be edited
     prefillCat: string | null; // If a category is selected in the left side bar, add task should prefill category
 }
 
 const {Content} = Layout;
 
+/**
+ * Main content component on the right mainly to show a list of task items
+ */
 class MainContent extends React.Component<MainContentProps, MainContentState> {
 
     constructor(props: MainContentProps) {

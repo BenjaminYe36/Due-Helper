@@ -26,6 +26,7 @@ export interface TaskInfo {
  * A component that represents a single record of task
  *  - contains checkbox to mark complete or not
  *  - contains category, description, available date (if any) and due date
+ *  - contains tooltip on date tags for date differences to current date
  */
 class Todo extends React.Component<TodoProps, {}> {
 

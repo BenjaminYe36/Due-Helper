@@ -7,8 +7,8 @@ import {ReloadOutlined} from "@ant-design/icons";
 import {TaskInfo} from "./Todo";
 
 interface TaskPopupProps {
-    category: string[];
-    taskModalVisible: boolean;
+    category: string[]; // array of strings that represents the user added categories for the tasks
+    taskModalVisible: boolean; // boolean representing the visibility of the modal for adding or editing task
     createNew: boolean; // if true => show create new popup, if false => show edit popup
     model: ModelAPI; // Reference to the fake backend Api
     prefillTaskInfo: TaskInfo | null; // prefilled information if not null (for edit popup only)
@@ -19,11 +19,11 @@ interface TaskPopupProps {
 }
 
 interface TaskPopupState {
-    completed: boolean;
-    categoryName: string | null;
-    description: string;
-    availableDate: string | null;
-    dueDate: string | null;
+    completed: boolean; // the completion state of this current task
+    categoryName: string | null; // the category name of this current task
+    description: string; // description of this current task
+    availableDate: string | null; // string in ISO date string
+    dueDate: string | null; // string in ISO date string
 }
 
 const {Option} = Select;
