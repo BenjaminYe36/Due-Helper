@@ -126,9 +126,12 @@ class App extends Component<{}, AppStates> {
     // methods relating to the side bar menu states
 
     updateSelectionKey = (key: string) => {
-        this.setState({
-            selectionKey: key,
-        });
+        console.log(`update select key called with ${key}`);
+        if (!key.startsWith('Cat') || (key.startsWith('Cat-') && this.model.hasCat(key.substring(4)))) {
+            this.setState({
+                selectionKey: key,
+            });
+        }
     }
 
     // methods of calling the model to update view in this App

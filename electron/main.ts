@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from "fs";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer";
 
+const defaultTaskData = '{"category":[],"taskList":[]}';
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -72,6 +73,9 @@ ipcMain.on('reading-json-synchronous', ((event, args) => {
         if (fs.existsSync(dir)) {
             console.log("file exists");
             event.returnValue = fs.readFileSync(dir, 'utf8');
+        } else {
+            console.log("file doesn't exist, use default value instead");
+            event.returnValue = defaultTaskData;
         }
     } catch (e) {
         console.log(e);

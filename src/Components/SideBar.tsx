@@ -39,6 +39,7 @@ class SideBar extends React.Component<SiderProps, {}> {
 
     handleConfirm = (name: string) => {
         this.props.model.deleteCat(name);
+        this.props.updateSelection("All Tasks");
         this.props.refreshModel();
     }
 

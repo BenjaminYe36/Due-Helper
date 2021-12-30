@@ -1,8 +1,8 @@
 {
-  "name": "my-app",
+  "name": "due-helper",
   "version": "0.2.0",
-  "author": "Your Name",
-  "description": "React-TypeScript-Electron sample with Create React App and Electron Builder",
+  "author": "Guangyin Ye",
+  "description": "Manage tasks with due dates",
   "homepage": ".",
   "main": "build/electron/main.js",
   "private": true,

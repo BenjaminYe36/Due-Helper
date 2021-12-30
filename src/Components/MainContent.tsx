@@ -1,6 +1,6 @@
 import React from "react";
 import Todo, {TaskInfo} from "./Todo";
-import {Button, Empty, Layout, Tooltip} from "antd";
+import {Button, Collapse, Empty, Layout, Switch, Tooltip} from "antd";
 import ModelAPI from "../Model & Util/ModelAPI";
 import {PlusOutlined} from "@ant-design/icons";
 import TaskPopup from "./TaskPopup";
@@ -18,9 +18,11 @@ interface MainContentState {
     editTaskModalVisible: boolean; // visibility of the popup to edit an existing task
     prefillTaskInfo: TaskInfo | null; // prefilled task info for the task requested to be edited
     prefillCat: string | null; // If a category is selected in the left side bar, add task should prefill category
+    groupedByCat: boolean; // whether the tasks are grouped by categories
 }
 
 const {Content} = Layout;
+const {Panel} = Collapse;
 
 /**
  * Main content component on the right mainly to show a list of task items
@@ -34,6 +36,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
             editTaskModalVisible: false,
             prefillTaskInfo: null,
             prefillCat: null,
+            groupedByCat: false,
         }
     }
 
@@ -91,7 +94,22 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
         });
     }
 
+    updateGroupedByCat = (checked: boolean) => {
+        this.setState({
+            groupedByCat: checked,
+        });
+    }
+
     render() {
+        let taskListForEachCat: any[] = [];
+        if (!this.props.selection.startsWith('Cat-') && this.state.groupedByCat) {
+            for (let i = 0; i < this.props.category.length; i++) {
+                taskListForEachCat.push(this.props.taskList.filter((task) =>
+                    task.category === this.props.category[i]));
+            }
+            console.log(taskListForEachCat);
+        }
+
         return (
             <Content style={{margin: '24px 16px 0'}}>
                 <div className="site-layout-background" style={{padding: 24, minHeight: 360}}>
@@ -108,19 +126,48 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                                     style={{float: 'right'}}
                                     onClick={this.showNewTaskModal}/>
                         </Tooltip>
+                        {!this.props.selection.startsWith('Cat-') ?
+                            <Switch style={{float: 'right', marginTop: '5px', marginRight: '5px'}}
+                                    checkedChildren="Grouped by category"
+                                    unCheckedChildren="Not Grouped by category"
+                                    checked={this.state.groupedByCat}
+                                    onClick={this.updateGroupedByCat}
+                            /> : null}
+
                     </h1>
 
-                    {/*List of Todos*/}
-                    {this.props.taskList.length > 0 ?
-                        <ul style={{listStyleType: 'none'}}>
-                            {this.props.taskList.map((task) =>
-                                <Todo key={task.id} task={task}
-                                      model={this.props.model}
-                                      refreshModel={this.props.refreshModel}
-                                      onEdit={this.showEditPopup}/>
-                            )}
-                        </ul>
-                        : <Empty description={<span>No Task Yet</span>}/>}
+                    <div>
+                        {/*List of Todos*/}
+                        {this.state.groupedByCat && !this.props.selection.startsWith('Cat-') ?
+                            <Collapse bordered={false} defaultActiveKey={this.props.category}>
+                                {this.props.category.map((cat, i) =>
+                                    taskListForEachCat[i].length > 0 ?
+                                        <Panel key={cat} header={cat}>
+                                            <ul style={{listStyleType: 'none'}}>
+                                                {taskListForEachCat[i].map((task: TaskInfo) =>
+                                                    <Todo key={task.id} task={task}
+                                                          model={this.props.model}
+                                                          refreshModel={this.props.refreshModel}
+                                                          onEdit={this.showEditPopup}/>
+                                                )}
+                                            </ul>
+                                        </Panel> : null
+                                )}
+                            </Collapse>
+                            :
+                            (this.props.taskList.length > 0 ?
+                                <ul style={{listStyleType: 'none'}}>
+                                    {this.props.taskList.map((task) =>
+                                        <Todo key={task.id} task={task}
+                                              model={this.props.model}
+                                              refreshModel={this.props.refreshModel}
+                                              onEdit={this.showEditPopup}/>
+                                    )}
+                                </ul>
+                                : <Empty description={<span>No Task Yet</span>}/>)
+                        }
+                    </div>
+
                 </div>
                 {/*New Task Popup*/}
                 <TaskPopup taskModalVisible={this.state.newTaskModalVisible}
