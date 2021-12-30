@@ -6,6 +6,10 @@
 <span>Made by <a href="https://github.com/BenjaminYe36">Guangyin Ye</a></span>
 </p>
 
+## Screenshots
+[![TfCjNF.png](https://s4.ax1x.com/2021/12/30/TfCjNF.png)](https://imgtu.com/i/TfCjNF)
+[![TfCz9J.png](https://s4.ax1x.com/2021/12/30/TfCz9J.png)](https://imgtu.com/i/TfCz9J)
+
 ## Testing & Building
 ### Pre-req for testing
 
