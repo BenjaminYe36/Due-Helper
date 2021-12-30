@@ -1,10 +1,10 @@
-<div style="text-align: center">
+<p align="center">
 <img alt='Due Helper Logo' width="400"  src='https://s4.ax1x.com/2021/12/30/TWW1u6.png'/>
 <br/>
 <span>A free & open-source software for managing tasks. Optimized for tasks with due dates under categories.</span>
 <br/>
 <span>Made by <a href="https://github.com/BenjaminYe36">Guangyin Ye</a></span>
-</div>
+</p>
 
 ## Testing & Building
 ### Pre-req for testing
