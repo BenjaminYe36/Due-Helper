@@ -1,5 +1,5 @@
 <div style="text-align: center">
-<img alt='Due Helper Logo' width="400"  src='https://raw.githubusercontent.com/BenjaminYe36/Due-Helper/main/public/logo.png?token=AKGMHJVDZKVG6GPWPBW5C7TBZW5WQ'/>
+<img alt='Due Helper Logo' width="400"  src='https://s4.ax1x.com/2021/12/30/TWW1u6.png'/>
 <br/>
 <span>A free & open-source software for managing tasks. Optimized for tasks with due dates under categories.</span>
 <br/>
