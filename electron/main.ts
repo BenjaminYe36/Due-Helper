@@ -1,15 +1,78 @@
-import {app, BrowserWindow, ipcMain} from 'electron';
+import {app, BrowserWindow, ipcMain, Menu, shell} from 'electron';
 import * as path from 'path';
 import * as fs from "fs";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer";
 
 const defaultTaskData = '{"category":[],"taskList":[]}';
 
+const userDataPath = app.getPath('userData');
+
+const isMac = process.platform === 'darwin'
+
+const template = [
+    // { role: 'appMenu' }
+    ...(isMac ? [{
+        label: app.name,
+        submenu: [
+            {role: 'about'},
+            {type: 'separator'},
+            {role: 'services'},
+            {type: 'separator'},
+            {role: 'hide'},
+            {role: 'hideOthers'},
+            {role: 'unhide'},
+            {type: 'separator'},
+            {role: 'quit'}
+        ]
+    }] : []),
+    // { role: 'fileMenu' }
+    {
+        label: 'File',
+        submenu: [
+            {
+                label: 'Open task data location',
+                click: async () => {
+                    await shell.showItemInFolder(path.join(userDataPath, './TaskData/taskData.json'));
+                }
+            },
+            isMac ? {role: 'close'} : {role: 'quit'}
+        ]
+    },
+    // { role: 'viewMenu' }
+    {
+        label: 'View',
+        submenu: [
+            {role: 'reload'},
+            {role: 'forceReload'},
+            {role: 'toggleDevTools'},
+            {type: 'separator'},
+            {role: 'togglefullscreen'}
+        ]
+    },
+    {
+        role: 'help',
+        submenu: [
+            {
+                label: 'Help documents',
+                click: async () => {
+                    await shell.openExternal('https://github.com/BenjaminYe36/Due-Helper');
+                }
+            }
+        ]
+    }
+]
+
+// @ts-ignore
+const menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);
+
 function createWindow() {
     const win = new BrowserWindow({
         show: false,
         minWidth: 800,
         minHeight: 600,
+        title: "Due Helper",
+        icon: `${__dirname}/../icon.png`,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -67,9 +130,9 @@ app.whenReady().then(() => {
 
 
 // ipc handles reading json from existing local data (if there is one already)
-ipcMain.on('reading-json-synchronous', ((event, args) => {
+ipcMain.on('reading-json-synchronous', ((event) => {
     try {
-        let dir = path.join(__dirname, '../TaskData/taskData.json');
+        let dir = path.join(userDataPath, './TaskData/taskData.json');
         if (fs.existsSync(dir)) {
             console.log("file exists");
             event.returnValue = fs.readFileSync(dir, 'utf8');
@@ -77,6 +140,7 @@ ipcMain.on('reading-json-synchronous', ((event, args) => {
             console.log("file doesn't exist, use default value instead");
             event.returnValue = defaultTaskData;
         }
+        console.log(path.join(userDataPath, './TaskData/taskData.json'));
     } catch (e) {
         console.log(e);
     }
@@ -85,14 +149,14 @@ ipcMain.on('reading-json-synchronous', ((event, args) => {
 // ipc handles write to json when updates are done through ModelAPI
 ipcMain.on('writing-json-synchronous', ((event, args) => {
     try {
-        let dir = path.join(__dirname, '../TaskData');
+        let dir = path.join(userDataPath, './TaskData');
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
             console.log("created dir");
         }
-        fs.writeFileSync(path.join(__dirname, '../TaskData/taskData.json'), args);
+        fs.writeFileSync(path.join(userDataPath, './TaskData/taskData.json'), args);
         console.log("write success");
-        console.log(path.join(__dirname, '../TaskData/taskData.json'));
+        console.log(path.join(userDataPath, './TaskData/taskData.json'));
         event.returnValue = 'write success';
     } catch (e) {
         console.log(e);

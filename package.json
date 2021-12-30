@@ -1,31 +1,14 @@
 {
   "name": "due-helper",
-  "version": "0.2.0",
+  "version": "0.9.0",
   "author": "Guangyin Ye",
-  "description": "Manage tasks with due dates",
+  "description": "Due Helper - A Task management app for tasks with due dates in categories",
   "homepage": ".",
+  "repository": "https://github.com/BenjaminYe36/Due-Helper",
   "main": "build/electron/main.js",
   "private": true,
   "dependencies": {
-    "@ant-design/icons": "^4.7.0",
-    "@testing-library/jest-dom": "^5.15.0",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/electron-devtools-installer": "^2.2.0",
-    "@types/jest": "^27.0.2",
-    "@types/node": "^16.11.7",
-    "@types/react": "^17.0.35",
-    "@types/react-dom": "^17.0.11",
-    "antd": "^4.17.4",
     "electron-devtools-installer": "^3.2.0",
-    "electron-reload": "^1.5.0",
-    "nanoid": "^3.1.30",
-    "react": "^17.0.2",
-    "react-custom-scrollbars": "^4.2.1",
-    "react-dom": "^17.0.2",
-    "react-movable": "^3.0.2",
-    "react-scripts": "4.0.3",
-    "typescript": "^4.5.2",
     "web-vitals": "^2.1.2"
   },
   "scripts": {
@@ -38,6 +21,45 @@
     "eject": "react-scripts eject"
   },
   "build": {
+    "appId": "com.guangyinye.duehelper",
+    "productName": "Due Helper",
+    "copyright": "MIT",
+    "buildVersion": "0.9.0",
+    "mac": {
+      "target": "dmg",
+      "icon": "./public/icon.icns",
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "7z"
+      ],
+      "icon": "./public/icon.png",
+      "signingHashAlgorithms": [
+        "sha256",
+        "sha1"
+      ],
+      "signAndEditExecutable": true,
+      "publisherName": "Guangyin Ye"
+    },
+    "nsis": {
+      "oneClick": "false",
+      "allowToChangeInstallationDirectory": "true",
+      "shortcutName": "Due Helper"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "tar.xz"
+      ],
+      "icon": "./public/icon.png",
+      "vendor": "Guangyin Ye",
+      "category": "Utility",
+      "executableName": "Due Helper",
+      "description": "Due Helper - A Task management app for tasks with due dates in categories. By Guangyin Ye",
+      "synopsis": "Task management app (with due dates and categories)"
+    },
     "extends": null,
     "files": [
       "build/**/*"
@@ -52,6 +74,7 @@
       "react-app/jest"
     ]
   },
+  "license": "MIT",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -69,6 +92,24 @@
     "cross-env": "^7.0.3",
     "electron": "^16.0.5",
     "electron-builder": "^22.13.1",
-    "wait-on": "^6.0.0"
+    "wait-on": "^6.0.0",
+    "typescript": "^4.5.2",
+    "@types/electron-devtools-installer": "^2.2.0",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.11.7",
+    "@types/react": "^17.0.35",
+    "@types/react-dom": "^17.0.11",
+    "@testing-library/jest-dom": "^5.15.0",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "electron-reload": "^1.5.0",
+    "react-custom-scrollbars": "^4.2.1",
+    "react-movable": "^3.0.2",
+    "@ant-design/icons": "^4.7.0",
+    "antd": "^4.17.4",
+    "nanoid": "^3.1.30",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3"
   }
 }

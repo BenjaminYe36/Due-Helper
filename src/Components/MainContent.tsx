@@ -138,24 +138,24 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
 
                     <div>
                         {/*List of Todos*/}
-                        {this.state.groupedByCat && !this.props.selection.startsWith('Cat-') ?
-                            <Collapse bordered={false} defaultActiveKey={this.props.category}>
-                                {this.props.category.map((cat, i) =>
-                                    taskListForEachCat[i].length > 0 ?
-                                        <Panel key={cat} header={cat}>
-                                            <ul style={{listStyleType: 'none'}}>
-                                                {taskListForEachCat[i].map((task: TaskInfo) =>
-                                                    <Todo key={task.id} task={task}
-                                                          model={this.props.model}
-                                                          refreshModel={this.props.refreshModel}
-                                                          onEdit={this.showEditPopup}/>
-                                                )}
-                                            </ul>
-                                        </Panel> : null
-                                )}
-                            </Collapse>
-                            :
-                            (this.props.taskList.length > 0 ?
+                        {this.props.taskList.length > 0 ?
+                            (this.state.groupedByCat && !this.props.selection.startsWith('Cat-') ?
+                                <Collapse bordered={false} defaultActiveKey={this.props.category}>
+                                    {this.props.category.map((cat, i) =>
+                                        taskListForEachCat[i].length > 0 ?
+                                            <Panel key={cat} header={cat}>
+                                                <ul style={{listStyleType: 'none'}}>
+                                                    {taskListForEachCat[i].map((task: TaskInfo) =>
+                                                        <Todo key={task.id} task={task}
+                                                              model={this.props.model}
+                                                              refreshModel={this.props.refreshModel}
+                                                              onEdit={this.showEditPopup}/>
+                                                    )}
+                                                </ul>
+                                            </Panel> : null
+                                    )}
+                                </Collapse>
+                                :
                                 <ul style={{listStyleType: 'none'}}>
                                     {this.props.taskList.map((task) =>
                                         <Todo key={task.id} task={task}
@@ -163,8 +163,8 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                                               refreshModel={this.props.refreshModel}
                                               onEdit={this.showEditPopup}/>
                                     )}
-                                </ul>
-                                : <Empty description={<span>No Task Yet</span>}/>)
+                                </ul>)
+                            : <Empty description={<span>No Task Yet</span>}/>
                         }
                     </div>
 
