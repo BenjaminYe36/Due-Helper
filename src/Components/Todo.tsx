@@ -117,12 +117,16 @@ class Todo extends React.Component<TodoProps, {}> {
                         {this.props.task?.availableDate === null ?
                             null :
                             <Tooltip
-                                title={Util.isAvailable(this.props.task) ?
-                                    'Available Now' :
-                                    `Will be available in 
+                                title={this.props.task.completed ?
+                                    'Already Done' :
+                                    (Util.isAvailable(this.props.task) ?
+                                        ('Available Now') :
+                                        (`Will be available in 
                                     ${Util.getDateDifferenceInDays(new Date().toISOString(),
-                                        this.props.task.availableDate)} day(s)`}>
-                                <Tag color={Util.isAvailable(this.props.task) ? 'green' : 'orange'}
+                                            this.props.task.availableDate)} day(s)`))
+                                }>
+                                <Tag color={this.props.task.completed ? 'default' :
+                                    (Util.isAvailable(this.props.task) ? 'green' : 'orange')}
                                      style={{float: 'right'}}>
                                     Not available until: {new Date(this.props.task?.availableDate).toLocaleDateString()}
                                 </Tag>

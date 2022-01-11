@@ -55,7 +55,13 @@ const template = [
             {
                 label: 'Help documents',
                 click: async () => {
-                    await shell.openExternal('https://github.com/BenjaminYe36/Due-Helper');
+                    await shell.openExternal('https://github.com/BenjaminYe36/Due-Helper/wiki');
+                }
+            },
+            {
+                label: 'Report Issues',
+                click: async () => {
+                    await shell.openExternal('https://github.com/BenjaminYe36/Due-Helper/issues');
                 }
             }
         ]
