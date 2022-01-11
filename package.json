@@ -1,7 +1,10 @@
 {
   "name": "due-helper",
   "version": "0.9.0",
-  "author": "Guangyin Ye",
+  "author": {
+    "name": "Guangyin Ye",
+    "email": "ygy36@outlook.com"
+  },
   "description": "Due Helper - A Task management app for tasks with due dates in categories",
   "homepage": ".",
   "repository": "https://github.com/BenjaminYe36/Due-Helper",
