@@ -13,10 +13,11 @@ interface NewCatPopupProps {
 
 interface NewCatPopupState {
     catValue: string; // string representing the input of category name from user
+    color: string; // default color for color picker (hex)
 }
 
 /**
- * A Popup with an input box to enable users to add new categories for the tasks
+ * A Popup with an input box and color picker to enable users to add new categories for the tasks
  */
 class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
     private readonly catInput: React.RefObject<Input>; // Ref of input to enable auto focus when popup is opened
@@ -25,6 +26,7 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
         super(props);
         this.state = {
             catValue: "",
+            color: '#85a5ff',
         };
         this.catInput = React.createRef();
     }
@@ -66,6 +68,12 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
         });
     }
 
+    updateColor = (color: any) => {
+        this.setState({
+            color: color.hex,
+        });
+    }
+
     render() {
         return (
             <Modal
@@ -92,7 +100,8 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
                     </Col>
 
                     <Col>
-                        <ColorPicker/>
+                        <ColorPicker color={this.state.color}
+                                     onChangeColor={this.updateColor}/>
                     </Col>
                 </Row>
 

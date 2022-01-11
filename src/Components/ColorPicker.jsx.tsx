@@ -5,40 +5,28 @@ import reactCSS from 'reactcss';
 import {SketchPicker} from 'react-color';
 import {Tooltip} from 'antd';
 
-class ColorPicker extends React.Component {
-    state = {
-        displayColorPicker: false,
-        color: {
-            r: '133',
-            g: '165',
-            b: '255',
-            a: '1',
-        },
-    };
+interface ColorPickerProps {
+    color: string; // default color in this picker (hex)
+    onChangeColor(color: any): void; // callback to change color of this color picker
+}
 
-    handleClick = () => {
-        this.setState({displayColorPicker: !this.state.displayColorPicker})
-    };
+interface ColorPickerState {
+    displayColorPicker: boolean; // the visibility of the actual color picker part
+}
 
-    handleClose = () => {
-        this.setState({displayColorPicker: false})
-    };
+/**
+ * A Color picker using react-color component
+ */
+class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
+    private styles: reactCSS;
 
-    handleChange = (color: any) => {
-        this.setState({color: color.rgb})
-    };
-
-    render() {
-
-        const styles = reactCSS({
+    constructor(props: ColorPickerProps) {
+        super(props);
+        this.state = {
+            displayColorPicker: false,
+        };
+        this.styles = reactCSS({
             'default': {
-                color: {
-                    width: '17px',
-                    height: '17px',
-                    borderRadius: '2px',
-                    background: `rgba(${this.state.color.r}, ${this.state.color.g},
-                     ${this.state.color.b}, ${this.state.color.a})`,
-                },
                 swatch: {
                     marginTop: '2.7px',
                     padding: '5px',
@@ -61,22 +49,42 @@ class ColorPicker extends React.Component {
                 },
             },
         });
+    }
+
+    handleClick = () => {
+        this.setState({displayColorPicker: !this.state.displayColorPicker});
+    };
+
+    handleClose = () => {
+        this.setState({displayColorPicker: false});
+    };
+
+    handleChange = (color: any) => {
+        this.props.onChangeColor(color);
+    };
+
+    render() {
 
         return (
             <div>
                 <Tooltip title="Pick Tag Color">
-                    <div style={styles.swatch} onClick={this.handleClick}>
-                        <div style={styles.color}/>
+                    <div style={this.styles.swatch} onClick={this.handleClick}>
+                        <div style={{
+                            width: '17px',
+                            height: '17px',
+                            borderRadius: '2px',
+                            background: this.props.color,
+                        }}/>
                     </div>
                 </Tooltip>
 
-                {this.state.displayColorPicker ? <div style={styles.popover}>
-                    <div style={styles.cover} onClick={this.handleClose}/>
-                    <SketchPicker color={this.state.color} onChange={this.handleChange}/>
+                {this.state.displayColorPicker ? <div style={this.styles.popover}>
+                    <div style={this.styles.cover} onClick={this.handleClose}/>
+                    <SketchPicker color={this.props.color} onChange={this.handleChange} disableAlpha={true}/>
                 </div> : null}
 
             </div>
-        )
+        );
     }
 }
 
