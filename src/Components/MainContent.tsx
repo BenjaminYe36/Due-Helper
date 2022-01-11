@@ -9,7 +9,7 @@ interface MainContentProps {
     category: string[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     model: ModelAPI; // Reference to the fake backend Api
-    selection: string; // Selection on the side bar menu
+    selection: string; // Selection on the sidebar menu
     refreshModel(): void; // callback to refresh from backend after modifying
 }
 
@@ -17,7 +17,7 @@ interface MainContentState {
     newTaskModalVisible: boolean; // visibility of the popup to add a new task
     editTaskModalVisible: boolean; // visibility of the popup to edit an existing task
     prefillTaskInfo: TaskInfo | null; // prefilled task info for the task requested to be edited
-    prefillCat: string | null; // If a category is selected in the left side bar, add task should prefill category
+    prefillCat: string | null; // If a category is selected in the left sidebar, add task should prefill category
     groupedByCat: boolean; // whether the tasks are grouped by categories
 }
 

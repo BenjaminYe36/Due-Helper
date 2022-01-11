@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react';
-import {Button, Dropdown, Layout, Menu, Popconfirm} from 'antd';
+import {Button, Dropdown, Input, Layout, Menu, message, Popconfirm} from 'antd';
 import ModelAPI from "../Model & Util/ModelAPI";
 import {
     CarryOutTwoTone,
@@ -10,32 +10,98 @@ import {
     QuestionCircleOutlined
 } from "@ant-design/icons";
 import EditableTextCat from "./EditableTextCat";
+import NewCatPopup from "./NewCatPopup";
+import ReorderPopup from "./ReorderPopup";
 
 
-interface SiderProps {
+interface SideBarProps {
     category: string[]; // array of strings that represents the user added categories for the tasks
     model: ModelAPI; // Reference to the fake backend Api
-    selectionKey: string; // Selected key in the side bar menu
+    selectionKey: string; // Selected key in the sidebar menu
     refreshModel(): void; // callback to refresh from backend after modifying
-    onNewCat(): void; // callback called when a new category needs to be added
-    onReorderCat(): void; // callback called when reordering of category names is needed
     updateSelection(key: string): void; // callback for updating selected key value in the side menu
+}
+
+interface SideBarState {
+    catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
+    catValue: string; // string representing the input of category name from user
+    reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
 }
 
 const {Sider} = Layout;
 
 /**
- * Side bar of the main app, consists of all tasks, Time filtered views, and user created categories
+ * Sidebar of the main app, consists of all tasks, Time filtered views, and user created categories
  */
-class SideBar extends React.Component<SiderProps, {}> {
+class SideBar extends React.Component<SideBarProps, SideBarState> {
+    private readonly catInput: React.RefObject<Input>;
 
-    openNewCat = () => {
-        this.props.onNewCat();
+    constructor(props: SideBarProps) {
+        super(props);
+        this.state = {
+            catModalVisible: false,
+            reorderModalVisible: false,
+            catValue: "",
+        };
+        this.catInput = React.createRef();
     }
 
-    openReorderCat = () => {
-        this.props.onReorderCat();
+    // NewCatModal callback related functions
+
+    showNewCatModal = () => {
+        this.setCatModalVisible(true);
+        setTimeout(() => {
+            this.catInput.current!.focus({
+                cursor: 'end',
+            });
+        }, 200);
     }
+
+    handleCatModalOk = () => {
+        if (this.state.catValue.trim() !== "") {
+            this.props.model.addCat(this.state.catValue);
+            this.props.refreshModel();
+            this.setState({
+                catValue: "",
+            });
+            this.setCatModalVisible(false);
+        } else {
+            message.warning("Can't use empty category names!");
+        }
+    }
+
+    handleCatModalCancel = () => {
+        this.setState({
+            catValue: "",
+        });
+        this.setCatModalVisible(false);
+    }
+
+    setCatModalVisible = (visible: boolean) => {
+        this.setState({
+            catModalVisible: visible,
+        });
+    }
+
+    updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            catValue: event.target.value,
+        });
+    }
+
+    // ReorderModal callback related functions
+
+    showReorderModal = () => {
+        this.setReorderModalVisible(true);
+    }
+
+    setReorderModalVisible = (visible: boolean) => {
+        this.setState({
+            reorderModalVisible: visible,
+        });
+    }
+
+    // Method that deals with delete confirm
 
     handleConfirm = (name: string) => {
         this.props.model.deleteCat(name);
@@ -94,9 +160,9 @@ class SideBar extends React.Component<SiderProps, {}> {
                 <div className="modifyCatButtons" style={{textAlign: 'center'}}>
                     <Button type="primary" shape="round"
                             icon={<PlusOutlined/>}
-                            onClick={this.openNewCat}>New Category</Button>
+                            onClick={this.showNewCatModal}>New Category</Button>
                     <Button style={{marginLeft: "10px"}} shape="round"
-                            onClick={this.openReorderCat}>Reorder</Button>
+                            onClick={this.showReorderModal}>Reorder</Button>
                 </div>
                 <Menu theme="dark" mode="inline"
                       selectedKeys={[this.props.selectionKey]}
@@ -134,6 +200,19 @@ class SideBar extends React.Component<SiderProps, {}> {
                         }
                     </Menu.ItemGroup>
                 </Menu>
+
+                <NewCatPopup catModalVisible={this.state.catModalVisible}
+                             catValue={this.state.catValue}
+                             catInput={this.catInput}
+                             handleCatModalOk={this.handleCatModalOk}
+                             handleCatModalCancel={this.handleCatModalCancel}
+                             updateInput={this.updateInput}/>
+                <ReorderPopup reorderModalVisible={this.state.reorderModalVisible}
+                              category={this.props.category}
+                              model={this.props.model}
+                              refreshModel={this.props.refreshModel}
+                              handleReorderModalOk={() => this.setReorderModalVisible(false)}
+                              handleReorderModalCancel={() => this.setReorderModalVisible(false)}/>
             </Sider>
         );
     }

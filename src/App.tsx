@@ -1,11 +1,9 @@
 import React, {Component} from 'react';
-import {Input, Layout, message} from 'antd';
+import {Layout} from 'antd';
 import './App.css';
 import 'antd/dist/antd.css';
 import SideBar from "./Components/SideBar";
-import NewCatPopup from "./Components/NewCatPopup";
 import ModelAPI from "./Model & Util/ModelAPI";
-import ReorderPopup from "./Components/ReorderPopup";
 import {TaskInfo} from "./Components/Todo";
 import MainContent from "./Components/MainContent";
 // @ts-ignore
@@ -18,18 +16,14 @@ const {ipcRenderer} = window.require("electron");
 interface AppStates {
     category: string[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
-    filteredList: TaskInfo[]; // filtered and ordered list that correspond to the selection on side bar menu
-    catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
-    reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
-    catValue: string; // string representing the input of category name from user
-    selectionKey: string; // string representing the key of selected item in the side bar menu
+    filteredList: TaskInfo[]; // filtered and ordered list that correspond to the selection on sidebar menu
+    selectionKey: string; // string representing the key of selected item in the sidebar menu
 }
 
 /**
  * The main application class of this task management software
  */
 class App extends Component<{}, AppStates> {
-    private readonly catInput: React.RefObject<Input>;
     private model: ModelAPI;
 
     constructor(props: any) {
@@ -38,12 +32,8 @@ class App extends Component<{}, AppStates> {
             category: [],
             taskList: [],
             filteredList: [],
-            catModalVisible: false,
-            reorderModalVisible: false,
-            catValue: "",
             selectionKey: 'All Tasks',
         };
-        this.catInput = React.createRef();
         this.model = new ModelAPI([], []);
     }
 
@@ -68,62 +58,8 @@ class App extends Component<{}, AppStates> {
         }
     }
 
-    // NewCatModal callback related functions
 
-    showNewCatModal = () => {
-        this.setCatModalVisible(true);
-        setTimeout(() => {
-            this.catInput.current!.focus({
-                cursor: 'end',
-            });
-        }, 200);
-    }
-
-    handleCatModalOk = () => {
-        if (this.state.catValue.trim() !== "") {
-            this.model.addCat(this.state.catValue);
-            this.refreshModel();
-            this.setState({
-                catValue: "",
-            });
-            this.setCatModalVisible(false);
-        } else {
-            message.warning("Can't use empty category names!");
-        }
-    }
-
-    handleCatModalCancel = () => {
-        this.setState({
-            catValue: "",
-        });
-        this.setCatModalVisible(false);
-    }
-
-    setCatModalVisible = (visible: boolean) => {
-        this.setState({
-            catModalVisible: visible,
-        });
-    }
-
-    updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-            catValue: event.target.value,
-        });
-    }
-
-    // ReorderModal callback related functions
-
-    showReorderModal = () => {
-        this.setReorderModalVisible(true);
-    }
-
-    setReorderModalVisible = (visible: boolean) => {
-        this.setState({
-            reorderModalVisible: visible,
-        });
-    }
-
-    // methods relating to the side bar menu states
+    // methods relating to the sidebar menu states
 
     updateSelectionKey = (key: string) => {
         console.log(`update select key called with ${key}`);
@@ -198,8 +134,6 @@ class App extends Component<{}, AppStates> {
                 <SideBar category={this.state.category}
                          model={this.model}
                          selectionKey={this.state.selectionKey}
-                         onNewCat={this.showNewCatModal}
-                         onReorderCat={this.showReorderModal}
                          refreshModel={this.refreshModel}
                          updateSelection={this.updateSelectionKey}
                 />
@@ -214,18 +148,6 @@ class App extends Component<{}, AppStates> {
 
                 </Layout>
 
-                <NewCatPopup catModalVisible={this.state.catModalVisible}
-                             catValue={this.state.catValue}
-                             catInput={this.catInput}
-                             handleCatModalOk={this.handleCatModalOk}
-                             handleCatModalCancel={this.handleCatModalCancel}
-                             updateInput={this.updateInput}/>
-                <ReorderPopup reorderModalVisible={this.state.reorderModalVisible}
-                              category={this.state.category}
-                              model={this.model}
-                              refreshModel={this.refreshModel}
-                              handleReorderModalOk={() => this.setReorderModalVisible(false)}
-                              handleReorderModalCancel={() => this.setReorderModalVisible(false)}/>
 
             </Layout>
         );
