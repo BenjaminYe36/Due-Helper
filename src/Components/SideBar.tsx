@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react';
-import {Button, Dropdown, Input, Layout, Menu, message, Popconfirm} from 'antd';
+import {Button, Dropdown, Layout, Menu, Popconfirm} from 'antd';
 import ModelAPI from "../Model & Util/ModelAPI";
 import {
     CarryOutTwoTone,
@@ -24,7 +24,6 @@ interface SideBarProps {
 
 interface SideBarState {
     catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
-    catValue: string; // string representing the input of category name from user
     reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
 }
 
@@ -34,58 +33,24 @@ const {Sider} = Layout;
  * Sidebar of the main app, consists of all tasks, Time filtered views, and user created categories
  */
 class SideBar extends React.Component<SideBarProps, SideBarState> {
-    private readonly catInput: React.RefObject<Input>;
 
     constructor(props: SideBarProps) {
         super(props);
         this.state = {
             catModalVisible: false,
             reorderModalVisible: false,
-            catValue: "",
         };
-        this.catInput = React.createRef();
     }
 
     // NewCatModal callback related functions
 
     showNewCatModal = () => {
         this.setCatModalVisible(true);
-        setTimeout(() => {
-            this.catInput.current!.focus({
-                cursor: 'end',
-            });
-        }, 200);
-    }
-
-    handleCatModalOk = () => {
-        if (this.state.catValue.trim() !== "") {
-            this.props.model.addCat(this.state.catValue);
-            this.props.refreshModel();
-            this.setState({
-                catValue: "",
-            });
-            this.setCatModalVisible(false);
-        } else {
-            message.warning("Can't use empty category names!");
-        }
-    }
-
-    handleCatModalCancel = () => {
-        this.setState({
-            catValue: "",
-        });
-        this.setCatModalVisible(false);
     }
 
     setCatModalVisible = (visible: boolean) => {
         this.setState({
             catModalVisible: visible,
-        });
-    }
-
-    updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-            catValue: event.target.value,
         });
     }
 
@@ -202,11 +167,10 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                 </Menu>
 
                 <NewCatPopup catModalVisible={this.state.catModalVisible}
-                             catValue={this.state.catValue}
-                             catInput={this.catInput}
-                             handleCatModalOk={this.handleCatModalOk}
-                             handleCatModalCancel={this.handleCatModalCancel}
-                             updateInput={this.updateInput}/>
+                             model={this.props.model}
+                             refreshModel={this.props.refreshModel}
+                             handleCatModalOk={() => this.setCatModalVisible(false)}
+                             handleCatModalCancel={() => this.setCatModalVisible(false)}/>
                 <ReorderPopup reorderModalVisible={this.state.reorderModalVisible}
                               category={this.props.category}
                               model={this.props.model}
