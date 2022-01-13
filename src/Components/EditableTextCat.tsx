@@ -6,6 +6,7 @@ interface EditableTextCatProps {
     value: string; // initial value in this editable text element
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying
+    updateSelection(key: string): void; // callback for updating selected key value in the side menu
 }
 
 interface EditableTextCatState {
@@ -58,8 +59,10 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
             message.warning("No duplicated names allowed!");
             isInvalid = true;
         } else if (this.state.value !== this.props.value) {
-            this.props.model.replaceCat(this.props.value, this.state.value);
+            this.props.model.replaceCatName(this.props.value, this.state.value);
+            this.props.updateSelection('All Tasks');
             this.props.refreshModel();
+
         }
         if (isInvalid) {
             // revert back to original text

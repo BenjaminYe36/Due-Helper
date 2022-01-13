@@ -2,7 +2,7 @@ import React from "react";
 import {Checkbox, Dropdown, Menu, Popconfirm, Tag, Tooltip} from "antd";
 import {MenuInfo} from "rc-menu/lib/interface";
 import {DeleteOutlined, EditTwoTone, QuestionCircleOutlined} from "@ant-design/icons";
-import ModelAPI from "../Model & Util/ModelAPI";
+import ModelAPI, {TaskInfo} from "../Model & Util/ModelAPI";
 import {CheckboxChangeEvent} from "antd/es/checkbox";
 import Util from "../Model & Util/Util";
 
@@ -11,15 +11,6 @@ interface TodoProps {
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying
     onEdit(task: TaskInfo): void; // callback to show edit popup with prefilled task info
-}
-
-export interface TaskInfo {
-    id: string; // unique id of this task
-    category: string; // Category this task is under
-    description: string; // Description of the task
-    availableDate: string | null; // Date string in ISO format for available date of this task
-    dueDate: string; // Date string in ISO format for due date of this task
-    completed: boolean; // the completed or not situation of this task (corresponds to checkbox)
 }
 
 /**
@@ -93,7 +84,8 @@ class Todo extends React.Component<TodoProps, {}> {
                                   disabled={!Util.isAvailable(this.props.task)}
                         />
 
-                        <Tag color='#85a5ff'>{this.props.task?.category}</Tag>
+                        <Tag color={this.props.task.category.color}>{
+                            this.props.task.category.catName}</Tag>
 
                         <span
                             style={{

@@ -1,10 +1,10 @@
 import React from "react";
 import {Empty, Modal} from "antd";
-import ModelAPI from "../Model & Util/ModelAPI";
+import ModelAPI, {categoryWithColor} from "../Model & Util/ModelAPI";
 import {List} from "react-movable";
 
 interface ReorderPopupProps {
-    category: string[]; // array of strings that represents the user added categories for the tasks
+    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
     reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying
@@ -29,7 +29,7 @@ class ReorderPopup extends React.Component<ReorderPopupProps, {}> {
                 onCancel={this.props.handleReorderModalCancel}>
                 {this.props.category.length > 0 ?
                     <List
-                        values={this.props.category}
+                        values={this.props.category.map(cat => cat.catName)}
                         onChange={({oldIndex, newIndex}) => {
                             console.log(oldIndex, newIndex);
                             this.props.model.moveCat(oldIndex, newIndex);

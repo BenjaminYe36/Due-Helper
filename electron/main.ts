@@ -4,6 +4,7 @@ import * as fs from "fs";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer";
 
 const defaultTaskData = '{"category":[],"taskList":[]}';
+const defaultColor = '#85a5ff';
 
 const userDataPath = app.getPath('userData');
 
@@ -141,7 +142,35 @@ ipcMain.on('reading-json-synchronous', ((event) => {
         let dir = path.join(userDataPath, './TaskData/taskData.json');
         if (fs.existsSync(dir)) {
             console.log("file exists");
-            event.returnValue = fs.readFileSync(dir, 'utf8');
+            let data = fs.readFileSync(dir, 'utf8');
+            // Code to fix data from older versions without color in category
+            let parsedData = JSON.parse(data);
+            let isUpdated = false;
+            let correctData = JSON.parse(defaultTaskData);
+            if (parsedData.category.length !== 0) {
+                if (parsedData.category.color === undefined) {
+                    isUpdated = true;
+                    for (let i = 0; i < parsedData.category.length; i++) {
+                        correctData.category = parsedData.category.map((cat: any) => {
+                            return {catName: cat, color: defaultColor};
+                        });
+                    }
+                }
+                if (parsedData.taskList.length !== 0) {
+                    isUpdated = true;
+                    correctData.taskList = parsedData.taskList.map((task: any) => {
+                        return {
+                            id: task.id,
+                            category: {catName: task.category, color: defaultColor},
+                            description: task.description,
+                            availableDate: task.availableDate,
+                            dueDate: task.dueDate,
+                            completed: task.completed
+                        };
+                    });
+                }
+            }
+            event.returnValue = isUpdated ? JSON.stringify(correctData) : data;
         } else {
             console.log("file doesn't exist, use default value instead");
             event.returnValue = defaultTaskData;

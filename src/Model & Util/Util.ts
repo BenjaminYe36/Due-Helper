@@ -1,5 +1,6 @@
 import {message} from "antd";
-import {TaskInfo} from "../Components/Todo";
+import {TaskInfo} from "./ModelAPI";
+
 
 class Util {
     static getDateFormatString(locale: string) {

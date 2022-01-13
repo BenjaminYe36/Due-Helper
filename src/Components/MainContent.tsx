@@ -1,12 +1,12 @@
 import React from "react";
-import Todo, {TaskInfo} from "./Todo";
+import Todo from "./Todo";
 import {Button, Collapse, Empty, Layout, Switch, Tooltip} from "antd";
-import ModelAPI from "../Model & Util/ModelAPI";
+import ModelAPI, {categoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
 import {PlusOutlined} from "@ant-design/icons";
 import TaskPopup from "./TaskPopup";
 
 interface MainContentProps {
-    category: string[]; // array of strings that represents the user added categories for the tasks
+    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     model: ModelAPI; // Reference to the fake backend Api
     selection: string; // Selection on the sidebar menu
@@ -105,7 +105,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
         if (!this.props.selection.startsWith('Cat-') && this.state.groupedByCat) {
             for (let i = 0; i < this.props.category.length; i++) {
                 taskListForEachCat.push(this.props.taskList.filter((task) =>
-                    task.category === this.props.category[i]));
+                    task.category.catName === this.props.category[i].catName));
             }
             console.log(taskListForEachCat);
         }
@@ -140,10 +140,11 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                         {/*List of Todos*/}
                         {this.props.taskList.length > 0 ?
                             (this.state.groupedByCat && !this.props.selection.startsWith('Cat-') ?
-                                <Collapse bordered={false} defaultActiveKey={this.props.category}>
+                                <Collapse bordered={false}
+                                          defaultActiveKey={this.props.category.map(cat => cat.catName)}>
                                     {this.props.category.map((cat, i) =>
                                         taskListForEachCat[i].length > 0 ?
-                                            <Panel key={cat} header={cat}>
+                                            <Panel key={cat.catName} header={cat.catName}>
                                                 <ul style={{listStyleType: 'none'}}>
                                                     {taskListForEachCat[i].map((task: TaskInfo) =>
                                                         <Todo key={task.id} task={task}

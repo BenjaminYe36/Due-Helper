@@ -1,21 +1,22 @@
 import React, {ReactNode} from 'react';
 import {Button, Dropdown, Layout, Menu, Popconfirm} from 'antd';
-import ModelAPI from "../Model & Util/ModelAPI";
+import ModelAPI, {categoryWithColor} from "../Model & Util/ModelAPI";
 import {
     CarryOutTwoTone,
-    ClockCircleTwoTone, DeleteOutlined,
+    ClockCircleTwoTone, DeleteOutlined, EditTwoTone,
     ExclamationCircleTwoTone,
     FileSearchOutlined,
     PlusOutlined,
     QuestionCircleOutlined
 } from "@ant-design/icons";
 import EditableTextCat from "./EditableTextCat";
-import NewCatPopup from "./NewCatPopup";
+import CatPopup from "./CatPopup";
 import ReorderPopup from "./ReorderPopup";
+import {MenuInfo} from "rc-menu/lib/interface";
 
 
 interface SideBarProps {
-    category: string[]; // array of strings that represents the user added categories for the tasks
+    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
     model: ModelAPI; // Reference to the fake backend Api
     selectionKey: string; // Selected key in the sidebar menu
     refreshModel(): void; // callback to refresh from backend after modifying
@@ -23,8 +24,10 @@ interface SideBarProps {
 }
 
 interface SideBarState {
-    catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
+    newCatModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
+    editCatModalVisible: boolean; // boolean representing the visibility of the modal for editing Categories
     reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
+    prefillCat: categoryWithColor | null; // prefilled data for edit category popup
 }
 
 const {Sider} = Layout;
@@ -37,20 +40,37 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
     constructor(props: SideBarProps) {
         super(props);
         this.state = {
-            catModalVisible: false,
+            newCatModalVisible: false,
+            editCatModalVisible: false,
             reorderModalVisible: false,
+            prefillCat: null,
         };
     }
 
     // NewCatModal callback related functions
 
     showNewCatModal = () => {
-        this.setCatModalVisible(true);
+        this.setNewCatModalVisible(true);
     }
 
-    setCatModalVisible = (visible: boolean) => {
+    setNewCatModalVisible = (visible: boolean) => {
         this.setState({
-            catModalVisible: visible,
+            newCatModalVisible: visible,
+        });
+    }
+
+    // EditCatModal callback related functions
+
+    showEditPopup = (cat: categoryWithColor) => {
+        this.setState({
+            prefillCat: cat,
+        });
+        this.setEditCatModalVisible(true);
+    }
+
+    setEditCatModalVisible = (visible: boolean) => {
+        this.setState({
+            editCatModalVisible: visible,
         });
     }
 
@@ -74,19 +94,36 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
         this.props.refreshModel();
     }
 
+    // Context Menu handle function
+
+    handleContextMenu = (menuInfo: MenuInfo, cat: categoryWithColor) => {
+        console.log(menuInfo);
+        if (menuInfo.key === "Context-Edit") {
+            console.log('should pop up edit');
+            this.showEditPopup(cat);
+        } else if (menuInfo.key === "Context-Del") {
+            console.log('should do nothing and wait for Popconfirm to delete');
+        }
+        console.log(cat);
+    }
+
     getMenuItems(): ReactNode {
-        return this.props.category.map((name) =>
-            <Menu.Item key={"Cat-" + name}>
+        return this.props.category.map((cat) =>
+            <Menu.Item key={"Cat-" + cat.catName}>
                 <Dropdown overlay={
-                    <Menu>
+                    <Menu onClick={(item) => this.handleContextMenu(item, cat)}>
+                        <Menu.Item key="Context-Edit"
+                                   icon={<EditTwoTone twoToneColor='#8c8c8c'/>}>
+                            Edit
+                        </Menu.Item>
                         <Popconfirm
                             title={<span>Irrecoverable action. <br/>
                                     ALL TASKS IN THIS CATEGORY WILL ALSO BE DELETED! <br/>
-                                    Are you sure to delete category: {`[ ${name} ]?`}</span>}
+                                    Are you sure to delete category: {`[ ${cat.catName} ]?`}</span>}
                             icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
                             okText='Delete'
                             okType='danger'
-                            onConfirm={() => this.handleConfirm(name)}
+                            onConfirm={() => this.handleConfirm(cat.catName)}
                         >
                             <Menu.Item key={'Context-Del'}
                                        icon={<DeleteOutlined/>}
@@ -97,10 +134,26 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                     </Menu>
                 } trigger={['contextMenu']}>
                     <div>
+                        <div style={{
+                            padding: '2px',
+                            background: '#fff',
+                            borderRadius: '2px',
+                            boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                            display: 'inline-flex',
+                            cursor: 'pointer',
+                        }}>
+                            <div style={{
+                                width: '10px',
+                                height: '10px',
+                                borderRadius: '2px',
+                                background: cat.color,
+                            }}/>
+                        </div>
                         <EditableTextCat
-                            value={name}
+                            value={cat.catName}
                             model={this.props.model}
                             refreshModel={this.props.refreshModel}
+                            updateSelection={this.props.updateSelection}
                         />
                     </div>
                 </Dropdown>
@@ -165,12 +218,29 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                         }
                     </Menu.ItemGroup>
                 </Menu>
-
-                <NewCatPopup catModalVisible={this.state.catModalVisible}
-                             model={this.props.model}
-                             refreshModel={this.props.refreshModel}
-                             handleCatModalOk={() => this.setCatModalVisible(false)}
-                             handleCatModalCancel={() => this.setCatModalVisible(false)}/>
+                {/*New Cat Popup*/}
+                <CatPopup catModalVisible={this.state.newCatModalVisible}
+                          model={this.props.model}
+                          createNew={true}
+                          prefillCat={null}
+                          refreshModel={this.props.refreshModel}
+                          handleCatModalOk={() => this.setNewCatModalVisible(false)}
+                          handleCatModalCancel={() => this.setNewCatModalVisible(false)}
+                          updateSelection={this.props.updateSelection}/>
+                {/*Edit Cat Popup*/}
+                <CatPopup catModalVisible={this.state.editCatModalVisible}
+                          model={this.props.model}
+                          createNew={false}
+                          prefillCat={this.state.prefillCat}
+                          refreshModel={this.props.refreshModel}
+                          handleCatModalOk={() => this.setEditCatModalVisible(false)}
+                          handleCatModalCancel={() => {
+                              this.setEditCatModalVisible(false);
+                              this.setState({
+                                  prefillCat: null,
+                              });
+                          }}
+                          updateSelection={this.props.updateSelection}/>
                 <ReorderPopup reorderModalVisible={this.state.reorderModalVisible}
                               category={this.props.category}
                               model={this.props.model}

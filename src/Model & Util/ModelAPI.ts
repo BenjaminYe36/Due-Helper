@@ -1,55 +1,79 @@
 import {message} from "antd";
-import {TaskInfo} from "../Components/Todo";
 import {nanoid} from "nanoid";
 import Util from "./Util";
+
+export interface categoryWithColor {
+    catName: string; // the name of the category
+    color: string; // hex value of color for the tag of this category
+}
+
+export interface TaskInfo {
+    id: string; // unique id of this task
+    category: categoryWithColor; // Category this task is under
+    description: string; // Description of the task
+    availableDate: string | null; // Date string in ISO format for available date of this task
+    dueDate: string; // Date string in ISO format for due date of this task
+    completed: boolean; // the completed or not situation of this task (corresponds to checkbox)
+}
 
 const {ipcRenderer} = window.require("electron");
 
 class ModelAPI {
-    private category: string[];
+    private category: categoryWithColor[];
     private taskList: TaskInfo[];
 
-    constructor(category: string[], taskList: TaskInfo[]) {
+    constructor(category: categoryWithColor[], taskList: TaskInfo[]) {
         this.category = category;
         this.taskList = taskList;
     }
 
     // Methods related to observers and mutators of category
 
-    public getCat(): string[] {
+    public getCat(): categoryWithColor[] {
         return this.category;
     }
 
-    public hasCat(cat: string): boolean {
-        return this.category.indexOf(cat) !== -1;
+    public hasCat(catName: string): boolean {
+        return this.category.findIndex((cat) => cat.catName === catName) !== -1;
     }
 
-    public addCat(cat: string): void {
-        if (this.category.indexOf(cat) !== -1) {
+    public addCat(catName: string, color: string): void {
+        if (this.hasCat(catName)) {
             message.warning("No duplicated names allowed!");
             return;
         }
-        this.category = this.category.concat(cat);
+        this.category = this.category.concat({catName: catName, color: color});
         this.writeToJson();
         console.log(this.category);
     }
 
-    public replaceCat(oldCat: string, newCat: string): void {
-        if (this.category.indexOf(newCat) !== -1) {
-            message.warning("No duplicated names allowed!");
-            return;
-        }
-        let indexOfOld = this.category.indexOf(oldCat);
+    public replaceCatName(oldCatName: string, newCatName: string) {
+        let indexOfOld = this.category.findIndex((cat) => cat.catName === oldCatName);
         if (indexOfOld === -1) {
             console.log("old category name not found, nothing is done in renaming");
             return;
         } else {
-            // replace name in category array
-            this.category[indexOfOld] = newCat;
-            // replace name in existing tasks
+            this.replaceCat(oldCatName, newCatName, this.category[indexOfOld].color);
+        }
+    }
+
+    public replaceCat(oldCatName: string, newCatName: string, newColor: string): void {
+        if (this.hasCat(newCatName) && oldCatName !== newCatName) {
+            message.warning("No duplicated names allowed!");
+            return;
+        }
+        let indexOfOld = this.category.findIndex((cat) => cat.catName === oldCatName);
+        if (indexOfOld === -1) {
+            console.log("old category name not found, nothing is done in renaming");
+            return;
+        } else {
+            // replace name and color in category array
+            this.category[indexOfOld] = {catName: newCatName, color: newColor};
+            // replace name and color in existing tasks
             this.taskList.map((task) => {
-                if (task.category === oldCat) {
-                    task.category = newCat;
+                if (task.category.catName === oldCatName) {
+                    task.category.catName = newCatName;
+                    task.category.color = newColor;
                 }
                 return null;
             });
@@ -75,15 +99,15 @@ class ModelAPI {
         console.log(this.category);
     }
 
-    public deleteCat(cat: string): void {
-        if (this.category.indexOf(cat) === -1) {
+    public deleteCat(catName: string): void {
+        if (this.category.findIndex((cat) => cat.catName === catName) === -1) {
             console.log("category not found, nothing is done in deleting");
             return;
         } else {
             // Delete name in category array
-            this.category = this.category.filter((tmpCat) => tmpCat !== cat);
+            this.category = this.category.filter((tmpCat) => tmpCat.catName !== catName);
             // Delete tasks with this category name in task array
-            this.taskList = this.taskList.filter((task) => task.category !== cat);
+            this.taskList = this.taskList.filter((task) => task.category.catName !== catName);
             this.writeToJson();
             console.log(this.category);
             console.log(this.taskList);
@@ -96,13 +120,14 @@ class ModelAPI {
         return this.taskList;
     }
 
-    public addTask(category: string, description: string,
+    public addTask(category: categoryWithColor, description: string,
                    availableDate: string | null, dueDate: string, completed: boolean): void {
-        if (!this.hasCat(category)) {
+        if (!this.hasCat(category.catName)) {
             message.warning("Does not has this category, please recheck category of this task!");
+            console.log(this.category);
             return;
         }
-        if (!Util.validateTaskInfo(category, description, availableDate, dueDate, completed)) {
+        if (!Util.validateTaskInfo(category.catName, description, availableDate, dueDate, completed)) {
             return;
         }
         let task: TaskInfo = {
@@ -118,14 +143,14 @@ class ModelAPI {
         console.log(this.taskList);
     }
 
-    public replaceTask(id: string, category: string, description: string,
+    public replaceTask(id: string, category: categoryWithColor, description: string,
                        availableDate: string | null, dueDate: string, completed: boolean): void {
         let targetIndex = this.taskList.findIndex((t) => t.id === id);
         if (targetIndex === -1) {
             message.warning("Id not found, can't replace");
             return;
         }
-        if (!Util.validateTaskInfo(category, description, availableDate, dueDate, completed)) {
+        if (!Util.validateTaskInfo(category.catName, description, availableDate, dueDate, completed)) {
             return;
         }
         this.taskList[targetIndex] = {

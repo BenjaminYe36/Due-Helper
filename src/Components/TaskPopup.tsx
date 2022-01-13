@@ -1,13 +1,12 @@
 import React from "react";
 import {Modal, Input, Select, Switch, DatePicker, Button} from "antd";
 import Util from "../Model & Util/Util";
-import ModelAPI from "../Model & Util/ModelAPI";
+import ModelAPI, {categoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
 import moment from "moment";
 import {ReloadOutlined} from "@ant-design/icons";
-import {TaskInfo} from "./Todo";
 
 interface TaskPopupProps {
-    category: string[]; // array of strings that represents the user added categories for the tasks
+    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskModalVisible: boolean; // boolean representing the visibility of the modal for adding or editing task
     createNew: boolean; // if true => show create new popup, if false => show edit popup
     model: ModelAPI; // Reference to the fake backend Api
@@ -50,7 +49,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
             if (!this.props.createNew && this.props.prefillTaskInfo !== null) {
                 this.setState({
                     completed: this.props.prefillTaskInfo.completed,
-                    categoryName: 'Cat-' + this.props.prefillTaskInfo.category,
+                    categoryName: 'Cat-' + this.props.prefillTaskInfo.category.catName,
                     description: this.props.prefillTaskInfo.description,
                     availableDate: this.props.prefillTaskInfo.availableDate,
                     dueDate: this.props.prefillTaskInfo.dueDate,
@@ -123,11 +122,12 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
             return;
         }
 
+        let catWithColor: categoryWithColor | undefined = this.props.category.find((cat =>
+            cat.catName === this.state.categoryName?.substring(4)));
         if (this.props.createNew) { // New task popup
             // @ts-ignore
-            this.props.model.addTask(this.state.categoryName.substring(4), this.state.description,
-                // @ts-ignore
-                this.state.availableDate, this.state.dueDate, this.state.completed);
+            this.props.model.addTask(catWithColor, this.state.description, this.state.availableDate,
+                this.state.dueDate, this.state.completed);
             this.props.refreshModel();
             this.reset();
             this.props.handleOk();
@@ -135,7 +135,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
             // @ts-ignore
             this.props.model.replaceTask(this.props.prefillTaskInfo.id,
                 // @ts-ignore
-                this.state.categoryName.substring(4), this.state.description,
+                catWithColor, this.state.description,
                 // @ts-ignore
                 this.state.availableDate, this.state.dueDate, this.state.completed);
             this.props.refreshModel();
@@ -190,8 +190,8 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                         filterOption={(input, option) =>
                             option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }>
-                    {this.props.category.map((name) =>
-                        <Option key={'Cat-' + name} value={'Cat-' + name}>{name}</Option>
+                    {this.props.category.map((cat) =>
+                        <Option key={'Cat-' + cat.catName} value={'Cat-' + cat.catName}>{cat.catName}</Option>
                     )}
                 </Select>
 

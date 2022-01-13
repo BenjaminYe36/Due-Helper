@@ -3,8 +3,7 @@ import {Layout} from 'antd';
 import './App.css';
 import 'antd/dist/antd.css';
 import SideBar from "./Components/SideBar";
-import ModelAPI from "./Model & Util/ModelAPI";
-import {TaskInfo} from "./Components/Todo";
+import ModelAPI, {categoryWithColor, TaskInfo} from "./Model & Util/ModelAPI";
 import MainContent from "./Components/MainContent";
 // @ts-ignore
 import {Scrollbars} from 'react-custom-scrollbars';
@@ -14,7 +13,7 @@ const {ipcRenderer} = window.require("electron");
 
 
 interface AppStates {
-    category: string[]; // array of strings that represents the user added categories for the tasks
+    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     filteredList: TaskInfo[]; // filtered and ordered list that correspond to the selection on sidebar menu
     selectionKey: string; // string representing the key of selected item in the sidebar menu
@@ -90,7 +89,7 @@ class App extends Component<{}, AppStates> {
             default:
                 if (this.state.selectionKey.startsWith('Cat-')) {
                     let filterName = this.state.selectionKey.substring(4);
-                    tmpList = this.model.getTaskList().filter((task) => task.category === filterName);
+                    tmpList = this.model.getTaskList().filter((task) => task.category.catName === filterName);
                 }
         }
         // Sorting of filteredList by increasing DueDate

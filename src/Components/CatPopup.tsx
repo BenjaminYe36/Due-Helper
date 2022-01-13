@@ -1,28 +1,31 @@
 import React from "react";
 import {Col, Input, message, Modal, Row} from "antd";
-import ColorPicker from "./ColorPicker.jsx";
-import ModelAPI from "../Model & Util/ModelAPI";
+import ColorPicker from "./ColorPicker";
+import ModelAPI, {categoryWithColor} from "../Model & Util/ModelAPI";
 
-interface NewCatPopupProps {
+interface CatPopupProps {
     catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
     model: ModelAPI; // Reference to the fake backend Api
+    createNew: boolean; // if true => show create new popup, if false => show edit popup
+    prefillCat: categoryWithColor | null; // prefilled data for edit category popup
     refreshModel(): void; // callback to refresh from backend after modifying
     handleCatModalOk(): void; // callback that closes this popup
     handleCatModalCancel(): void; // callback that closes this popup
+    updateSelection(key: string): void; // callback for updating selected key value in the side menu
 }
 
-interface NewCatPopupState {
+interface CatPopupState {
     catValue: string; // string representing the input of category name from user
     color: string; // default color for color picker (hex)
 }
 
 /**
- * A Popup with an input box and color picker to enable users to add new categories for the tasks
+ * A Popup with an input box and color picker to enable users to add new categories or edit existing categories
  */
-class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
+class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
     private readonly catInput: React.RefObject<Input>; // Ref of input to enable auto focus when popup is opened
 
-    constructor(props: NewCatPopupProps) {
+    constructor(props: CatPopupProps) {
         super(props);
         this.state = {
             catValue: "",
@@ -31,7 +34,7 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
         this.catInput = React.createRef();
     }
 
-    componentDidUpdate(prevProps: Readonly<NewCatPopupProps>, prevState: Readonly<NewCatPopupState>, snapshot?: any) {
+    componentDidUpdate(prevProps: Readonly<CatPopupProps>, prevState: Readonly<CatPopupState>, snapshot?: any) {
         if (!prevProps.catModalVisible && this.props.catModalVisible) {
             // set auto focus when popup is displayed
             setTimeout(() => {
@@ -40,25 +43,43 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
                 });
             }, 200);
         }
+        if (prevProps.prefillCat !== this.props.prefillCat) {
+            if (!this.props.createNew && this.props.prefillCat !== null) {
+                this.setState({
+                    catValue: this.props.prefillCat.catName,
+                    color: this.props.prefillCat.color,
+                });
+                console.log('set prefilled state');
+            }
+        }
     }
 
     handleCatModalOk = () => {
-        if (this.state.catValue.trim() !== "") {
-            this.props.model.addCat(this.state.catValue);
-            this.props.refreshModel();
-            this.setState({
-                catValue: "",
-            });
-            this.props.handleCatModalOk();
-        } else {
+        // Validations first
+        if (this.state.catValue.trim() === "") {
             message.warning("Can't use empty category names!");
+            return;
+        }
+        if (this.props.createNew) { // New cat popup
+            this.props.model.addCat(this.state.catValue, this.state.color);
+            this.props.refreshModel();
+            this.reset();
+            this.props.handleCatModalOk();
+        } else { // Edit cat popup
+            // @ts-ignore
+            this.props.model.replaceCat(this.props.prefillCat?.catName,
+                this.state.catValue, this.state.color);
+            if (this.state.catValue !== this.props.prefillCat?.catName) {
+                this.props.updateSelection('All Tasks');
+            }
+            this.props.refreshModel();
+            this.reset();
+            this.props.handleCatModalOk();
         }
     }
 
     handleCatModalCancel = () => {
-        this.setState({
-            catValue: "",
-        });
+        this.reset();
         this.props.handleCatModalCancel();
     }
 
@@ -74,10 +95,17 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
         });
     }
 
+    reset = () => {
+        this.setState({
+            catValue: "",
+            color: '#85a5ff',
+        });
+    }
+
     render() {
         return (
             <Modal
-                title="Add a new Category"
+                title={this.props.createNew ? "Add a new Category" : "Edit this Category"}
                 centered
                 visible={this.props.catModalVisible}
                 onOk={this.handleCatModalOk}
@@ -93,7 +121,7 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
                                ref={this.catInput}
                                onKeyDown={(event) => {
                                    if (event.key === 'Enter') {
-                                       this.props.handleCatModalOk();
+                                       this.handleCatModalOk();
                                    }
                                }}
                         />
@@ -110,4 +138,4 @@ class NewCatPopup extends React.Component<NewCatPopupProps, NewCatPopupState> {
     }
 }
 
-export default NewCatPopup;
+export default CatPopup;
