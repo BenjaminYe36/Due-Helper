@@ -41,14 +41,15 @@ class App extends Component<{}, AppStates> {
         console.log(tmp);
         this.model = new ModelAPI(JSON.parse(tmp).category, JSON.parse(tmp).taskList);
         this.refreshModel();
-        // Set time out to refresh on 0:00 to update availability and due date information
+        // Set time out to refresh next update time (not available -> available, not urgent -> urgent)
+        let offset = Util.getTimeToNextUpdate(this.model.getTaskList());
+        console.log(offset);
         setTimeout(() => {
             console.log('timeout callback called');
             // @ts-ignore
             window.location.reload(false);
-        }, Util.getTimeToNextDay());
+        }, offset + 1000);
         console.log('set timeout complete');
-        console.log(Util.getTimeToNextDay());
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<AppStates>, snapshot?: any) {

@@ -13,13 +13,70 @@ interface TodoProps {
     onEdit(task: TaskInfo): void; // callback to show edit popup with prefilled task info
 }
 
+interface TodoState {
+    availableTip: string; // string for tooltip for available date
+    dueTip: string; // string for tooltip for due date
+}
+
 /**
  * A component that represents a single record of task
  *  - contains checkbox to mark complete or not
  *  - contains category, description, available date (if any) and due date
  *  - contains tooltip on date tags for date differences to current date
  */
-class Todo extends React.Component<TodoProps, {}> {
+class Todo extends React.Component<TodoProps, TodoState> {
+
+    constructor(props: TodoProps) {
+        super(props);
+        this.state = {
+            availableTip: '',
+            dueTip: '',
+        };
+    }
+
+    setAvailableTip = () => {
+        let tmpTip: string = '';
+        if (this.props.task.completed) {
+            tmpTip = 'Already Done';
+        } else if (Util.isAvailable(this.props.task)) {
+            tmpTip = 'Available Now';
+        } else if (this.props.task.availableDate !== null) {
+            let diffInMinutes = Util.getDateDifferenceInMinutes(new Date().toISOString(), this.props.task.availableDate);
+            tmpTip = `Will be available in ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
+        }
+        this.setState({
+            availableTip: tmpTip,
+        });
+    }
+
+    handleAvailableDateTipVisible = (visible: boolean) => {
+        if (visible) {
+            this.setAvailableTip();
+        }
+    }
+
+    setDueDateTip = () => {
+        let tmpTip: string;
+        if (this.props.task.completed) {
+            tmpTip = 'Already Done';
+        } else {
+            let diffInMinutes = Util.getDateDifferenceInMinutes(new Date().toISOString(), this.props.task.dueDate);
+            if (diffInMinutes >= 0) {
+                tmpTip = `Due in ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
+            } else {
+                tmpTip = `Past due ${Util.getTimeStringFromMinutes(-diffInMinutes)}`;
+            }
+        }
+        this.setState({
+            dueTip: tmpTip,
+        });
+    }
+
+    handleDueDateTipVisible = (visible: boolean) => {
+        if (visible) {
+            this.setDueDateTip();
+        }
+    }
 
     handleContextMenu = (menuInfo: MenuInfo, id: string) => {
         console.log(menuInfo);
@@ -47,7 +104,7 @@ class Todo extends React.Component<TodoProps, {}> {
     }
 
     render() {
-        let dueDateDiffInDays = Util.getDateDifferenceInDays(new Date().toISOString(), this.props.task.dueDate);
+
         return (
             // Context menu
             <li id={this.props.task?.id}>
@@ -96,31 +153,23 @@ class Todo extends React.Component<TodoProps, {}> {
                             {this.props.task?.description}
                         </span>
 
-                        <Tooltip title={this.props.task.completed ? 'Already Done' :
-                            (dueDateDiffInDays >= 0) ? `Due in ${dueDateDiffInDays} day(s)` :
-                                `Past due ${-dueDateDiffInDays} day(s)`}>
+                        <Tooltip title={<span>{this.state.dueTip}</span>}
+                                 onVisibleChange={this.handleDueDateTipVisible}>
                             <Tag
                                 color={this.props.task.completed ? 'green' :
                                     (Util.isUrgent(this.props.task) ? 'red' : 'cyan')}
                                 style={{float: 'right'}}>
-                                Due: {new Date(this.props.task?.dueDate).toLocaleDateString()}
+                                Due: {Util.getLocalDate(this.props.task.dueDate)}
                             </Tag>
                         </Tooltip>
                         {this.props.task?.availableDate === null ?
                             null :
-                            <Tooltip
-                                title={this.props.task.completed ?
-                                    'Already Done' :
-                                    (Util.isAvailable(this.props.task) ?
-                                        ('Available Now') :
-                                        (`Will be available in 
-                                    ${Util.getDateDifferenceInDays(new Date().toISOString(),
-                                            this.props.task.availableDate)} day(s)`))
-                                }>
+                            <Tooltip title={<span>{this.state.availableTip}</span>}
+                                     onVisibleChange={this.handleAvailableDateTipVisible}>
                                 <Tag color={this.props.task.completed ? 'default' :
                                     (Util.isAvailable(this.props.task) ? 'green' : 'orange')}
                                      style={{float: 'right'}}>
-                                    Not available until: {new Date(this.props.task?.availableDate).toLocaleDateString()}
+                                    Not available until: {Util.getLocalDate(this.props.task.availableDate)}
                                 </Tag>
                             </Tooltip>
                         }

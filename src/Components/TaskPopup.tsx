@@ -90,10 +90,10 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
         });
     }
 
-    updateAvailableDate = (date: any) => {
+    updateAvailableDate = (date: any, dateString: string) => {
         if (date !== null) {
             this.setState({
-                availableDate: new Date(new Date(date.toISOString()).toLocaleDateString()).toISOString(),
+                availableDate: date.toISOString(),
             });
         } else {
             this.setState({
@@ -102,10 +102,10 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
         }
     }
 
-    updateDueDate = (date: any) => {
+    updateDueDate = (date: any, dateString: string) => {
         if (date !== null) {
             this.setState({
-                dueDate: new Date(new Date(date.toISOString()).toLocaleDateString()).toISOString(),
+                dueDate: date.toISOString(),
             });
         } else {
             this.setState({
@@ -208,6 +208,10 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                 <DatePicker
                     onChange={this.updateAvailableDate}
                     value={this.state.availableDate === null ? null : moment(this.state.availableDate)}
+                    showTime={{
+                        defaultValue: moment("00:00:00", "HH:mm:ss"),
+                        format: "HH:mm"
+                    }}
                     format={Util.getDateFormatString(navigator.language)}/>
                 <br/>
                 <br/>
@@ -215,6 +219,10 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                 <span>Due Date: </span>
                 <DatePicker onChange={this.updateDueDate}
                             value={this.state.dueDate === null ? null : moment(this.state.dueDate)}
+                            showTime={{
+                                defaultValue: moment("23:59:59", "HH:mm:ss"),
+                                format: "HH:mm"
+                            }}
                             format={Util.getDateFormatString(navigator.language)}/>
             </Modal>
         );
