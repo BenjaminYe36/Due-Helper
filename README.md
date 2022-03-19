@@ -7,8 +7,11 @@
 </p>
 
 ## Screenshots
-[![TfCjNF.png](https://s4.ax1x.com/2021/12/30/TfCjNF.png)](https://imgtu.com/i/TfCjNF)
-[![TfCz9J.png](https://s4.ax1x.com/2021/12/30/TfCz9J.png)](https://imgtu.com/i/TfCz9J)
+[![qABGTI.png](https://s1.ax1x.com/2022/03/19/qABGTI.png)](https://imgtu.com/i/qABGTI)
+[![qABIB9.png](https://s1.ax1x.com/2022/03/19/qABIB9.png)](https://imgtu.com/i/qABIB9)
+
+## User Guide
+[See wiki here](https://github.com/BenjaminYe36/Due-Helper/wiki)
 
 ## Testing & Building
 ### Pre-req for testing
