@@ -48,7 +48,7 @@ class App extends Component<{}, AppStates> {
             console.log('timeout callback called');
             // @ts-ignore
             window.location.reload(false);
-        }, offset + 1000);
+        }, offset);
         console.log('set timeout complete');
     }
 

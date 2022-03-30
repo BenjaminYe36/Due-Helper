@@ -1,6 +1,6 @@
 {
   "name": "due-helper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Guangyin Ye",
     "email": "ygy36@outlook.com"
@@ -27,7 +27,7 @@
     "appId": "com.guangyinye.duehelper",
     "productName": "Due Helper",
     "copyright": "MIT",
-    "buildVersion": "1.0.0",
+    "buildVersion": "1.1.0",
     "mac": {
       "target": [
         "dmg",

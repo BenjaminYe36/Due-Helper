@@ -3,6 +3,8 @@ import {TaskInfo} from "./ModelAPI";
 
 // Urgent day boundary, less than or equal to will be classified as urgent
 const urgentDay = 1;
+// Max delay due to the 32bit storage of delay for timeout
+const maxDelay = Math.pow(2, 31) - 1;
 
 class Util {
     static getDateFormatString(locale: string) {
@@ -89,7 +91,7 @@ class Util {
                 minTime = Math.min(minTime, urgentDate.getTime());
             }
         }
-        return minTime - curTime;
+        return Math.min(maxDelay, minTime- curTime + 1000);
     }
 
     static validateTaskInfo(category: string | null, description: string,
