@@ -1,0 +1,52 @@
+.logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.site-layout-sub-header-background {
+  background: #fff;
+}
+
+.site-layout-background {
+  background: #f0f2f5;
+}
+[data-theme="dark"] .site-layout-sub-header-background {
+  background: #141414;
+}
+
+p.todo-p {
+  border: 2px solid #bfbfbf;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 15px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+p.todo-p:hover {
+  border: 2px solid #6a85ca;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 15px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+::-webkit-scrollbar{
+  width: 7px;
+}
+
+::-webkit-scrollbar-track{
+  background: #001529;
+}
+
+::-webkit-scrollbar-thumb{
+  background: #8c8c8c;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background: #595959;
+  border-radius: 20px;
+}

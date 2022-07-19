@@ -1,0 +1,33 @@
+{
+  "name": "due-helper",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@tauri-apps/cli": "^1.0.4",
+    "@types/node": "^18.0.6",
+    "@types/react": "^18.0.15",
+    "@types/react-color": "^3.0.6",
+    "@types/react-dom": "^18.0.6",
+    "@types/reactcss": "^1.2.6",
+    "@vitejs/plugin-react": "^2.0.0",
+    "antd": "^4.21.7",
+    "react-color": "^2.19.3",
+    "react-custom-scrollbars-2": "^4.5.0",
+    "react-movable": "^3.0.4",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.0"
+  }
+}
