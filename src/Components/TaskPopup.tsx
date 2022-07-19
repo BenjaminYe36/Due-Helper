@@ -147,7 +147,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
     reset = () => {
         this.setState({
             completed: false,
-            categoryName: null,
+            categoryName: (this.props.prefillCat === null ? null : "Cat-" + this.props.prefillCat),
             description: '',
             availableDate: null,
             dueDate: null,
