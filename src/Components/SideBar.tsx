@@ -1,13 +1,13 @@
-import React, {ReactNode} from 'react';
-import {Button, Dropdown, Layout, Menu, Popconfirm} from 'antd';
+import React from 'react';
+import {Button, Dropdown, Layout, Menu, Modal} from 'antd';
+import type {MenuProps} from 'antd';
 import ModelAPI, {categoryWithColor} from "../Model & Util/ModelAPI";
 import {
     CarryOutTwoTone,
-    ClockCircleTwoTone, DeleteOutlined, EditTwoTone,
+    ClockCircleTwoTone, DeleteOutlined, EditTwoTone, ExclamationCircleOutlined,
     ExclamationCircleTwoTone,
     FileSearchOutlined,
-    PlusOutlined,
-    QuestionCircleOutlined
+    PlusOutlined
 } from "@ant-design/icons";
 import EditableTextCat from "./EditableTextCat";
 import CatPopup from "./CatPopup";
@@ -31,6 +31,7 @@ interface SideBarState {
 }
 
 const {Sider} = Layout;
+const {confirm} = Modal;
 
 /**
  * Sidebar of the main app, consists of all tasks, Time filtered views, and user created categories
@@ -74,6 +75,32 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
         });
     }
 
+    // Delete popup confirm
+
+    showDeleteConfirm = (cat: categoryWithColor) => {
+        let handleConfirm = this.handleConfirm;
+        confirm({
+            title: <span>Irrecoverable action. <br/>
+                         Are you sure to delete category: {`[ ${cat.catName} ]?`}
+                   </span>,
+            icon: <ExclamationCircleOutlined style={{color: "red"}}/>,
+            content: 'ALL TASKS IN THIS CATEGORY WILL ALSO BE DELETED!',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            width: 800,
+
+            onOk() {
+                console.log(`Delete ${cat.catName}`);
+                handleConfirm(cat.catName);
+            },
+
+            onCancel() {
+                console.log('Delete Cancelled');
+            },
+        });
+    };
+
     // ReorderModal callback related functions
 
     showReorderModal = () => {
@@ -102,66 +129,107 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
             console.log('should pop up edit');
             this.showEditPopup(cat);
         } else if (menuInfo.key === "Context-Del") {
-            console.log('should do nothing and wait for Popconfirm to delete');
+            console.log('should pop up delete confirm');
+            this.showDeleteConfirm(cat);
         }
         console.log(cat);
     }
 
-    getMenuItems(): ReactNode {
-        return this.props.category.map((cat) =>
-            <Menu.Item key={"Cat-" + cat.catName}>
-                <Dropdown overlay={
-                    <Menu onClick={(item) => this.handleContextMenu(item, cat)}>
-                        <Menu.Item key="Context-Edit"
-                                   icon={<EditTwoTone twoToneColor='#8c8c8c'/>}>
-                            Edit
-                        </Menu.Item>
-                        <Popconfirm
-                            title={<span>Irrecoverable action. <br/>
-                                    ALL TASKS IN THIS CATEGORY WILL ALSO BE DELETED! <br/>
-                                    Are you sure to delete category: {`[ ${cat.catName} ]?`}</span>}
-                            icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
-                            okText='Delete'
-                            okType='danger'
-                            onConfirm={() => this.handleConfirm(cat.catName)}
-                        >
-                            <Menu.Item key={'Context-Del'}
-                                       icon={<DeleteOutlined/>}
-                                       danger>
-                                Delete
-                            </Menu.Item>
-                        </Popconfirm>
-                    </Menu>
-                } trigger={['contextMenu']}>
-                    <div>
-                        <div style={{
-                            padding: '2px',
-                            background: '#fff',
-                            borderRadius: '2px',
-                            boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-                            display: 'inline-flex',
-                            cursor: 'pointer',
-                        }}>
+    getMenuItems(): MenuProps["items"] {
+        return this.props.category.map((cat) => {
+                const contextMenuItems: MenuProps['items'] = [
+                    {
+                        label: "Edit",
+                        key: "Context-Edit",
+                        icon: <EditTwoTone twoToneColor='#8c8c8c'/>
+                    },
+                    {
+                        label: "Delete",
+                        key: "Context-Del",
+                        icon: <DeleteOutlined/>,
+                        danger: true
+                    }
+                ];
+                const innerNode =
+                    (<Dropdown overlay={
+                        <Menu onClick={(item) => this.handleContextMenu(item, cat)}
+                              items={contextMenuItems}/>
+                    } trigger={['contextMenu']}>
+                        <div>
                             <div style={{
-                                width: '10px',
-                                height: '10px',
+                                padding: '2px',
+                                background: '#fff',
                                 borderRadius: '2px',
-                                background: cat.color,
-                            }}/>
+                                boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                display: 'inline-flex',
+                                cursor: 'pointer',
+                            }}>
+                                <div style={{
+                                    width: '10px',
+                                    height: '10px',
+                                    borderRadius: '2px',
+                                    background: cat.color,
+                                }}/>
+                            </div>
+                            <EditableTextCat
+                                value={cat.catName}
+                                model={this.props.model}
+                                refreshModel={this.props.refreshModel}
+                                updateSelection={this.props.updateSelection}
+                            />
                         </div>
-                        <EditableTextCat
-                            value={cat.catName}
-                            model={this.props.model}
-                            refreshModel={this.props.refreshModel}
-                            updateSelection={this.props.updateSelection}
-                        />
-                    </div>
-                </Dropdown>
-            </Menu.Item>
+                    </Dropdown>);
+                return ({label: innerNode, key: `Cat-${cat.catName}`});
+            }
         );
     }
 
     render() {
+        const items: MenuProps['items'] = [
+            // First part: All Tasks View
+            {
+                label: "All Tasks",
+                key: "All Tasks",
+                icon: <FileSearchOutlined style={{color: '#d9d9d9'}}/>
+            },
+            // Second part: Time Filtered Views
+            {
+                label: "[Tasks by Time]",
+                key: "byTime",
+                type: "group",
+                children: [
+                    {
+                        label: "Urgent Tasks",
+                        key: "Urgent Tasks",
+                        icon: <ExclamationCircleTwoTone twoToneColor='#cf1322'/>
+                    },
+                    {
+                        label: "Current Tasks",
+                        key: "Current Tasks",
+                        icon: <CarryOutTwoTone twoToneColor='#faad14'/>
+                    },
+                    {
+                        label: "Future Tasks",
+                        key: "Future Tasks",
+                        icon: <ClockCircleTwoTone twoToneColor='#a0d911'/>
+                    }
+                ]
+            },
+            // Third Part: User added categories
+            {
+                label: "[Categories]",
+                key: "byUserCat",
+                type: "group",
+                children: this.props.category.length > 0 ?
+                    this.getMenuItems() :
+                    [{
+                        label: <span style={{fontStyle: "italic"}}>Nothing yet</span>,
+                        key: "nothingYet",
+                        disabled: true
+                    }]
+            }
+        ];
+
         return (
             <Sider
                 breakpoint="lg"
@@ -184,40 +252,8 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                 </div>
                 <Menu theme="dark" mode="inline"
                       selectedKeys={[this.props.selectionKey]}
-                      onClick={(item) => this.props.updateSelection(item.key)}>
-                    {/*First part: All Tasks View*/}
-                    <Menu.Item key="All Tasks"
-                               icon={<FileSearchOutlined style={{color: '#d9d9d9'}}/>}>
-                        All Tasks</Menu.Item>
-                    {/*Second part: Time Filtered Views*/}
-                    <Menu.ItemGroup key="byTime" title="[Tasks by Time]">
-                        <Menu.Item key="Urgent Tasks"
-                                   icon={<ExclamationCircleTwoTone twoToneColor='#cf1322'/>}>
-                            Urgent Tasks
-                        </Menu.Item>
-                        <Menu.Item key="Current Tasks"
-                                   icon={<CarryOutTwoTone twoToneColor='#faad14'/>}>
-                            Current Tasks
-                        </Menu.Item>
-                        <Menu.Item key="Future Tasks"
-                                   icon={<ClockCircleTwoTone twoToneColor='#a0d911'/>}>
-                            Future Tasks
-                        </Menu.Item>
-                    </Menu.ItemGroup>
-                    {/*Third part: user added Categories*/}
-                    <Menu.ItemGroup key="byUserCat" title="[Categories]">
-                        {
-                            this.props.category.length > 0 ?
-                                this.getMenuItems() :
-                                <Menu.Item
-                                    key="nothingYet"
-                                    style={{fontStyle: "italic"}}
-                                    disabled={true}>
-                                    Nothing Yet
-                                </Menu.Item>
-                        }
-                    </Menu.ItemGroup>
-                </Menu>
+                      onClick={(item) => this.props.updateSelection(item.key)}
+                      items={items}/>
                 {/*New Cat Popup*/}
                 <CatPopup catModalVisible={this.state.newCatModalVisible}
                           model={this.props.model}

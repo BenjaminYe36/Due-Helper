@@ -1,7 +1,8 @@
 import React from "react";
-import {Checkbox, Dropdown, Menu, Popconfirm, Tag, Tooltip} from "antd";
+import {Checkbox, Dropdown, Menu, Tag, Tooltip} from "antd";
+import type {MenuProps} from 'antd';
 import {MenuInfo} from "rc-menu/lib/interface";
-import {DeleteOutlined, EditTwoTone, QuestionCircleOutlined} from "@ant-design/icons";
+import {DeleteOutlined, EditTwoTone} from "@ant-design/icons";
 import ModelAPI, {TaskInfo} from "../Model & Util/ModelAPI";
 import {CheckboxChangeEvent} from "antd/es/checkbox";
 import Util from "../Model & Util/Util";
@@ -84,7 +85,8 @@ class Todo extends React.Component<TodoProps, TodoState> {
             console.log('should pop up edit');
             this.props.onEdit(this.props.task);
         } else if (menuInfo.key === "Context-Del") {
-            console.log('should do nothing and wait for Popconfirm to delete');
+            console.log('should delete this task');
+            this.deleteTask(id);
         }
         console.log(id);
     }
@@ -104,30 +106,27 @@ class Todo extends React.Component<TodoProps, TodoState> {
     }
 
     render() {
+        const items: MenuProps["items"] = [
+            {
+                label: "Edit",
+                key: "Context-Edit",
+                icon: <EditTwoTone twoToneColor='#8c8c8c'/>
+            },
+            {
+                label: "Delete",
+                key: "Context-Del",
+                icon: <DeleteOutlined/>,
+                danger: true
+            }
+        ];
 
         return (
             // Context menu
             <li id={this.props.task?.id}>
                 <Dropdown
                     overlay={
-                        <Menu onClick={(item) => this.handleContextMenu(item, this.props.task.id)}>
-                            <Menu.Item key="Context-Edit"
-                                       icon={<EditTwoTone twoToneColor='#8c8c8c'/>}>
-                                Edit
-                            </Menu.Item>
-                            {/*Popconfirm for delete*/}
-                            <Popconfirm title='Are you sure?'
-                                        icon={<QuestionCircleOutlined style={{color: 'red'}}/>}
-                                        okText='Delete'
-                                        okType='danger'
-                                        onConfirm={() => this.deleteTask(this.props.task.id)}
-                            >
-                                <Menu.Item key="Context-Del"
-                                           icon={<DeleteOutlined/>}
-                                           danger>
-                                    Delete</Menu.Item>
-                            </Popconfirm>
-                        </Menu>
+                        <Menu onClick={(item) => this.handleContextMenu(item, this.props.task.id)}
+                              items={items}/>
                     }
                     trigger={['contextMenu']}
                 >
