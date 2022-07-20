@@ -2,13 +2,13 @@ import React from "react";
 import {Col, Input, message, Modal, Row} from "antd";
 import type {InputRef} from 'antd';
 import ColorPicker from "./ColorPicker";
-import ModelAPI, {categoryWithColor} from "../Model & Util/ModelAPI";
+import ModelAPI, {CategoryWithColor} from "../Model & Util/ModelAPI";
 
 interface CatPopupProps {
     catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
     model: ModelAPI; // Reference to the fake backend Api
     createNew: boolean; // if true => show create new popup, if false => show edit popup
-    prefillCat: categoryWithColor | null; // prefilled data for edit category popup
+    prefillCat: CategoryWithColor | null; // prefilled data for edit category popup
     refreshModel(): void; // callback to refresh from backend after modifying
     handleCatModalOk(): void; // callback that closes this popup
     handleCatModalCancel(): void; // callback that closes this popup

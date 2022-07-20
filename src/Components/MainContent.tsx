@@ -1,12 +1,12 @@
 import React from "react";
 import Todo from "./Todo";
 import {Button, Collapse, Empty, Layout, Switch, Tooltip} from "antd";
-import ModelAPI, {categoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
+import ModelAPI, {CategoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
 import {PlusOutlined} from "@ant-design/icons";
 import TaskPopup from "./TaskPopup";
 
 interface MainContentProps {
-    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
+    category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     model: ModelAPI; // Reference to the fake backend Api
     selection: string; // Selection on the sidebar menu

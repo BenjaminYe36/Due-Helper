@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Dropdown, Layout, Menu, Modal} from 'antd';
 import type {MenuProps} from 'antd';
-import ModelAPI, {categoryWithColor} from "../Model & Util/ModelAPI";
+import ModelAPI, {CategoryWithColor} from "../Model & Util/ModelAPI";
 import {
     CarryOutTwoTone,
     ClockCircleTwoTone, DeleteOutlined, EditTwoTone, ExclamationCircleOutlined,
@@ -16,7 +16,7 @@ import {MenuInfo} from "rc-menu/lib/interface";
 
 
 interface SideBarProps {
-    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
+    category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     model: ModelAPI; // Reference to the fake backend Api
     selectionKey: string; // Selected key in the sidebar menu
     refreshModel(): void; // callback to refresh from backend after modifying
@@ -27,7 +27,7 @@ interface SideBarState {
     newCatModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
     editCatModalVisible: boolean; // boolean representing the visibility of the modal for editing Categories
     reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
-    prefillCat: categoryWithColor | null; // prefilled data for edit category popup
+    prefillCat: CategoryWithColor | null; // prefilled data for edit category popup
 }
 
 const {Sider} = Layout;
@@ -62,7 +62,7 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
 
     // EditCatModal callback related functions
 
-    showEditPopup = (cat: categoryWithColor) => {
+    showEditPopup = (cat: CategoryWithColor) => {
         this.setState({
             prefillCat: cat,
         });
@@ -77,7 +77,7 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
 
     // Delete popup confirm
 
-    showDeleteConfirm = (cat: categoryWithColor) => {
+    showDeleteConfirm = (cat: CategoryWithColor) => {
         let handleConfirm = this.handleConfirm;
         confirm({
             title: <span>Irrecoverable action. <br/>
@@ -123,7 +123,7 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
 
     // Context Menu handle function
 
-    handleContextMenu = (menuInfo: MenuInfo, cat: categoryWithColor) => {
+    handleContextMenu = (menuInfo: MenuInfo, cat: CategoryWithColor) => {
         console.log(menuInfo);
         if (menuInfo.key === "Context-Edit") {
             console.log('should pop up edit');

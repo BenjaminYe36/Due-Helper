@@ -3,7 +3,7 @@ import {Layout} from 'antd';
 import './App.css';
 import 'antd/dist/antd.css';
 import SideBar from "./Components/SideBar";
-import ModelAPI, {categoryWithColor, TaskInfo} from "./Model & Util/ModelAPI";
+import ModelAPI, {CategoryWithColor, TaskInfo} from "./Model & Util/ModelAPI";
 import MainContent from "./Components/MainContent";
 import {Scrollbars} from 'react-custom-scrollbars-2';
 import Util from "./Model & Util/Util";
@@ -11,12 +11,12 @@ import {BaseDirectory, readTextFile} from "@tauri-apps/api/fs";
 
 
 interface TaskData {
-    category: categoryWithColor[];
+    category: CategoryWithColor[];
     taskList: TaskInfo[];
 }
 
 interface AppStates {
-    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
+    category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     filteredList: TaskInfo[]; // filtered and ordered list that correspond to the selection on sidebar menu
     selectionKey: string; // string representing the key of selected item in the sidebar menu

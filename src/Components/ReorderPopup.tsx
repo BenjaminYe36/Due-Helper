@@ -1,10 +1,10 @@
 import React from "react";
 import {Empty, Modal} from "antd";
-import ModelAPI, {categoryWithColor} from "../Model & Util/ModelAPI";
+import ModelAPI, {CategoryWithColor} from "../Model & Util/ModelAPI";
 import {List} from "react-movable";
 
 interface ReorderPopupProps {
-    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
+    category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying

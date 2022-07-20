@@ -1,12 +1,12 @@
 import React from "react";
 import {Modal, Input, Select, Switch, DatePicker, Button} from "antd";
 import Util from "../Model & Util/Util";
-import ModelAPI, {categoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
+import ModelAPI, {CategoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
 import moment from "moment";
 import {ReloadOutlined} from "@ant-design/icons";
 
 interface TaskPopupProps {
-    category: categoryWithColor[]; // array of strings that represents the user added categories for the tasks
+    category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskModalVisible: boolean; // boolean representing the visibility of the modal for adding or editing task
     createNew: boolean; // if true => show create new popup, if false => show edit popup
     model: ModelAPI; // Reference to the fake backend Api
@@ -122,7 +122,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
             return;
         }
 
-        let catWithColor: categoryWithColor | undefined = this.props.category.find((cat =>
+        let catWithColor: CategoryWithColor | undefined = this.props.category.find((cat =>
             cat.catName === this.state.categoryName?.substring(4)));
         if (this.props.createNew) { // New task popup
             // @ts-ignore

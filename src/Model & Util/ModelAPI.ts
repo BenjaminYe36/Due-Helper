@@ -3,14 +3,14 @@ import {nanoid} from "nanoid";
 import {BaseDirectory, createDir, writeTextFile} from "@tauri-apps/api/fs";
 import Util from "./Util";
 
-export interface categoryWithColor {
+export interface CategoryWithColor {
     catName: string; // the name of the category
     color: string; // hex value of color for the tag of this category
 }
 
 export interface TaskInfo {
     id: string; // unique id of this task
-    category: categoryWithColor; // Category this task is under
+    category: CategoryWithColor; // Category this task is under
     description: string; // Description of the task
     availableDate: string | null; // Date string in ISO format for available date of this task
     dueDate: string; // Date string in ISO format for due date of this task
@@ -18,17 +18,17 @@ export interface TaskInfo {
 }
 
 class ModelAPI {
-    private category: categoryWithColor[];
+    private category: CategoryWithColor[];
     private taskList: TaskInfo[];
 
-    constructor(category: categoryWithColor[], taskList: TaskInfo[]) {
+    constructor(category: CategoryWithColor[], taskList: TaskInfo[]) {
         this.category = category;
         this.taskList = taskList;
     }
 
     // Methods related to observers and mutators of category
 
-    public getCat(): categoryWithColor[] {
+    public getCat(): CategoryWithColor[] {
         return this.category;
     }
 
@@ -119,7 +119,7 @@ class ModelAPI {
         return this.taskList;
     }
 
-    public addTask(category: categoryWithColor, description: string,
+    public addTask(category: CategoryWithColor, description: string,
                    availableDate: string | null, dueDate: string, completed: boolean): void {
         if (!this.hasCat(category.catName)) {
             message.warning("Does not has this category, please recheck category of this task!");
@@ -142,7 +142,7 @@ class ModelAPI {
         console.log(this.taskList);
     }
 
-    public replaceTask(id: string, category: categoryWithColor, description: string,
+    public replaceTask(id: string, category: CategoryWithColor, description: string,
                        availableDate: string | null, dueDate: string, completed: boolean): void {
         let targetIndex = this.taskList.findIndex((t) => t.id === id);
         if (targetIndex === -1) {
