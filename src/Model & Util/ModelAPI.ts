@@ -175,7 +175,7 @@ class ModelAPI {
         }
     }
 
-    private writeToJson() {
+    public writeToJson() {
         createDir('Database', {dir: BaseDirectory.App, recursive: true})
             .then(() => {
                 console.log("create dir success");

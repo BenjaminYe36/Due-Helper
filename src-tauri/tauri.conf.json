@@ -18,6 +18,17 @@
         "readFile": true,
         "writeFile": true,
         "scope": ["$APP/*"]
+      },
+      "path": {
+        "all": true
+      },
+      "shell": {
+        "all": false,
+        "open": "[\\s\\S]*"
+      },
+      "clipboard": {
+        "all": false,
+        "writeText": true
       }
     },
     "bundle": {

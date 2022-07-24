@@ -8,6 +8,7 @@ import MainContent from "./Components/MainContent";
 import {Scrollbars} from 'react-custom-scrollbars-2';
 import Util from "./Model & Util/Util";
 import {BaseDirectory, readTextFile} from "@tauri-apps/api/fs";
+import HelpPage from "./Components/HelpPage";
 
 
 interface TaskData {
@@ -64,6 +65,7 @@ class App extends Component<{}, AppStates> {
 
     initializeModel = (obj: TaskData) => {
         this.model = new ModelAPI(obj.category, obj.taskList);
+        this.model.writeToJson();
         this.refreshModel();
         // Set time out to refresh next update time (not available -> available, not urgent -> urgent)
         let offset = Util.getTimeToNextUpdate(this.model.getTaskList());
@@ -158,9 +160,13 @@ class App extends Component<{}, AppStates> {
                 <Layout>
 
                     <Scrollbars>
-                        <MainContent category={this.state.category} taskList={this.state.filteredList}
-                                     model={this.model} refreshModel={this.refreshModel}
-                                     selection={this.state.selectionKey}/>
+                        {
+                            this.state.selectionKey === "helpAndInfo" ?
+                                <HelpPage title="Help & Info"/> :
+                                <MainContent category={this.state.category} taskList={this.state.filteredList}
+                                             model={this.model} refreshModel={this.refreshModel}
+                                             selection={this.state.selectionKey}/>
+                        }
                     </Scrollbars>
 
                 </Layout>

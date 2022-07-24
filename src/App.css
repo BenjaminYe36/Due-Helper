@@ -1,52 +1,76 @@
 .logo {
-  height: 32px;
-  margin: 16px;
-  background: rgba(255, 255, 255, 0.2);
+    height: 32px;
+    margin: 16px;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .site-layout-sub-header-background {
-  background: #fff;
+    background: #fff;
+}
+
+.main-content {
+    margin: 24px 16px 0;
 }
 
 .site-layout-background {
-  background: #f0f2f5;
+    background: #f0f2f5;
+    padding: 24px;
+    min-height: 360px;
 }
+
+.main-title {
+    font-size: 20px;
+    margin-left: 42px;
+}
+
 [data-theme="dark"] .site-layout-sub-header-background {
-  background: #141414;
+    background: #141414;
+}
+
+.help-page-inner {
+    margin-left: 40px;
+}
+
+.grouped-buttons {
+    display: inline-block;
+}
+
+.grouped-buttons > button:not(:last-child) {
+    margin-right: 10px;
 }
 
 p.todo-p {
-  border: 2px solid #bfbfbf;
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 15px;
-  overflow: hidden;
-  background-color: #fff;
+    border: 2px solid #bfbfbf;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 15px;
+    overflow: hidden;
+    background-color: #fff;
 }
 
 p.todo-p:hover {
-  border: 2px solid #6a85ca;
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 15px;
-  overflow: hidden;
-  background-color: #fff;
+    border: 2px solid #6a85ca;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 15px;
+    overflow: hidden;
+    background-color: #fff;
 }
 
-::-webkit-scrollbar{
-  width: 7px;
+::-webkit-scrollbar {
+    width: 7px;
 }
 
-::-webkit-scrollbar-track{
-  background: #001529;
+::-webkit-scrollbar-track {
+    background: #001529;
 }
 
-::-webkit-scrollbar-thumb{
-  background: #8c8c8c;
-  border-radius: 20px;
+::-webkit-scrollbar-thumb {
+    background: #8c8c8c;
+    border-radius: 20px;
 }
 
-::-webkit-scrollbar-thumb:hover{
-  background: #595959;
-  border-radius: 20px;
+::-webkit-scrollbar-thumb:hover {
+    background: #595959;
+    border-radius: 20px;
 }

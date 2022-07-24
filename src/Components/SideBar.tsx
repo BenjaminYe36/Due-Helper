@@ -6,7 +6,7 @@ import {
     CarryOutTwoTone,
     ClockCircleTwoTone, DeleteOutlined, EditTwoTone, ExclamationCircleOutlined,
     ExclamationCircleTwoTone,
-    FileSearchOutlined,
+    FileSearchOutlined, InfoCircleTwoTone,
     PlusOutlined
 } from "@ant-design/icons";
 import EditableTextCat from "./EditableTextCat";
@@ -227,6 +227,19 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                         key: "nothingYet",
                         disabled: true
                     }]
+            },
+            // Forth Part: Settings & Help
+            {
+                label: "[Settings & Help]",
+                key: "settingsGroup",
+                type: "group",
+                children: [
+                    {
+                        label: "Help & Info",
+                        key: "helpAndInfo",
+                        icon: <InfoCircleTwoTone/>
+                    }
+                ]
             }
         ];
 
