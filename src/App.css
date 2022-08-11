@@ -39,8 +39,18 @@
     margin-right: 10px;
 }
 
-p.todo-p {
+.todo-container {
     border: 2px solid #bfbfbf;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 1em;
+    font-size: 15px;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.todo-container:hover {
+    border: 2px solid #6a85ca;
     border-radius: 12px;
     padding: 10px;
     font-size: 15px;
@@ -48,13 +58,24 @@ p.todo-p {
     background-color: #fff;
 }
 
-p.todo-p:hover {
-    border: 2px solid #6a85ca;
-    border-radius: 12px;
-    padding: 10px;
-    font-size: 15px;
-    overflow: hidden;
-    background-color: #fff;
+.todo-checkbox {
+    padding-right: 7px !important;
+}
+
+.todo-subtask {
+    margin-left: 23px;
+    margin-top: 5px;
+}
+
+.center-subtask {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.button-right {
+    float: right;
+    margin-left: 8px;
 }
 
 ::-webkit-scrollbar {

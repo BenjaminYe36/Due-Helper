@@ -1,9 +1,10 @@
 import React from "react";
-import {Modal, Input, Select, Switch, DatePicker, Button} from "antd";
+import {Modal, Input, Select, Switch, DatePicker, Button, Checkbox, message} from "antd";
 import Util from "../Model & Util/Util";
-import ModelAPI, {CategoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
+import ModelAPI, {CategoryWithColor, SubtaskInfo, TaskInfo} from "../Model & Util/ModelAPI";
 import moment from "moment";
-import {ReloadOutlined} from "@ant-design/icons";
+import {DeleteOutlined, PlusOutlined, ReloadOutlined} from "@ant-design/icons";
+import {nanoid} from "nanoid";
 
 interface TaskPopupProps {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
@@ -23,6 +24,9 @@ interface TaskPopupState {
     description: string; // description of this current task
     availableDate: string | null; // string in ISO date string
     dueDate: string | null; // string in ISO date string
+    showAddTaskInput: boolean; // boolean that represents show the add task input or add task button
+    subtaskInputVal: string; // the description of the subtask in the add subtask input
+    subtaskList: SubtaskInfo[]; // subtaskList that is under this task, can be edited in this popup
 }
 
 const {Option} = Select;
@@ -41,6 +45,9 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
             description: '',
             availableDate: null,
             dueDate: null,
+            showAddTaskInput: false,
+            subtaskInputVal: '',
+            subtaskList: []
         }
     }
 
@@ -53,6 +60,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                     description: this.props.prefillTaskInfo.description,
                     availableDate: this.props.prefillTaskInfo.availableDate,
                     dueDate: this.props.prefillTaskInfo.dueDate,
+                    subtaskList: this.props.prefillTaskInfo.subtaskList ? this.props.prefillTaskInfo.subtaskList : [],
                 });
                 console.log('set prefilled state');
             }
@@ -114,6 +122,88 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
         }
     }
 
+    updateSubtaskInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        this.setState({
+            subtaskInputVal: e.target.value
+        });
+    }
+
+    toggleShowAddTaskInput = () => {
+        this.setState({
+            showAddTaskInput: !this.state.showAddTaskInput,
+            subtaskInputVal: ''
+        });
+    }
+
+    handleAddSubtask = () => {
+        if (this.state.subtaskInputVal.trim() === "") {
+            message.warning("can't use empty description");
+            return;
+        }
+        let newSubtask: SubtaskInfo = {
+            id: nanoid(),
+            description: this.state.subtaskInputVal,
+            completed: false
+        };
+        this.setState({
+            subtaskList: [...this.state.subtaskList, newSubtask],
+            subtaskInputVal: '',
+            showAddTaskInput: false
+        });
+    }
+
+    deleteSubtask = (id: string) => {
+        this.setState({
+            subtaskList: this.state.subtaskList.filter((subtask) => subtask.id !== id)
+        });
+    }
+
+    updateSubtaskChecked = (id: string, checked: boolean) => {
+        let newSubtaskList = this.state.subtaskList.map((subtask) => {
+            if (subtask.id === id) {
+                return {...subtask, completed: checked};
+            } else {
+                return subtask;
+            }
+        });
+        this.setState({
+            subtaskList: newSubtaskList
+        });
+    }
+
+    updateSubtaskDescription = (id: string, description: string) => {
+        let newSubtaskList = this.state.subtaskList.map((subtask) => {
+            if (subtask.id === id) {
+                return {...subtask, description: description};
+            } else {
+                return subtask;
+            }
+        });
+        this.setState({
+            subtaskList: newSubtaskList
+        });
+    }
+
+    // Subtask component
+    Subtask = (props: { subtask: SubtaskInfo }) => {
+        return (
+            <div className="center-subtask">
+                <Checkbox className="todo-checkbox" checked={props.subtask.completed}
+                          onChange={(e) => {
+                              this.updateSubtaskChecked(props.subtask.id, e.target.checked);
+                          }}/>
+                <TextArea style={{width: '50%', marginRight: '10px'}} size="small" value={props.subtask.description}
+                          onChange={(e) => {
+                              this.updateSubtaskDescription(props.subtask.id, e.target.value);
+                          }}/>
+                <Button shape="circle" icon={<DeleteOutlined/>} danger
+                        onClick={() => {
+                            this.deleteSubtask(props.subtask.id);
+                        }}/>
+            </div>
+        );
+    }
+
     handleSubmit = () => {
         // Shared validations
         if (!Util.validateTaskInfo(this.state.categoryName, this.state.description,
@@ -124,10 +214,16 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
 
         let catWithColor: CategoryWithColor | undefined = this.props.category.find((cat =>
             cat.catName === this.state.categoryName?.substring(4)));
+        let completed = this.state.completed;
+        // handle subtask logic with main task completion
+        if (this.state.subtaskList.length > 0) {
+            // if all subtask complete -> main task complete, else main task not complete
+            completed = this.state.subtaskList.filter((subtask) => !subtask.completed).length === 0;
+        }
         if (this.props.createNew) { // New task popup
             // @ts-ignore
             this.props.model.addTask(catWithColor, this.state.description, this.state.availableDate,
-                this.state.dueDate, this.state.completed);
+                this.state.dueDate, completed, this.state.subtaskList);
             this.props.refreshModel();
             this.reset();
             this.props.handleOk();
@@ -137,7 +233,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                 // @ts-ignore
                 catWithColor, this.state.description,
                 // @ts-ignore
-                this.state.availableDate, this.state.dueDate, this.state.completed);
+                this.state.availableDate, this.state.dueDate, completed, this.state.subtaskList);
             this.props.refreshModel();
             this.reset();
             this.props.handleOk();
@@ -151,6 +247,9 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
             description: '',
             availableDate: null,
             dueDate: null,
+            showAddTaskInput: false,
+            subtaskInputVal: '',
+            subtaskList: []
         });
     }
 
@@ -201,6 +300,35 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                 <TextArea value={this.state.description} onChange={this.updateDescription} rows={3}/>
 
                 <br/>
+                <br/>
+
+                <span>Sub-tasks:</span>
+                <div>
+                    {
+                        this.state.subtaskList.map((subtask) =>
+                            <this.Subtask key={subtask.id} subtask={subtask}/>)
+                    }
+                    {
+                        this.state.showAddTaskInput ?
+                            <div>
+                                <TextArea style={{marginBottom: "10px"}}
+                                          value={this.state.subtaskInputVal}
+                                          onChange={this.updateSubtaskInput}/>
+                                <br/>
+                                <Button className="button-right" type="primary" onClick={this.handleAddSubtask}>
+                                    Add task
+                                </Button>
+                                <Button className="button-right" onClick={this.toggleShowAddTaskInput}>
+                                    Cancel
+                                </Button>
+                            </div>
+                            :
+                            <Button icon={<PlusOutlined/>} onClick={this.toggleShowAddTaskInput}>
+                                Add sub-task
+                            </Button>
+                    }
+                </div>
+
                 <br/>
 
                 <span>Available Date (optional): </span>
