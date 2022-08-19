@@ -7,11 +7,11 @@
 </p>
 
 ## Big Changes
-- Switched from Electron to Tauri for reduced executable size (From 193 MB down to around 2 MB)
+- Switched from Electron to Tauri for reduced executable size (From 193 MB down to less than 3 MB (on Windows))
 
 ## Screenshots
-[![qABGTI.png](https://s1.ax1x.com/2022/03/19/qABGTI.png)](https://imgtu.com/i/qABGTI)
-[![qABIB9.png](https://s1.ax1x.com/2022/03/19/qABIB9.png)](https://imgtu.com/i/qABIB9)
+[![1.png](https://s1.ax1x.com/2022/08/19/vrxjOI.png)](https://imgse.com/i/vrxjOI)
+[![2.png](https://s1.ax1x.com/2022/08/19/vrzklj.png)](https://imgse.com/i/vrzklj)
 
 ## User Guide
 [See wiki here](https://github.com/BenjaminYe36/Due-Helper/wiki)
@@ -19,12 +19,14 @@
 ## Testing & Building
 ### Pre-req for testing
 
+- Rust & System specific pre-req ([please view Tauri doc here](https://tauri.app/v1/guides/getting-started/prerequisites))
 - NodeJs & npm
 
 ### Testing instructions
 1. git clone this repo or download source code and extract
-2. run `npm install` under project folder
-3. run `npm run tauri dev` for dev build testing
+2. install Tauri pre-req by following [this guide](https://tauri.app/v1/guides/getting-started/prerequisites)
+3. run `npm install` under project folder
+4. run `npm run tauri dev` for dev build testing
 
 ### Building
 run command `npm run tauri build` for creating distribution for your platform
