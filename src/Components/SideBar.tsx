@@ -260,8 +260,9 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                     <Button type="primary" shape="round"
                             icon={<PlusOutlined/>}
                             onClick={this.showNewCatModal}>New Category</Button>
+                    <br />
                     <Button style={{marginLeft: "10px"}} shape="round"
-                            onClick={this.showReorderModal}>Reorder</Button>
+                            onClick={this.showReorderModal}>Reorder Categories</Button>
                 </div>
                 <Menu theme="dark" mode="inline"
                       selectedKeys={[this.props.selectionKey]}
