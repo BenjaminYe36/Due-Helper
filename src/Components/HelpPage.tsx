@@ -41,7 +41,7 @@ class HelpPage extends React.Component<HelpPageProps, HelpPageState> {
     }
 
     // Handles language change
-    handleLanguageChange = async (val) => {
+    handleLanguageChange = async (val: string) => {
         await Settings.changeLanguage(val);
     };
 

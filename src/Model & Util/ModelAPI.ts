@@ -48,6 +48,7 @@ class ModelAPI {
 
     public addCat(catName: string, color: string): void {
         if (this.hasCat(catName)) {
+            // @ts-ignore
             message.warning(t('warn.no-duplicate-cat'));
             return;
         }
@@ -68,6 +69,7 @@ class ModelAPI {
 
     public replaceCat(oldCatName: string, newCatName: string, newColor: string): void {
         if (this.hasCat(newCatName) && oldCatName !== newCatName) {
+            // @ts-ignore
             message.warning(t('warn.no-duplicate-cat'));
             return;
         }
@@ -133,6 +135,7 @@ class ModelAPI {
                    availableDate: string | null, dueDate: string,
                    completed: boolean, subtaskList: SubtaskInfo[]): void {
         if (!this.hasCat(category.catName)) {
+            // @ts-ignore
             message.warning(t('warn.no-this-cat'));
             console.log(this.category);
             return;
@@ -159,6 +162,7 @@ class ModelAPI {
                        completed: boolean, subTaskList: SubtaskInfo[]): void {
         let targetIndex = this.taskList.findIndex((t) => t.id === id);
         if (targetIndex === -1) {
+            // @ts-ignore
             message.warning(t('warn.no-id'));
             return;
         }
@@ -182,6 +186,7 @@ class ModelAPI {
     public checkTask(id: string): void {
         let targetIndex = this.taskList.findIndex((t) => t.id === id);
         if (targetIndex === -1) {
+            // @ts-ignore
             message.warning(t('warn.no-id'));
             return;
         }
@@ -207,11 +212,13 @@ class ModelAPI {
     public checkSubtask(taskId: string, subtaskId: string) {
         let targetIndex = this.taskList.findIndex((t) => t.id === taskId);
         if (targetIndex === -1) {
+            // @ts-ignore
             message.warning(t('warn.no-id'));
             return;
         }
         let subtaskIndex = this.taskList[targetIndex].subtaskList?.findIndex((t) => t.id === subtaskId);
         if (subtaskIndex === undefined || subtaskIndex === -1) {
+            // @ts-ignore
             message.warning(t('warn.no-sub-id'));
             return;
         }
@@ -230,6 +237,7 @@ class ModelAPI {
 
     public deleteTask(id: string): void {
         if (this.taskList.findIndex((t) => t.id === id) === -1) {
+            // @ts-ignore
             message.warning(t('warn.no-id'));
             return;
         } else {

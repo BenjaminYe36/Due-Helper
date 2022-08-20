@@ -1,9 +1,9 @@
 import React from 'react';
 import {Input, message} from "antd";
 import ModelAPI from "../Model & Util/ModelAPI";
-import i18n from '../i18n/config';
+import {withTranslation, WithTranslation} from 'react-i18next';
 
-interface EditableTextCatProps {
+interface EditableTextCatProps extends WithTranslation {
     value: string; // initial value in this editable text element
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying
@@ -14,8 +14,6 @@ interface EditableTextCatState {
     toggle: boolean; // whether or not this component is editable or not (true means not editable)
     value: string; // current value in the input box
 }
-
-const t = i18n.t;
 
 /**
  * A component with editable inner text by double clicking to toggle to edit
@@ -55,10 +53,10 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
         });
         // doesn't allow empty or duplicated category names
         if (this.state.value.trim() === "") {
-            message.warning(t('warn.no-empty-cat'));
+            message.warning(this.props.t('warn.no-empty-cat'));
             isInvalid = true;
         } else if (this.state.value !== this.props.value && this.props.model.hasCat(this.state.value)) {
-            message.warning(t('warn.no-duplicate-cat'));
+            message.warning(this.props.t('warn.no-duplicate-cat'));
             isInvalid = true;
         } else if (this.state.value !== this.props.value) {
             this.props.model.replaceCatName(this.props.value, this.state.value);
@@ -101,4 +99,4 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
     }
 }
 
-export default EditableTextCat;
+export default withTranslation()(EditableTextCat);

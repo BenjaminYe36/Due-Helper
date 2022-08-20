@@ -13,6 +13,7 @@ import {withTranslation, WithTranslation} from 'react-i18next';
 import i18n from "./i18n/config";
 import zhCN from "antd/es/locale/zh_CN";
 import enUS from "antd/es/locale/en_US";
+import Settings from "./Model & Util/Settings";
 
 
 interface TaskData {
@@ -70,6 +71,8 @@ class App extends Component<AppProps, AppStates> {
                 language: lng
             });
         });
+        let language = await Settings.getLanguage();
+        i18n.changeLanguage(language);
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<AppStates>, snapshot?: any) {
