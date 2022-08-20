@@ -6,8 +6,9 @@ import {DeleteOutlined, EditTwoTone} from "@ant-design/icons";
 import ModelAPI, {SubtaskInfo, TaskInfo} from "../Model & Util/ModelAPI";
 import {CheckboxChangeEvent} from "antd/es/checkbox";
 import Util from "../Model & Util/Util";
+import {withTranslation, WithTranslation} from 'react-i18next';
 
-interface TodoProps {
+interface TodoProps extends WithTranslation {
     task: TaskInfo; // an object contains all the information of a task (see interface for details)
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying
@@ -38,12 +39,12 @@ class Todo extends React.Component<TodoProps, TodoState> {
     setAvailableTip = () => {
         let tmpTip: string = '';
         if (this.props.task.completed) {
-            tmpTip = 'Already Done';
+            tmpTip = this.props.t('todo.already-done');
         } else if (Util.isAvailable(this.props.task)) {
-            tmpTip = 'Available Now';
+            tmpTip = this.props.t('todo.available-now');
         } else if (this.props.task.availableDate !== null) {
             let diffInMinutes = Util.getDateDifferenceInMinutes(new Date().toISOString(), this.props.task.availableDate);
-            tmpTip = `Will be available in ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
+            tmpTip = `${this.props.t('todo.will-available-text')} ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
         }
         this.setState({
             availableTip: tmpTip,
@@ -59,13 +60,13 @@ class Todo extends React.Component<TodoProps, TodoState> {
     setDueDateTip = () => {
         let tmpTip: string;
         if (this.props.task.completed) {
-            tmpTip = 'Already Done';
+            tmpTip = this.props.t('todo.already-done');
         } else {
             let diffInMinutes = Util.getDateDifferenceInMinutes(new Date().toISOString(), this.props.task.dueDate);
             if (diffInMinutes >= 0) {
-                tmpTip = `Due in ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
+                tmpTip = `${this.props.t('todo.due-in')} ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
             } else {
-                tmpTip = `Past due ${Util.getTimeStringFromMinutes(-diffInMinutes)}`;
+                tmpTip = `${this.props.t('todo.past-due')} ${Util.getTimeStringFromMinutes(-diffInMinutes)}`;
             }
         }
         this.setState({
@@ -129,14 +130,15 @@ class Todo extends React.Component<TodoProps, TodoState> {
     }
 
     render() {
+        const {t} = this.props;
         const items: MenuProps["items"] = [
             {
-                label: "Edit",
+                label: t('edit'),
                 key: "Context-Edit",
                 icon: <EditTwoTone twoToneColor='#8c8c8c'/>
             },
             {
-                label: "Delete",
+                label: t('delete'),
                 key: "Context-Del",
                 icon: <DeleteOutlined/>,
                 danger: true
@@ -181,7 +183,7 @@ class Todo extends React.Component<TodoProps, TodoState> {
                                     color={this.props.task.completed ? 'green' :
                                         (Util.isUrgent(this.props.task) ? 'red' : 'cyan')}
                                     style={{float: 'right'}}>
-                                    Due: {Util.getLocalDate(this.props.task.dueDate)}
+                                    {t('todo.due')}: {Util.getLocalDate(this.props.task.dueDate)}
                                 </Tag>
                             </Tooltip>
                             {this.props.task?.availableDate === null ?
@@ -191,7 +193,7 @@ class Todo extends React.Component<TodoProps, TodoState> {
                                     <Tag color={this.props.task.completed ? 'default' :
                                         (Util.isAvailable(this.props.task) ? 'green' : 'orange')}
                                          style={{float: 'right'}}>
-                                        Not available until: {Util.getLocalDate(this.props.task.availableDate)}
+                                        {t('todo.available-text')}: {Util.getLocalDate(this.props.task.availableDate)}
                                     </Tag>
                                 </Tooltip>
                             }
@@ -210,4 +212,4 @@ class Todo extends React.Component<TodoProps, TodoState> {
 
 }
 
-export default Todo;
+export default withTranslation()(Todo);

@@ -1,0 +1,96 @@
+{
+  "help-page": {
+    "title": "Settings, Help & Info",
+    "help-and-info": "Help & Info",
+    "data-store-location": "Data Stored location:",
+    "copy-path": "Copy Path",
+    "open-folder": "Open Folder",
+    "usage-help": "Usage Help",
+    "issue-and-suggestion": "Submit Issues Or Suggestions",
+    "clip-success": "Copied to clipboard successfully",
+    "clip-fail": "Copy to clipboard failed",
+    "open-folder-fail": "Open folder failed",
+    "select-language": "Select the display language: "
+  },
+  "side-bar": {
+    "new-cat": "New Category",
+    "reorder": "Reorder Categories",
+    "all-tasks": "All Tasks",
+    "tasks-by-time": "Tasks by Time",
+    "urgent": "Urgent Tasks",
+    "current": "Current Tasks",
+    "future": "Future Tasks",
+    "cat": "Categories",
+    "settings-and-help": "Settings & Help"
+  },
+  "cat-popup": {
+    "add-cat": "Add a new Category",
+    "edit-cat": "Edit this Category",
+    "cat-name": "Category Name",
+    "pick-tag-color": "Pick tag color"
+  },
+  "reorder-popup": {
+    "title": "Reorder the category names by dragging the list items"
+  },
+  "todo": {
+    "due": "Due",
+    "available-text": "Not available until",
+    "already-done": "Already Done",
+    "due-in": "Due in",
+    "past-due": "Past due",
+    "available-now": "Available Now",
+    "will-available-text": "Will be available in"
+  },
+  "time": {
+    "day": "day",
+    "hour": "hour",
+    "minute": "minute",
+    "s": "s"
+  },
+  "main": {
+    "new-task": "New Task",
+    "group": "Grouped by category",
+    "not-group": "Not Grouped by category"
+  },
+  "task-popup": {
+    "add-task": "Add a new Task",
+    "edit-task": "Edit this Task",
+    "reset-all": "Reset All",
+    "completed": "Completed",
+    "incomplete": "Incomplete",
+    "complete-label": "Is the task completed: ",
+    "cat-label": "Category: ",
+    "cat-placeholder": "select a category",
+    "description": "Description: ",
+    "subtask-label": "Sub-tasks: ",
+    "add-subtask": "Add sub-task",
+    "subtask-ok": "Add sub-task",
+    "subtask-cancel": "Cancel",
+    "available-label": "Available Date (optional): ",
+    "due-label": "Due Date: "
+  },
+  "warn": {
+    "no-duplicate-cat": "No duplicated names allowed!",
+    "no-empty-cat": "Can't use empty category names!",
+    "must-choose-cat": "Category must be chosen!",
+    "no-empty-desc": "Empty description not allowed!",
+    "no-due": "Due date must be chosen!",
+    "available-after-due": "Invalid dates, available date can't be later than due date!",
+    "not-available-but-complete": "Invalid date and completeness, can't be completed before task is available!",
+    "no-this-cat": "Does not has this category, please recheck category of this task!",
+    "no-id": "Task id not found, can't perform this action",
+    "no-sub-id": "SubtaskId not found, can't perform this action"
+  },
+  "irr-warning": "Irrecoverable action.",
+  "delete-cat-confirm": "Are you sure to delete category",
+  "delete-cat-warning": "ALL TASKS IN THIS CATEGORY WILL ALSO BE DELETED!",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "edit": "Edit",
+  "delete": "Delete",
+  "nothing": "Nothing yet",
+  "no-cat": "No Category Yet",
+  "no-task": "No Task Yet"
+}

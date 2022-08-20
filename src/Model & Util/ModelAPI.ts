@@ -2,6 +2,7 @@ import {message} from "antd";
 import {nanoid} from "nanoid";
 import {BaseDirectory, createDir, writeTextFile} from "@tauri-apps/api/fs";
 import Util from "./Util";
+import i18n from '../i18n/config';
 
 export interface CategoryWithColor {
     catName: string; // the name of the category
@@ -24,6 +25,8 @@ export interface TaskInfo {
     subtaskList?: SubtaskInfo[]; // optional field for list of subtasks
 }
 
+const t = i18n.t;
+
 class ModelAPI {
     private category: CategoryWithColor[];
     private taskList: TaskInfo[];
@@ -45,7 +48,7 @@ class ModelAPI {
 
     public addCat(catName: string, color: string): void {
         if (this.hasCat(catName)) {
-            message.warning("No duplicated names allowed!");
+            message.warning(t('warn.no-duplicate-cat'));
             return;
         }
         this.category = this.category.concat({catName: catName, color: color});
@@ -65,7 +68,7 @@ class ModelAPI {
 
     public replaceCat(oldCatName: string, newCatName: string, newColor: string): void {
         if (this.hasCat(newCatName) && oldCatName !== newCatName) {
-            message.warning("No duplicated names allowed!");
+            message.warning(t('warn.no-duplicate-cat'));
             return;
         }
         let indexOfOld = this.category.findIndex((cat) => cat.catName === oldCatName);
@@ -130,7 +133,7 @@ class ModelAPI {
                    availableDate: string | null, dueDate: string,
                    completed: boolean, subtaskList: SubtaskInfo[]): void {
         if (!this.hasCat(category.catName)) {
-            message.warning("Does not has this category, please recheck category of this task!");
+            message.warning(t('warn.no-this-cat'));
             console.log(this.category);
             return;
         }
@@ -156,7 +159,7 @@ class ModelAPI {
                        completed: boolean, subTaskList: SubtaskInfo[]): void {
         let targetIndex = this.taskList.findIndex((t) => t.id === id);
         if (targetIndex === -1) {
-            message.warning("Id not found, can't replace");
+            message.warning(t('warn.no-id'));
             return;
         }
         if (!Util.validateTaskInfo(category.catName, description, availableDate, dueDate, completed)) {
@@ -179,7 +182,7 @@ class ModelAPI {
     public checkTask(id: string): void {
         let targetIndex = this.taskList.findIndex((t) => t.id === id);
         if (targetIndex === -1) {
-            message.warning("Id not found, can't check");
+            message.warning(t('warn.no-id'));
             return;
         }
         this.taskList[targetIndex].completed = !this.taskList[targetIndex].completed;
@@ -204,12 +207,12 @@ class ModelAPI {
     public checkSubtask(taskId: string, subtaskId: string) {
         let targetIndex = this.taskList.findIndex((t) => t.id === taskId);
         if (targetIndex === -1) {
-            message.warning("Id not found, can't check");
+            message.warning(t('warn.no-id'));
             return;
         }
         let subtaskIndex = this.taskList[targetIndex].subtaskList?.findIndex((t) => t.id === subtaskId);
         if (subtaskIndex === undefined || subtaskIndex === -1) {
-            message.warning("SubtaskId not found, can't check");
+            message.warning(t('warn.no-sub-id'));
             return;
         }
         let subtask = this.taskList[targetIndex].subtaskList?.[subtaskIndex];
@@ -227,7 +230,7 @@ class ModelAPI {
 
     public deleteTask(id: string): void {
         if (this.taskList.findIndex((t) => t.id === id) === -1) {
-            message.warning("Id not found, can't delete");
+            message.warning(t('warn.no-id'));
             return;
         } else {
             this.taskList = this.taskList.filter((t) => t.id !== id);

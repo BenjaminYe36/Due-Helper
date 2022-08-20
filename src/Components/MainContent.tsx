@@ -4,8 +4,9 @@ import {Button, Collapse, Empty, Layout, Switch, Tooltip} from "antd";
 import ModelAPI, {CategoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
 import {PlusOutlined} from "@ant-design/icons";
 import TaskPopup from "./TaskPopup";
+import {withTranslation, WithTranslation} from 'react-i18next';
 
-interface MainContentProps {
+interface MainContentProps extends WithTranslation {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     model: ModelAPI; // Reference to the fake backend Api
@@ -101,6 +102,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
     }
 
     render() {
+        const {t} = this.props;
         let taskListForEachCat: any[] = [];
         if (!this.props.selection.startsWith('Cat-') && this.state.groupedByCat) {
             for (let i = 0; i < this.props.category.length; i++) {
@@ -117,9 +119,9 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                     <h1 className="main-title">
                         {/*Big title*/}
                         {this.props.selection.startsWith('Cat-') ?
-                            this.props.selection.substring(4) : this.props.selection}
+                            this.props.selection.substring(4) : t('side-bar.' + this.props.selection)}
                         {/*Button with tooltip*/}
-                        <Tooltip title='New Task'>
+                        <Tooltip title={t('main.new-task')}>
                             <Button icon={<PlusOutlined/>}
                                     shape='circle'
                                     type='dashed'
@@ -128,8 +130,8 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                         </Tooltip>
                         {!this.props.selection.startsWith('Cat-') ?
                             <Switch style={{float: 'right', marginTop: '5px', marginRight: '5px'}}
-                                    checkedChildren="Grouped by category"
-                                    unCheckedChildren="Not Grouped by category"
+                                    checkedChildren={t('main.group')}
+                                    unCheckedChildren={t('main.not-group')}
                                     checked={this.state.groupedByCat}
                                     onClick={this.updateGroupedByCat}
                             /> : null}
@@ -165,7 +167,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                                               onEdit={this.showEditPopup}/>
                                     )}
                                 </ul>)
-                            : <Empty description={<span>No Task Yet</span>}/>
+                            : <Empty description={<span>{t('no-task')}</span>}/>
                         }
                     </div>
 
@@ -197,4 +199,4 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
     }
 }
 
-export default MainContent;
+export default withTranslation()(MainContent);

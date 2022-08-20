@@ -2,8 +2,9 @@ import React from "react";
 import {Empty, Modal} from "antd";
 import ModelAPI, {CategoryWithColor} from "../Model & Util/ModelAPI";
 import {List} from "react-movable";
+import {withTranslation, WithTranslation} from 'react-i18next';
 
-interface ReorderPopupProps {
+interface ReorderPopupProps extends WithTranslation {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
     model: ModelAPI; // Reference to the fake backend Api
@@ -19,14 +20,17 @@ interface ReorderPopupProps {
 class ReorderPopup extends React.Component<ReorderPopupProps, {}> {
 
     render() {
+        const {t} = this.props;
         return (
             <Modal
-                title="Reorder the category names by dragging the list items"
+                title={t('reorder-popup.title')}
                 centered
                 visible={this.props.reorderModalVisible}
                 zIndex={0}
                 onOk={this.props.handleReorderModalOk}
-                onCancel={this.props.handleReorderModalCancel}>
+                onCancel={this.props.handleReorderModalCancel}
+                okText={t('ok')}
+                cancelText={t('cancel')}>
                 {this.props.category.length > 0 ?
                     <List
                         values={this.props.category.map(cat => cat.catName)}
@@ -39,11 +43,11 @@ class ReorderPopup extends React.Component<ReorderPopupProps, {}> {
                         renderItem={({value, props}) => <li {...props}>{value}</li>}
                     />
                     :
-                    <Empty description={<span>No Category Yet</span>}/>
+                    <Empty description={<span>{t('no-cat')}</span>}/>
                 }
             </Modal>
         );
     }
 }
 
-export default ReorderPopup;
+export default withTranslation()(ReorderPopup);

@@ -1,0 +1,96 @@
+{
+  "help-page": {
+    "title": "设置，帮助与信息",
+    "help-and-info": "帮助与信息",
+    "data-store-location": "数据存储位置:",
+    "copy-path": "复制路径",
+    "open-folder": "打开文件夹",
+    "usage-help": "使用帮助",
+    "issue-and-suggestion": "反馈问题或建议",
+    "clip-success": "已成功复制到剪贴板",
+    "clip-fail": "复制到剪贴板失败",
+    "open-folder-fail": "打开文件夹失败",
+    "select-language": "选择显示语言："
+  },
+  "side-bar": {
+    "new-cat": "新建类别",
+    "reorder": "改变类别顺序",
+    "all-tasks": "所有任务",
+    "tasks-by-time": "根据时间划分任务",
+    "urgent": "紧急任务",
+    "current": "当前任务",
+    "future": "未来任务",
+    "cat": "类别",
+    "settings-and-help": "设置与帮助"
+  },
+  "cat-popup": {
+    "add-cat": "添加一个类别",
+    "edit-cat": "编辑此类别",
+    "cat-name": "类别名称",
+    "pick-tag-color": "选择标签颜色"
+  },
+  "reorder-popup": {
+    "title": "通过拖拽列表项目重新给类别排序"
+  },
+  "todo": {
+    "due": "截止日期",
+    "available-text": "可开始日期",
+    "already-done": "已完成",
+    "due-in": "距离截止",
+    "past-due": "超过截止",
+    "available-now": "已可做",
+    "will-available-text": "距离可开始"
+  },
+  "time": {
+    "day": "天",
+    "hour": "小时",
+    "minute": "分",
+    "s": ""
+  },
+  "main": {
+    "new-task": "新建任务",
+    "group": "根据类别合并",
+    "not-group": "不根据类别合并"
+  },
+  "task-popup": {
+    "add-task": "添加新任务",
+    "edit-task": "编辑此任务",
+    "reset-all": "重置所有",
+    "completed": "已完成",
+    "incomplete": "未完成",
+    "complete-label": "此任务是否已完成：",
+    "cat-label": "类别：",
+    "cat-placeholder": "选择一个类别",
+    "description": "任务描述：",
+    "subtask-label": "子任务：",
+    "add-subtask": "添加子任务",
+    "subtask-ok": "添加子任务",
+    "subtask-cancel": "取消",
+    "available-label": "可开始日期（可选）：",
+    "due-label": "截止日期："
+  },
+  "warn": {
+    "no-duplicate-cat": "不可使用重复的类别名称！",
+    "no-empty-cat": "不可使用空类别名！",
+    "must-choose-cat": "必须选择类别！",
+    "no-empty-desc": "任务描述不可为空！",
+    "no-due": "必须选择截止日期！",
+    "available-after-due": "无效的日期，可开始日期不能晚于截止日期！",
+    "not-available-but-complete": "无效的日期和完成状况，在任务可开始前不可标记为已完成！",
+    "no-this-cat": "没有此类别，请检查此任务的类别再重试！",
+    "no-id": "未找到此任务ID, 无法进行此操作！",
+    "no-sub-id": "未找到此子任务ID，无法进行此操作！"
+  },
+  "irr-warning": "不可恢复！",
+  "delete-cat-confirm": "是否确认删除类别",
+  "delete-cat-warning": "此类别下的所有任务也将被一并删除！",
+  "yes": "是",
+  "no": "否",
+  "ok": "确定",
+  "edit": "编辑",
+  "delete": "删除",
+  "cancel": "取消",
+  "nothing": "暂无",
+  "no-cat": "暂无类别",
+  "no-task": "暂无任务"
+}

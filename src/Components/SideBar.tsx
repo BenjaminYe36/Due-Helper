@@ -13,9 +13,10 @@ import EditableTextCat from "./EditableTextCat";
 import CatPopup from "./CatPopup";
 import ReorderPopup from "./ReorderPopup";
 import {MenuInfo} from "rc-menu/lib/interface";
+import {withTranslation, WithTranslation} from 'react-i18next';
 
 
-interface SideBarProps {
+interface SideBarProps extends WithTranslation {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     model: ModelAPI; // Reference to the fake backend Api
     selectionKey: string; // Selected key in the sidebar menu
@@ -80,14 +81,14 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
     showDeleteConfirm = (cat: CategoryWithColor) => {
         let handleConfirm = this.handleConfirm;
         confirm({
-            title: <span>Irrecoverable action. <br/>
-                         Are you sure to delete category: {`[ ${cat.catName} ]?`}
+            title: <span>{this.props.t('irr-warning')}<br/>
+                {this.props.t('delete-cat-confirm')}: {`[ ${cat.catName} ]?`}
                    </span>,
             icon: <ExclamationCircleOutlined style={{color: "red"}}/>,
-            content: 'ALL TASKS IN THIS CATEGORY WILL ALSO BE DELETED!',
-            okText: 'Yes',
+            content: this.props.t('delete-cat-warning'),
+            okText: this.props.t('yes'),
             okType: 'danger',
-            cancelText: 'No',
+            cancelText: this.props.t('no'),
             width: 800,
 
             onOk() {
@@ -117,7 +118,7 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
 
     handleConfirm = (name: string) => {
         this.props.model.deleteCat(name);
-        this.props.updateSelection("All Tasks");
+        this.props.updateSelection("all-tasks");
         this.props.refreshModel();
     }
 
@@ -139,12 +140,12 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
         return this.props.category.map((cat) => {
                 const contextMenuItems: MenuProps['items'] = [
                     {
-                        label: "Edit",
+                        label: this.props.t('edit'),
                         key: "Context-Edit",
                         icon: <EditTwoTone twoToneColor='#8c8c8c'/>
                     },
                     {
-                        label: "Delete",
+                        label: this.props.t('delete'),
                         key: "Context-Del",
                         icon: <DeleteOutlined/>,
                         danger: true
@@ -185,57 +186,58 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
     }
 
     render() {
+        const {t} = this.props;
         const items: MenuProps['items'] = [
             // First part: All Tasks View
             {
-                label: "All Tasks",
-                key: "All Tasks",
+                label: t('side-bar.all-tasks'),
+                key: "all-tasks",
                 icon: <FileSearchOutlined style={{color: '#d9d9d9'}}/>
             },
             // Second part: Time Filtered Views
             {
-                label: "[Tasks by Time]",
+                label: `[${t('side-bar.tasks-by-time')}]`,
                 key: "byTime",
                 type: "group",
                 children: [
                     {
-                        label: "Urgent Tasks",
-                        key: "Urgent Tasks",
+                        label: t('side-bar.urgent'),
+                        key: "urgent",
                         icon: <ExclamationCircleTwoTone twoToneColor='#cf1322'/>
                     },
                     {
-                        label: "Current Tasks",
-                        key: "Current Tasks",
+                        label: t('side-bar.current'),
+                        key: "current",
                         icon: <CarryOutTwoTone twoToneColor='#faad14'/>
                     },
                     {
-                        label: "Future Tasks",
-                        key: "Future Tasks",
+                        label: t('side-bar.future'),
+                        key: "future",
                         icon: <ClockCircleTwoTone twoToneColor='#a0d911'/>
                     }
                 ]
             },
             // Third Part: User added categories
             {
-                label: "[Categories]",
+                label: `[${t('side-bar.cat')}]`,
                 key: "byUserCat",
                 type: "group",
                 children: this.props.category.length > 0 ?
                     this.getMenuItems() :
                     [{
-                        label: <span style={{fontStyle: "italic"}}>Nothing yet</span>,
+                        label: <span style={{fontStyle: "italic"}}>{t('nothing')}</span>,
                         key: "nothingYet",
                         disabled: true
                     }]
             },
             // Forth Part: Settings & Help
             {
-                label: "[Settings & Help]",
+                label: `[${t('side-bar.settings-and-help')}]`,
                 key: "settingsGroup",
                 type: "group",
                 children: [
                     {
-                        label: "Help & Info",
+                        label: t('side-bar.settings-and-help'),
                         key: "helpAndInfo",
                         icon: <InfoCircleTwoTone/>
                     }
@@ -259,10 +261,10 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                 <div className="modifyCatButtons" style={{textAlign: 'center'}}>
                     <Button type="primary" shape="round"
                             icon={<PlusOutlined/>}
-                            onClick={this.showNewCatModal}>New Category</Button>
-                    <br />
-                    <Button style={{marginLeft: "10px"}} shape="round"
-                            onClick={this.showReorderModal}>Reorder Categories</Button>
+                            onClick={this.showNewCatModal}>{t('side-bar.new-cat')}</Button>
+                    <br/>
+                    <Button style={{marginTop: "10px"}} shape="round"
+                            onClick={this.showReorderModal}>{t('side-bar.reorder')}</Button>
                 </div>
                 <Menu theme="dark" mode="inline"
                       selectedKeys={[this.props.selectionKey]}
@@ -302,4 +304,4 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
     }
 }
 
-export default SideBar;
+export default withTranslation()(SideBar);

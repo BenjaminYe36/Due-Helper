@@ -5,8 +5,10 @@ import ModelAPI, {CategoryWithColor, SubtaskInfo, TaskInfo} from "../Model & Uti
 import moment from "moment";
 import {DeleteOutlined, PlusOutlined, ReloadOutlined} from "@ant-design/icons";
 import {nanoid} from "nanoid";
+import {withTranslation, WithTranslation} from 'react-i18next';
+import 'moment/dist/locale/zh-cn';
 
-interface TaskPopupProps {
+interface TaskPopupProps extends WithTranslation {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskModalVisible: boolean; // boolean representing the visibility of the modal for adding or editing task
     createNew: boolean; // if true => show create new popup, if false => show edit popup
@@ -137,7 +139,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
 
     handleAddSubtask = () => {
         if (this.state.subtaskInputVal.trim() === "") {
-            message.warning("can't use empty description");
+            message.warning(this.props.t('warn.no-empty-desc'));
             return;
         }
         let newSubtask: SubtaskInfo = {
@@ -254,31 +256,37 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
     }
 
     render() {
+        const {t} = this.props;
+        moment.locale('zh-cn');
         return (
             <Modal
-                title={this.props.createNew ? "Add a new Task" : "Edit this Task"}
+                title={this.props.createNew ? t('task-popup.add-task') : t('task-popup.edit-task')}
                 centered
                 visible={this.props.taskModalVisible}
                 width="1000px"
                 onOk={this.handleSubmit}
                 onCancel={this.props.handleCancel}
+                okText={t('ok')}
+                cancelText={t('cancel')}
             >
-                <Button icon={<ReloadOutlined/>} shape='round' onClick={this.reset} danger>Reset All</Button>
+                <Button icon={<ReloadOutlined/>} shape='round' onClick={this.reset} danger>
+                    {t('task-popup.reset-all')}
+                </Button>
 
                 <br/>
                 <br/>
 
-                <span>Is the task completed: </span>
+                <span>{t('task-popup.complete-label')}</span>
                 <Switch checked={this.state.completed}
-                        checkedChildren="Completed"
-                        unCheckedChildren="Incomplete"
+                        checkedChildren={t('task-popup.completed')}
+                        unCheckedChildren={t('task-popup.incomplete')}
                         onClick={this.updateCompleted}/>
 
                 <br/>
                 <br/>
 
-                <span>Category: </span>
-                <Select placeholder="select a category"
+                <span>{t('task-popup.cat-label')}</span>
+                <Select placeholder={t('task-popup.cat-placeholder')}
                         value={this.state.categoryName}
                         dropdownMatchSelectWidth={false}
                         showSearch
@@ -296,13 +304,13 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                 <br/>
                 <br/>
 
-                <span>Description: </span>
+                <span>{t('task-popup.description')}</span>
                 <TextArea value={this.state.description} onChange={this.updateDescription} rows={3}/>
 
                 <br/>
                 <br/>
 
-                <span>Sub-tasks:</span>
+                <span>{t('task-popup.subtask-label')}</span>
                 <div>
                     {
                         this.state.subtaskList.map((subtask) =>
@@ -316,22 +324,22 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                                           onChange={this.updateSubtaskInput}/>
                                 <br/>
                                 <Button className="button-right" type="primary" onClick={this.handleAddSubtask}>
-                                    Add task
+                                    {t('task-popup.subtask-ok')}
                                 </Button>
                                 <Button className="button-right" onClick={this.toggleShowAddTaskInput}>
-                                    Cancel
+                                    {t('task-popup.subtask-cancel')}
                                 </Button>
                             </div>
                             :
                             <Button icon={<PlusOutlined/>} onClick={this.toggleShowAddTaskInput}>
-                                Add sub-task
+                                {t('task-popup.add-subtask')}
                             </Button>
                     }
                 </div>
 
                 <br/>
 
-                <span>Available Date (optional): </span>
+                <span>{t('task-popup.available-label')}</span>
                 <DatePicker
                     onChange={this.updateAvailableDate}
                     value={this.state.availableDate === null ? null : moment(this.state.availableDate)}
@@ -343,17 +351,18 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                 <br/>
                 <br/>
 
-                <span>Due Date: </span>
-                <DatePicker onChange={this.updateDueDate}
-                            value={this.state.dueDate === null ? null : moment(this.state.dueDate)}
-                            showTime={{
-                                defaultValue: moment("23:59:59", "HH:mm:ss"),
-                                format: "HH:mm"
-                            }}
-                            format={Util.getDateFormatString(navigator.language)}/>
+                <span>{t('task-popup.due-label')}</span>
+                <DatePicker
+                    onChange={this.updateDueDate}
+                    value={this.state.dueDate === null ? null : moment(this.state.dueDate)}
+                    showTime={{
+                        defaultValue: moment("23:59:59", "HH:mm:ss"),
+                        format: "HH:mm"
+                    }}
+                    format={Util.getDateFormatString(navigator.language)}/>
             </Modal>
         );
     }
 }
 
-export default TaskPopup;
+export default withTranslation()(TaskPopup);

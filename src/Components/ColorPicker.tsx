@@ -2,8 +2,9 @@ import React from 'react';
 import reactCSS from 'reactcss';
 import {SketchPicker} from 'react-color';
 import {Tooltip} from 'antd';
+import {withTranslation, WithTranslation} from 'react-i18next';
 
-interface ColorPickerProps {
+interface ColorPickerProps extends WithTranslation {
     color: string; // default color in this picker (hex)
     onChangeColor(color: any): void; // callback to change color of this color picker
 }
@@ -16,7 +17,7 @@ interface ColorPickerState {
  * A Color picker using react-color component
  */
 class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
-    private styles : any;
+    private styles: any;
 
     constructor(props: ColorPickerProps) {
         super(props);
@@ -62,10 +63,11 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
     };
 
     render() {
+        const {t} = this.props;
 
         return (
             <div>
-                <Tooltip title="Pick Tag Color">
+                <Tooltip title={t('cat-popup.pick-tag-color')}>
                     <div style={this.styles.swatch} onClick={this.handleClick}>
                         <div style={{
                             width: '17px',
@@ -86,4 +88,4 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
     }
 }
 
-export default ColorPicker
+export default withTranslation()(ColorPicker);

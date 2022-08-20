@@ -1,11 +1,14 @@
 import {message} from "antd";
 import {TaskInfo} from "./ModelAPI";
 import {BaseDirectory, readTextFile} from "@tauri-apps/api/fs";
+import i18n from '../i18n/config';
 
 // Urgent day boundary, less than or equal to will be classified as urgent
 const urgentDay = 1;
 // Max delay due to the 32bit storage of delay for timeout
 const maxDelay = Math.pow(2, 31) - 1;
+
+const t = i18n.t;
 
 class Util {
     static getDateFormatString(locale: string) {
@@ -48,18 +51,18 @@ class Util {
         minute -= hour * 60;
         let timeString = '';
         if (day > 0) {
-            timeString += `${day} day`;
+            timeString += `${day} ${t('time.day')}`;
             if (day > 1) {
-                timeString += 's';
+                timeString += t('time.s');
             }
         }
         if (hour > 0) {
             if (timeString.length > 0) {
                 timeString += ' ';
             }
-            timeString += `${hour} hour`;
+            timeString += `${hour} ${t('time.hour')}`;
             if (hour > 0) {
-                timeString += 's';
+                timeString += t('time.s');
             }
         }
         if (timeString.length > 0 && minute === 0) {
@@ -68,9 +71,9 @@ class Util {
         if (timeString.length > 0) {
             timeString += ' ';
         }
-        timeString += `${minute} minute`;
+        timeString += `${minute} ${t('time.minute')}`;
         if (minute > 1) {
-            timeString += 's';
+            timeString += t('time.s');
         }
         return timeString;
     }
@@ -98,25 +101,25 @@ class Util {
     static validateTaskInfo(category: string | null, description: string,
                             availableDate: string | null, dueDate: string | null, completed: boolean): boolean {
         if (category === null) {
-            message.warning("Category must be chosen!");
+            message.warning(t('warn.must-choose-cat'));
             return false;
         }
         if (description.trim().length === 0) {
-            message.warning("Empty description not allowed!");
+            message.warning(t('warn.no-empty-desc'));
             return false;
         }
         if (dueDate === null) {
-            message.warning("Due date must be chosen!");
+            message.warning(t('warn.no-due'));
             return false;
         }
         if (availableDate !== null &&
             new Date(availableDate).getTime() > new Date(dueDate).getTime()) {
-            message.warning("Invalid dates, available date can't be later than due date!");
+            message.warning(t('warn.available-after-due'));
             return false;
         }
         if (completed && availableDate !== null
             && new Date().getTime() < new Date(availableDate).getTime()) {
-            message.warning("Invalid date and completeness, can't be completed before task is available!");
+            message.warning(t('warn.not-available-but-complete'));
             return false;
         }
         return true;

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Layout} from 'antd';
+import {Layout, ConfigProvider} from 'antd';
 import './App.css';
 import 'antd/dist/antd.css';
 import SideBar from "./Components/SideBar";
@@ -9,6 +9,10 @@ import {Scrollbars} from 'react-custom-scrollbars-2';
 import Util from "./Model & Util/Util";
 import {BaseDirectory, readTextFile} from "@tauri-apps/api/fs";
 import HelpPage from "./Components/HelpPage";
+import {withTranslation, WithTranslation} from 'react-i18next';
+import i18n from "./i18n/config";
+import zhCN from "antd/es/locale/zh_CN";
+import enUS from "antd/es/locale/en_US";
 
 
 interface TaskData {
@@ -16,11 +20,15 @@ interface TaskData {
     taskList: TaskInfo[];
 }
 
+interface AppProps extends WithTranslation {
+}
+
 interface AppStates {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     filteredList: TaskInfo[]; // filtered and ordered list that correspond to the selection on sidebar menu
     selectionKey: string; // string representing the key of selected item in the sidebar menu
+    language: string; // current language locale that should be used
 }
 
 const defaultTaskData = '{"category":[],"taskList":[]}';
@@ -28,7 +36,7 @@ const defaultTaskData = '{"category":[],"taskList":[]}';
 /**
  * The main application class of this task management software
  */
-class App extends Component<{}, AppStates> {
+class App extends Component<AppProps, AppStates> {
     private model: ModelAPI;
 
     constructor(props: any) {
@@ -37,7 +45,8 @@ class App extends Component<{}, AppStates> {
             category: [],
             taskList: [],
             filteredList: [],
-            selectionKey: 'All Tasks',
+            selectionKey: 'all-tasks',
+            language: i18n.language,
         };
         this.model = new ModelAPI([], []);
     }
@@ -55,6 +64,12 @@ class App extends Component<{}, AppStates> {
                 let obj = JSON.parse(defaultTaskData);
                 this.initializeModel(obj);
             });
+        i18n.on('languageChanged', (lng) => {
+            console.log(`language changed to ${lng}`);
+            this.setState({
+                language: lng
+            });
+        });
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<AppStates>, snapshot?: any) {
@@ -94,16 +109,16 @@ class App extends Component<{}, AppStates> {
     refreshModel = () => {
         let tmpList: TaskInfo[] = [];
         switch (this.state.selectionKey) {
-            case 'All Tasks':
+            case 'all-tasks':
                 tmpList = this.model.getTaskList();
                 break;
-            case 'Urgent Tasks':
+            case 'urgent':
                 tmpList = this.model.getTaskList().filter((task) => Util.isUrgent(task) && !task.completed);
                 break;
-            case 'Current Tasks':
+            case 'current':
                 tmpList = this.model.getTaskList().filter((task) => Util.isAvailable(task));
                 break;
-            case 'Future Tasks':
+            case 'future':
                 tmpList = this.model.getTaskList().filter((task) => !Util.isAvailable(task));
                 break;
             default:
@@ -147,32 +162,35 @@ class App extends Component<{}, AppStates> {
     }
 
     render() {
+        const {t} = this.props;
         return (
-            <Layout style={{minHeight: "100vh", overflow: "auto"}}>
+            <ConfigProvider locale={this.state.language.startsWith('zh') ? zhCN : enUS}>
+                <Layout style={{minHeight: "100vh", overflow: "auto"}}>
 
-                <SideBar category={this.state.category}
-                         model={this.model}
-                         selectionKey={this.state.selectionKey}
-                         refreshModel={this.refreshModel}
-                         updateSelection={this.updateSelectionKey}
-                />
+                    <SideBar category={this.state.category}
+                             model={this.model}
+                             selectionKey={this.state.selectionKey}
+                             refreshModel={this.refreshModel}
+                             updateSelection={this.updateSelectionKey}
+                    />
 
-                <Layout>
+                    <Layout>
 
-                    <Scrollbars>
-                        {
-                            this.state.selectionKey === "helpAndInfo" ?
-                                <HelpPage title="Help & Info"/> :
-                                <MainContent category={this.state.category} taskList={this.state.filteredList}
-                                             model={this.model} refreshModel={this.refreshModel}
-                                             selection={this.state.selectionKey}/>
-                        }
-                    </Scrollbars>
+                        <Scrollbars>
+                            {
+                                this.state.selectionKey === "helpAndInfo" ?
+                                    <HelpPage title={t('help-page.title')}/> :
+                                    <MainContent category={this.state.category} taskList={this.state.filteredList}
+                                                 model={this.model} refreshModel={this.refreshModel}
+                                                 selection={this.state.selectionKey}/>
+                            }
+                        </Scrollbars>
+
+                    </Layout>
+
 
                 </Layout>
-
-
-            </Layout>
+            </ConfigProvider>
         );
     }
 
@@ -180,4 +198,4 @@ class App extends Component<{}, AppStates> {
 }
 
 
-export default App;
+export default withTranslation()(App);

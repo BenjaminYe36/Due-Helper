@@ -3,8 +3,9 @@ import {Col, Input, message, Modal, Row} from "antd";
 import type {InputRef} from 'antd';
 import ColorPicker from "./ColorPicker";
 import ModelAPI, {CategoryWithColor} from "../Model & Util/ModelAPI";
+import {withTranslation, WithTranslation} from 'react-i18next';
 
-interface CatPopupProps {
+interface CatPopupProps extends WithTranslation {
     catModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
     model: ModelAPI; // Reference to the fake backend Api
     createNew: boolean; // if true => show create new popup, if false => show edit popup
@@ -58,7 +59,7 @@ class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
     handleCatModalOk = () => {
         // Validations first
         if (this.state.catValue.trim() === "") {
-            message.warning("Can't use empty category names!");
+            message.warning(this.props.t('warn.no-empty-cat'));
             return;
         }
         if (this.props.createNew) { // New cat popup
@@ -71,7 +72,7 @@ class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
             this.props.model.replaceCat(this.props.prefillCat?.catName,
                 this.state.catValue, this.state.color);
             if (this.state.catValue !== this.props.prefillCat?.catName) {
-                this.props.updateSelection('All Tasks');
+                this.props.updateSelection('all-tasks');
             }
             this.props.refreshModel();
             this.reset();
@@ -104,15 +105,18 @@ class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
     }
 
     render() {
+        const {t} = this.props;
         return (
             <Modal
-                title={this.props.createNew ? "Add a new Category" : "Edit this Category"}
+                title={this.props.createNew ? t('cat-popup.add-cat') : t('cat-popup.edit-cat')}
                 centered
                 visible={this.props.catModalVisible}
                 onOk={this.handleCatModalOk}
                 onCancel={this.handleCatModalCancel}
+                okText={t('ok')}
+                cancelText={t('cancel')}
             >
-                <span>Category Name:</span>
+                <span>{t('cat-popup.cat-name')}:</span>
 
                 <Row gutter={16}>
                     <Col className="gutter-row" span={18}>
@@ -139,4 +143,4 @@ class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
     }
 }
 
-export default CatPopup;
+export default withTranslation()(CatPopup);
