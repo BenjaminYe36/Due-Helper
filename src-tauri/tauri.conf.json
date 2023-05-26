@@ -17,7 +17,7 @@
         "createDir": true,
         "readFile": true,
         "writeFile": true,
-        "scope": ["$APP/*"]
+        "scope": ["$APP/**"]
       },
       "path": {
         "all": true
