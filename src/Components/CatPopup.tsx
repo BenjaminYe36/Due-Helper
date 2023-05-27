@@ -88,13 +88,13 @@ class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
     updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
             catValue: event.target.value,
-        });
+        } as CatPopupState);
     }
 
     updateColor = (color: any) => {
         this.setState({
             color: color.hex,
-        });
+        } as CatPopupState);
     }
 
     reset = () => {
@@ -110,7 +110,7 @@ class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
             <Modal
                 title={this.props.createNew ? t('cat-popup.add-cat') : t('cat-popup.edit-cat')}
                 centered
-                visible={this.props.catModalVisible}
+                open={this.props.catModalVisible}
                 onOk={this.handleCatModalOk}
                 onCancel={this.handleCatModalCancel}
                 okText={t('ok')}

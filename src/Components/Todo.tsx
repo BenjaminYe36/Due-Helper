@@ -1,5 +1,5 @@
 import React from "react";
-import {Checkbox, Dropdown, Menu, Tag, Tooltip} from "antd";
+import {Checkbox, Dropdown, Tag, Tooltip} from "antd";
 import type {MenuProps} from 'antd';
 import {MenuInfo} from "rc-menu/lib/interface";
 import {DeleteOutlined, EditTwoTone} from "@ant-design/icons";
@@ -48,7 +48,7 @@ class Todo extends React.Component<TodoProps, TodoState> {
         }
         this.setState({
             availableTip: tmpTip,
-        });
+        } as TodoState);
     }
 
     handleAvailableDateTipVisible = (visible: boolean) => {
@@ -71,7 +71,7 @@ class Todo extends React.Component<TodoProps, TodoState> {
         }
         this.setState({
             dueTip: tmpTip,
-        });
+        } as TodoState);
     }
 
     handleDueDateTipVisible = (visible: boolean) => {
@@ -144,22 +144,23 @@ class Todo extends React.Component<TodoProps, TodoState> {
                 danger: true
             }
         ];
+        const menuProps = {
+            items,
+            onClick: (item) => this.handleContextMenu(item, this.props.task.id)
+        };
 
         return (
             // Context menu
             <li id={this.props.task?.id}>
                 <Dropdown
-                    overlay={
-                        <Menu onClick={(item) => this.handleContextMenu(item, this.props.task.id)}
-                              items={items}/>
-                    }
+                    menu={menuProps}
                     trigger={['contextMenu']}
                 >
 
                     {/*inner contents of task display*/}
                     <div className='todo-container'>
                         <div>
-                            <Checkbox checked={this.props.task?.completed}
+                            <Checkbox checked={this.props.task.completed}
                                       className="todo-checkbox"
                                       onChange={this.handleCheck}
                                       disabled={!Util.isAvailable(this.props.task)}
@@ -178,7 +179,7 @@ class Todo extends React.Component<TodoProps, TodoState> {
                         </span>
 
                             <Tooltip title={<span>{this.state.dueTip}</span>}
-                                     onVisibleChange={this.handleDueDateTipVisible}>
+                                     onOpenChange={this.handleDueDateTipVisible}>
                                 <Tag
                                     color={this.props.task.completed ? 'green' :
                                         (Util.isUrgent(this.props.task) ? 'red' : 'cyan')}
@@ -189,7 +190,7 @@ class Todo extends React.Component<TodoProps, TodoState> {
                             {this.props.task?.availableDate === null ?
                                 null :
                                 <Tooltip title={<span>{this.state.availableTip}</span>}
-                                         onVisibleChange={this.handleAvailableDateTipVisible}>
+                                         onOpenChange={this.handleAvailableDateTipVisible}>
                                     <Tag color={this.props.task.completed ? 'default' :
                                         (Util.isAvailable(this.props.task) ? 'green' : 'orange')}
                                          style={{float: 'right'}}>

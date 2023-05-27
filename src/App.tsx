@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Layout, ConfigProvider} from 'antd';
 import './App.css';
-import 'antd/dist/antd.css';
+import 'antd/dist/reset.css';
 import SideBar from "./Components/SideBar";
 import ModelAPI, {CategoryWithColor, TaskInfo} from "./Model & Util/ModelAPI";
 import MainContent from "./Components/MainContent";
@@ -69,7 +69,7 @@ class App extends Component<AppProps, AppStates> {
             console.log(`language changed to ${lng}`);
             this.setState({
                 language: lng
-            });
+            } as AppStates);
         });
         let language = await Settings.getLanguage();
         i18n.changeLanguage(language);
@@ -103,7 +103,7 @@ class App extends Component<AppProps, AppStates> {
         if (!key.startsWith('Cat') || (key.startsWith('Cat-') && this.model.hasCat(key.substring(4)))) {
             this.setState({
                 selectionKey: key,
-            });
+            } as AppStates);
         }
     }
 
@@ -161,7 +161,7 @@ class App extends Component<AppProps, AppStates> {
             category: this.model.getCat(),
             taskList: this.model.getTaskList(),
             filteredList: tmpList,
-        });
+        } as AppStates);
     }
 
     render() {

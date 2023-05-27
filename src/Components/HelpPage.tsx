@@ -1,8 +1,8 @@
 import React from "react";
 import {Content} from "antd/es/layout/layout";
-import {Button, Divider, Input, message, Select, Tooltip} from "antd";
+import {Button, Divider, Input, message, Select, Tooltip, Space} from "antd";
 import {CopyOutlined, FolderOpenOutlined} from "@ant-design/icons";
-import {appDir} from "@tauri-apps/api/path";
+import {appDataDir} from "@tauri-apps/api/path";
 import {writeText} from "@tauri-apps/api/clipboard";
 import {shell} from "@tauri-apps/api";
 import {withTranslation, WithTranslation} from 'react-i18next';
@@ -29,7 +29,7 @@ class HelpPage extends React.Component<HelpPageProps, HelpPageState> {
     }
 
     async componentDidMount() {
-        appDir()
+        appDataDir()
             .then((dir) => {
                 this.setState({
                     dataPath: dir + "Database"
@@ -83,13 +83,15 @@ class HelpPage extends React.Component<HelpPageProps, HelpPageState> {
                     <div className="help-page-inner">
                         <Divider/>
                         <span>{t('help-page.select-language')}</span>
-                        <Select value={i18n.language.substring(0, 2)} onSelect={this.handleLanguageChange}>
+                        <Select value={i18n.language.substring(0, 2) as any}
+                                popupMatchSelectWidth={false}
+                                onSelect={this.handleLanguageChange}>
                             <Option value="en">English</Option>
                             <Option value="zh">简体中文</Option>
                         </Select>
                         <Divider/>
                         <span>{t('help-page.data-store-location')}</span>
-                        <Input.Group compact>
+                        <Space.Compact block>
                             <Input value={this.state.dataPath} style={{
                                 width: `${this.state.dataPath.length}ch`,
                                 maxWidth: '400px'
@@ -100,7 +102,7 @@ class HelpPage extends React.Component<HelpPageProps, HelpPageState> {
                             <Tooltip title={t('help-page.open-folder')}>
                                 <Button icon={<FolderOpenOutlined/>} onClick={this.handleOpenFolder}/>
                             </Tooltip>
-                        </Input.Group>
+                        </Space.Compact>
                         <Divider/>
                         <div className="grouped-buttons">
                             <Button type="primary" onClick={this.handleOpenWiki}>{t('help-page.usage-help')}</Button>

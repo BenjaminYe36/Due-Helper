@@ -31,7 +31,7 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
     handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
             value: event.target.value,
-        });
+        } as EditableTextCatState);
     }
 
     handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -50,7 +50,7 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
         let isInvalid = false;
         this.setState({
             toggle: true,
-        });
+        } as EditableTextCatState);
         // doesn't allow empty or duplicated category names
         if (this.state.value.trim() === "") {
             message.warning(this.props.t('warn.no-empty-cat'));
@@ -68,7 +68,7 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
             // revert back to original text
             this.setState({
                 value: this.props.value,
-            });
+            } as EditableTextCatState);
         }
     }
 
@@ -82,7 +82,7 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
                     onDoubleClick={() => {
                         this.setState({
                             toggle: false,
-                        });
+                        } as EditableTextCatState);
                     }}>{this.state.value}</span>) :
                 (<Input type="text"
                         value={this.state.value}

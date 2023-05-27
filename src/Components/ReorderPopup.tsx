@@ -25,7 +25,7 @@ class ReorderPopup extends React.Component<ReorderPopupProps, {}> {
             <Modal
                 title={t('reorder-popup.title')}
                 centered
-                visible={this.props.reorderModalVisible}
+                open={this.props.reorderModalVisible}
                 zIndex={0}
                 onOk={this.props.handleReorderModalOk}
                 onCancel={this.props.handleReorderModalCancel}

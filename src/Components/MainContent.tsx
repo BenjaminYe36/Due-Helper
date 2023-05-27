@@ -49,7 +49,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
             }
             this.setState({
                 prefillCat: tmpCat,
-            });
+            } as MainContentState);
         }
     }
 
@@ -68,13 +68,13 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
     setNewTaskModalVisible = (visible: boolean) => {
         this.setState({
             newTaskModalVisible: visible,
-        });
+        } as MainContentState);
     }
 
     showEditPopup = (task: TaskInfo) => {
         this.setState({
             prefillTaskInfo: task,
-        });
+        } as MainContentState);
         this.setEditTaskModalVisible(true);
     }
 
@@ -86,19 +86,19 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
         this.setEditTaskModalVisible(false);
         this.setState({
             prefillTaskInfo: null,
-        });
+        } as MainContentState);
     }
 
     setEditTaskModalVisible = (visible: boolean) => {
         this.setState({
             editTaskModalVisible: visible,
-        });
+        } as MainContentState);
     }
 
     updateGroupedByCat = (checked: boolean) => {
         this.setState({
             groupedByCat: checked,
-        });
+        } as MainContentState);
     }
 
     render() {

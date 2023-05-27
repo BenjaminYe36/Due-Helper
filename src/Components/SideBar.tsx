@@ -58,7 +58,7 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
     setNewCatModalVisible = (visible: boolean) => {
         this.setState({
             newCatModalVisible: visible,
-        });
+        } as SideBarState);
     }
 
     // EditCatModal callback related functions
@@ -66,14 +66,14 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
     showEditPopup = (cat: CategoryWithColor) => {
         this.setState({
             prefillCat: cat,
-        });
+        } as SideBarState);
         this.setEditCatModalVisible(true);
     }
 
     setEditCatModalVisible = (visible: boolean) => {
         this.setState({
             editCatModalVisible: visible,
-        });
+        } as SideBarState);
     }
 
     // Delete popup confirm
@@ -111,7 +111,7 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
     setReorderModalVisible = (visible: boolean) => {
         this.setState({
             reorderModalVisible: visible,
-        });
+        } as SideBarState);
     }
 
     // Method that deals with delete confirm
@@ -151,11 +151,12 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                         danger: true
                     }
                 ];
+                const menuProps = {
+                    items: contextMenuItems,
+                    onClick: (item) => this.handleContextMenu(item, cat)
+                }
                 const innerNode =
-                    (<Dropdown overlay={
-                        <Menu onClick={(item) => this.handleContextMenu(item, cat)}
-                              items={contextMenuItems}/>
-                    } trigger={['contextMenu']}>
+                    (<Dropdown menu={menuProps} trigger={['contextMenu']}>
                         <div>
                             <div style={{
                                 padding: '2px',
@@ -290,7 +291,7 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                               this.setEditCatModalVisible(false);
                               this.setState({
                                   prefillCat: null,
-                              });
+                              } as SideBarState);
                           }}
                           updateSelection={this.props.updateSelection}/>
                 <ReorderPopup reorderModalVisible={this.state.reorderModalVisible}

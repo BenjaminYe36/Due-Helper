@@ -2,11 +2,10 @@ import React from "react";
 import {Modal, Input, Select, Switch, DatePicker, Button, Checkbox, message} from "antd";
 import Util from "../Model & Util/Util";
 import ModelAPI, {CategoryWithColor, SubtaskInfo, TaskInfo} from "../Model & Util/ModelAPI";
-import moment from "moment";
+import dayjs from 'dayjs';
 import {DeleteOutlined, PlusOutlined, ReloadOutlined} from "@ant-design/icons";
 import {nanoid} from "nanoid";
 import {withTranslation, WithTranslation} from 'react-i18next';
-import 'moment/dist/locale/zh-cn';
 
 interface TaskPopupProps extends WithTranslation {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
@@ -63,7 +62,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                     availableDate: this.props.prefillTaskInfo.availableDate,
                     dueDate: this.props.prefillTaskInfo.dueDate,
                     subtaskList: this.props.prefillTaskInfo.subtaskList ? this.props.prefillTaskInfo.subtaskList : [],
-                });
+                } as TaskPopupState);
                 console.log('set prefilled state');
             }
         }
@@ -71,7 +70,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
             if (this.props.createNew) {
                 this.setState({
                     categoryName: (this.props.prefillCat === null ? null : "Cat-" + this.props.prefillCat),
-                });
+                } as TaskPopupState);
             }
         }
     }
@@ -79,36 +78,36 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
     updateCompleted = (checked: boolean) => {
         this.setState({
             completed: checked,
-        });
+        } as TaskPopupState);
     }
 
     updateCategoryName = (value: any) => {
         this.setState({
             categoryName: value,
-        });
+        } as TaskPopupState);
     }
 
     clearCategoryName = () => {
         this.setState({
             categoryName: null,
-        });
+        } as TaskPopupState);
     }
 
     updateDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({
             description: e.target.value,
-        });
+        } as TaskPopupState);
     }
 
     updateAvailableDate = (date: any, dateString: string) => {
         if (date !== null) {
             this.setState({
                 availableDate: date.toISOString(),
-            });
+            } as TaskPopupState);
         } else {
             this.setState({
                 availableDate: null,
-            });
+            } as TaskPopupState);
         }
     }
 
@@ -116,25 +115,25 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
         if (date !== null) {
             this.setState({
                 dueDate: date.toISOString(),
-            });
+            } as TaskPopupState);
         } else {
             this.setState({
                 dueDate: null,
-            });
+            } as TaskPopupState);
         }
     }
 
     updateSubtaskInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({
             subtaskInputVal: e.target.value
-        });
+        } as TaskPopupState);
     }
 
     toggleShowAddTaskInput = () => {
         this.setState({
             showAddTaskInput: !this.state.showAddTaskInput,
             subtaskInputVal: ''
-        });
+        } as TaskPopupState);
     }
 
     handleAddSubtask = () => {
@@ -151,13 +150,13 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
             subtaskList: [...this.state.subtaskList, newSubtask],
             subtaskInputVal: '',
             showAddTaskInput: false
-        });
+        } as TaskPopupState);
     }
 
     deleteSubtask = (id: string) => {
         this.setState({
             subtaskList: this.state.subtaskList.filter((subtask) => subtask.id !== id)
-        });
+        } as TaskPopupState);
     }
 
     updateSubtaskChecked = (id: string, checked: boolean) => {
@@ -170,7 +169,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
         });
         this.setState({
             subtaskList: newSubtaskList
-        });
+        } as TaskPopupState);
     }
 
     updateSubtaskDescription = (id: string, description: string) => {
@@ -183,7 +182,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
         });
         this.setState({
             subtaskList: newSubtaskList
-        });
+        } as TaskPopupState);
     }
 
     // Subtask component
@@ -257,12 +256,12 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
 
     render() {
         const {t} = this.props;
-        moment.locale('zh-cn');
+        dayjs.locale('zh-cn');
         return (
             <Modal
                 title={this.props.createNew ? t('task-popup.add-task') : t('task-popup.edit-task')}
                 centered
-                visible={this.props.taskModalVisible}
+                open={this.props.taskModalVisible}
                 width="1000px"
                 onOk={this.handleSubmit}
                 onCancel={this.props.handleCancel}
@@ -287,8 +286,8 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
 
                 <span>{t('task-popup.cat-label')}</span>
                 <Select placeholder={t('task-popup.cat-placeholder')}
-                        value={this.state.categoryName}
-                        dropdownMatchSelectWidth={false}
+                        value={this.state.categoryName as any}
+                        popupMatchSelectWidth={false}
                         showSearch
                         allowClear
                         onClear={this.clearCategoryName}
@@ -342,9 +341,9 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                 <span>{t('task-popup.available-label')}</span>
                 <DatePicker
                     onChange={this.updateAvailableDate}
-                    value={this.state.availableDate === null ? null : moment(this.state.availableDate)}
+                    value={this.state.availableDate === null ? null : dayjs(this.state.availableDate)}
                     showTime={{
-                        defaultValue: moment("00:00:00", "HH:mm:ss"),
+                        defaultValue: dayjs("00:00:00", "HH:mm:ss"),
                         format: "HH:mm"
                     }}
                     format={Util.getDateFormatString(navigator.language)}/>
@@ -354,9 +353,9 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
                 <span>{t('task-popup.due-label')}</span>
                 <DatePicker
                     onChange={this.updateDueDate}
-                    value={this.state.dueDate === null ? null : moment(this.state.dueDate)}
+                    value={this.state.dueDate === null ? null : dayjs(this.state.dueDate)}
                     showTime={{
-                        defaultValue: moment("23:59:59", "HH:mm:ss"),
+                        defaultValue: dayjs("23:59:59", "HH:mm:ss"),
                         format: "HH:mm"
                     }}
                     format={Util.getDateFormatString(navigator.language)}/>
