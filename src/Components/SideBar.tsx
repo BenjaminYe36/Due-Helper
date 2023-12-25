@@ -153,7 +153,7 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                 ];
                 const menuProps = {
                     items: contextMenuItems,
-                    onClick: (item) => this.handleContextMenu(item, cat)
+                    onClick: (item: MenuInfo) => this.handleContextMenu(item, cat)
                 }
                 const innerNode =
                     (<Dropdown menu={menuProps} trigger={['contextMenu']}>

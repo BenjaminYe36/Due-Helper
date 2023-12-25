@@ -13,7 +13,6 @@
 }
 
 .site-layout-background {
-    background: #f0f2f5;
     padding: 24px;
     min-height: 360px;
 }
@@ -21,6 +20,10 @@
 .main-title {
     font-size: 20px;
     margin-left: 42px;
+}
+
+.main-task-list-container {
+    padding-top: 15px;
 }
 
 [data-theme="dark"] .site-layout-sub-header-background {

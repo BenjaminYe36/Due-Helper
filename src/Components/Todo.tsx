@@ -146,7 +146,7 @@ class Todo extends React.Component<TodoProps, TodoState> {
         ];
         const menuProps = {
             items,
-            onClick: (item) => this.handleContextMenu(item, this.props.task.id)
+            onClick: (item: MenuInfo) => this.handleContextMenu(item, this.props.task.id)
         };
 
         return (

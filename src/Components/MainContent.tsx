@@ -1,5 +1,6 @@
 import React from "react";
 import Todo from "./Todo";
+import type {CollapseProps} from 'antd';
 import {Button, Collapse, Empty, Layout, Switch, Tooltip} from "antd";
 import ModelAPI, {CategoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
 import {PlusOutlined} from "@ant-design/icons";
@@ -23,7 +24,6 @@ interface MainContentState {
 }
 
 const {Content} = Layout;
-const {Panel} = Collapse;
 
 /**
  * Main content component on the right mainly to show a list of task items
@@ -103,14 +103,37 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
 
     render() {
         const {t} = this.props;
-        let taskListForEachCat: any[] = [];
+        let taskListForEachCat: Map<String, TaskInfo[]> = new Map();
         if (!this.props.selection.startsWith('Cat-') && this.state.groupedByCat) {
             for (let i = 0; i < this.props.category.length; i++) {
-                taskListForEachCat.push(this.props.taskList.filter((task) =>
-                    task.category.catName === this.props.category[i].catName));
+                const oneCatTaskList = this.props.taskList.filter((task) =>
+                    task.category.catName === this.props.category[i].catName);
+                // only set map value when a category has tasks under it
+                if (oneCatTaskList.length > 0) {
+                    taskListForEachCat.set(oneCatTaskList[0].category.catName, oneCatTaskList);
+                }
             }
             console.log(taskListForEachCat);
         }
+
+        // generate the collapse items
+        //@ts-ignore
+        const collapseItems: CollapseProps['items'] = Array.from(taskListForEachCat.keys())
+            .map((catName) => {
+                return {
+                    key: catName,
+                    label: catName,
+                    children:
+                        <ul style={{listStyleType: 'none'}}>
+                            {taskListForEachCat.get(catName)?.map((task: TaskInfo) =>
+                                <Todo key={task.id} task={task}
+                                      model={this.props.model}
+                                      refreshModel={this.props.refreshModel}
+                                      onEdit={this.showEditPopup}/>
+                            )}
+                        </ul>,
+                }
+            });
 
         return (
             <Content className="main-content">
@@ -138,26 +161,14 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
 
                     </h1>
 
-                    <div>
+                    <div className="main-task-list-container">
                         {/*List of Todos*/}
                         {this.props.taskList.length > 0 ?
                             (this.state.groupedByCat && !this.props.selection.startsWith('Cat-') ?
                                 <Collapse bordered={false}
-                                          defaultActiveKey={this.props.category.map(cat => cat.catName)}>
-                                    {this.props.category.map((cat, i) =>
-                                        taskListForEachCat[i].length > 0 ?
-                                            <Panel key={cat.catName} header={cat.catName}>
-                                                <ul style={{listStyleType: 'none'}}>
-                                                    {taskListForEachCat[i].map((task: TaskInfo) =>
-                                                        <Todo key={task.id} task={task}
-                                                              model={this.props.model}
-                                                              refreshModel={this.props.refreshModel}
-                                                              onEdit={this.showEditPopup}/>
-                                                    )}
-                                                </ul>
-                                            </Panel> : null
-                                    )}
-                                </Collapse>
+                                          items={collapseItems}
+                                          defaultActiveKey={this.props.category
+                                              .map(cat => cat.catName)}/>
                                 :
                                 <ul style={{listStyleType: 'none'}}>
                                     {this.props.taskList.map((task) =>

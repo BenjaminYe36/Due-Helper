@@ -90,6 +90,7 @@ class App extends Component<AppProps, AppStates> {
         console.log(offset);
         setTimeout(() => {
             console.log('timeout callback called');
+            // TODO Improve the logic that triggers the next update in tasks
             // @ts-ignore
             window.location.reload(false);
         }, offset);
