@@ -208,7 +208,7 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
     handleSubmit = () => {
         // Shared validations
         if (!Util.validateTaskInfo(this.state.categoryName, this.state.description,
-            this.state.availableDate, this.state.dueDate, this.state.completed)) {
+            this.state.availableDate, this.state.dueDate, this.state.completed, this.state.subtaskList)) {
             // not valid should stop here
             return;
         }

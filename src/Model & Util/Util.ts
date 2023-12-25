@@ -1,5 +1,5 @@
 import {message} from "antd";
-import {TaskInfo} from "./ModelAPI";
+import {SubtaskInfo, TaskInfo} from "./ModelAPI";
 import {BaseDirectory, readTextFile} from "@tauri-apps/api/fs";
 import i18n from '../i18n/config';
 
@@ -95,11 +95,12 @@ class Util {
                 minTime = Math.min(minTime, urgentDate.getTime());
             }
         }
-        return Math.min(maxDelay, minTime- curTime + 1000);
+        return Math.min(maxDelay, minTime - curTime + 1000);
     }
 
     static validateTaskInfo(category: string | null, description: string,
-                            availableDate: string | null, dueDate: string | null, completed: boolean): boolean {
+                            availableDate: string | null, dueDate: string | null, completed: boolean,
+                            subtaskList: SubtaskInfo[]): boolean {
         if (category === null) {
             // @ts-ignore
             message.warning(t('warn.must-choose-cat'));
@@ -121,7 +122,7 @@ class Util {
             message.warning(t('warn.available-after-due'));
             return false;
         }
-        if (completed && availableDate !== null
+        if ((completed || subtaskList.some((subtask) => subtask.completed)) && availableDate !== null
             && new Date().getTime() < new Date(availableDate).getTime()) {
             // @ts-ignore
             message.warning(t('warn.not-available-but-complete'));

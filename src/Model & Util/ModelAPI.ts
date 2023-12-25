@@ -140,7 +140,7 @@ class ModelAPI {
             console.log(this.category);
             return;
         }
-        if (!Util.validateTaskInfo(category.catName, description, availableDate, dueDate, completed)) {
+        if (!Util.validateTaskInfo(category.catName, description, availableDate, dueDate, completed, subtaskList)) {
             return;
         }
         let task: TaskInfo = {
@@ -166,7 +166,7 @@ class ModelAPI {
             message.warning(t('warn.no-id'));
             return;
         }
-        if (!Util.validateTaskInfo(category.catName, description, availableDate, dueDate, completed)) {
+        if (!Util.validateTaskInfo(category.catName, description, availableDate, dueDate, completed, subTaskList)) {
             return;
         }
         this.taskList[targetIndex] = {
