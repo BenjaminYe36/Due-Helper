@@ -27,7 +27,6 @@ interface AppProps extends WithTranslation {
 interface AppStates {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
-    filteredList: TaskInfo[]; // filtered and ordered list that correspond to the selection on sidebar menu
     selectionKey: string; // string representing the key of selected item in the sidebar menu
 }
 
@@ -44,7 +43,6 @@ class App extends Component<AppProps, AppStates> {
         this.state = {
             category: [],
             taskList: [],
-            filteredList: [],
             selectionKey: 'all-tasks',
         };
         this.model = new ModelAPI([], []);
@@ -106,57 +104,9 @@ class App extends Component<AppProps, AppStates> {
     // methods of calling the model to update view in this App
 
     refreshModel = () => {
-        let tmpList: TaskInfo[] = [];
-        switch (this.state.selectionKey) {
-            case 'all-tasks':
-                tmpList = this.model.getTaskList();
-                break;
-            case 'urgent':
-                tmpList = this.model.getTaskList().filter((task) => Util.isUrgent(task) && !task.completed);
-                break;
-            case 'current':
-                tmpList = this.model.getTaskList().filter((task) => Util.isAvailable(task));
-                break;
-            case 'future':
-                tmpList = this.model.getTaskList().filter((task) => !Util.isAvailable(task));
-                break;
-            default:
-                if (this.state.selectionKey.startsWith('Cat-')) {
-                    let filterName = this.state.selectionKey.substring(4);
-                    tmpList = this.model.getTaskList().filter((task) => task.category.catName === filterName);
-                }
-        }
-        // Sorting of filteredList by increasing DueDate
-        // First by due Date
-        tmpList.sort((a, b) => {
-            return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-        });
-        // Then by availability, not available yet tasks will to the last of the list
-        tmpList.sort((a, b) => {
-            let availA = Util.isAvailable(a);
-            let availB = Util.isAvailable(b);
-            if (availA === availB) {
-                return 0;
-            } else if (availA) {
-                return -1;
-            } else {
-                return 1;
-            }
-        });
-        // Last by completeness (completed tasks will be at the last of the list)
-        tmpList.sort((a, b) => {
-            if (a.completed === b.completed) {
-                return 0;
-            } else if (a.completed) {
-                return 1;
-            } else {
-                return -1;
-            }
-        });
         this.setState({
             category: this.model.getCat(),
             taskList: this.model.getTaskList(),
-            filteredList: tmpList,
         } as AppStates);
     }
 
@@ -179,7 +129,7 @@ class App extends Component<AppProps, AppStates> {
                             {
                                 this.state.selectionKey === "helpAndInfo" ?
                                     <HelpPage title={t('help-page.title')}/> :
-                                    <MainContent category={this.state.category} taskList={this.state.filteredList}
+                                    <MainContent category={this.state.category} taskList={this.state.taskList}
                                                  model={this.model} refreshModel={this.refreshModel}
                                                  selection={this.state.selectionKey}/>
                             }

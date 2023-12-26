@@ -6,10 +6,11 @@ import ModelAPI, {CategoryWithColor, TaskInfo} from "../Model & Util/ModelAPI";
 import {PlusOutlined} from "@ant-design/icons";
 import TaskPopup from "./TaskPopup";
 import {withTranslation, WithTranslation} from 'react-i18next';
+import Util from "../Model & Util/Util";
 
 interface MainContentProps extends WithTranslation {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
-    taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
+    taskList: TaskInfo[]; // array of TaskInfo of all tasks in the database
     model: ModelAPI; // Reference to the fake backend Api
     selection: string; // Selection on the sidebar menu
     refreshModel(): void; // callback to refresh from backend after modifying
@@ -103,6 +104,56 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
 
     render() {
         const {t} = this.props;
+
+        // Populate filtered task list based on category selection
+        let filteredList: TaskInfo[] = [];
+        switch (this.props.selection) {
+            case 'all-tasks':
+                filteredList = this.props.taskList;
+                break;
+            case 'urgent':
+                filteredList = this.props.taskList.filter((task) => Util.isUrgent(task) && !task.completed);
+                break;
+            case 'current':
+                filteredList = this.props.taskList.filter((task) => Util.isAvailable(task));
+                break;
+            case 'future':
+                filteredList = this.props.taskList.filter((task) => !Util.isAvailable(task));
+                break;
+            default:
+                if (this.props.selection.startsWith('Cat-')) {
+                    let filterName = this.props.selection.substring(4);
+                    filteredList = this.props.taskList.filter((task) => task.category.catName === filterName);
+                }
+        }
+        // Sorting of filteredList by increasing DueDate
+        // First by due Date
+        filteredList.sort((a, b) => {
+            return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        });
+        // Then by availability, not available yet tasks will to the last of the list
+        filteredList.sort((a, b) => {
+            let availA = Util.isAvailable(a);
+            let availB = Util.isAvailable(b);
+            if (availA === availB) {
+                return 0;
+            } else if (availA) {
+                return -1;
+            } else {
+                return 1;
+            }
+        });
+        // Last by completeness (completed tasks will be at the last of the list)
+        filteredList.sort((a, b) => {
+            if (a.completed === b.completed) {
+                return 0;
+            } else if (a.completed) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
+
         let taskListForEachCat: Map<String, TaskInfo[]> = new Map();
         if (!this.props.selection.startsWith('Cat-') && this.state.groupedByCat) {
             for (let i = 0; i < this.props.category.length; i++) {
@@ -163,7 +214,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
 
                     <div className="main-task-list-container">
                         {/*List of Todos*/}
-                        {this.props.taskList.length > 0 ?
+                        {filteredList.length > 0 ?
                             (this.state.groupedByCat && !this.props.selection.startsWith('Cat-') ?
                                 <Collapse bordered={false}
                                           items={collapseItems}
@@ -171,7 +222,7 @@ class MainContent extends React.Component<MainContentProps, MainContentState> {
                                               .map(cat => cat.catName)}/>
                                 :
                                 <ul style={{listStyleType: 'none'}}>
-                                    {this.props.taskList.map((task) =>
+                                    {filteredList.map((task) =>
                                         <Todo key={task.id} task={task}
                                               model={this.props.model}
                                               refreshModel={this.props.refreshModel}
