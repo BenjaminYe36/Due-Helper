@@ -29,7 +29,6 @@ interface AppStates {
     taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
     filteredList: TaskInfo[]; // filtered and ordered list that correspond to the selection on sidebar menu
     selectionKey: string; // string representing the key of selected item in the sidebar menu
-    language: string; // current language locale that should be used
 }
 
 const defaultTaskData = '{"category":[],"taskList":[]}';
@@ -47,7 +46,6 @@ class App extends Component<AppProps, AppStates> {
             taskList: [],
             filteredList: [],
             selectionKey: 'all-tasks',
-            language: i18n.language,
         };
         this.model = new ModelAPI([], []);
     }
@@ -67,9 +65,6 @@ class App extends Component<AppProps, AppStates> {
             });
         i18n.on('languageChanged', (lng) => {
             console.log(`language changed to ${lng}`);
-            this.setState({
-                language: lng
-            } as AppStates);
         });
         let language = await Settings.getLanguage();
         i18n.changeLanguage(language);
@@ -168,7 +163,7 @@ class App extends Component<AppProps, AppStates> {
     render() {
         const {t} = this.props;
         return (
-            <ConfigProvider locale={this.state.language.startsWith('zh') ? zhCN : enUS}>
+            <ConfigProvider locale={i18n.language.startsWith('zh') ? zhCN : enUS}>
                 <Layout style={{minHeight: "100vh", overflow: "auto"}}>
 
                     <SideBar category={this.state.category}

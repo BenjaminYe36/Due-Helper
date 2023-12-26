@@ -3,9 +3,11 @@ import {Modal, Input, Select, Switch, DatePicker, Button, Checkbox, message} fro
 import Util from "../Model & Util/Util";
 import ModelAPI, {CategoryWithColor, SubtaskInfo, TaskInfo} from "../Model & Util/ModelAPI";
 import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
 import {DeleteOutlined, PlusOutlined, ReloadOutlined} from "@ant-design/icons";
 import {nanoid} from "nanoid";
 import {withTranslation, WithTranslation} from 'react-i18next';
+import i18n from "i18next";
 
 interface TaskPopupProps extends WithTranslation {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
@@ -256,7 +258,13 @@ class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
 
     render() {
         const {t} = this.props;
-        dayjs.locale('zh-cn');
+        // For DatePicker localization
+        if (i18n.language.startsWith('en')) {
+            dayjs.locale('en');
+        } else if (i18n.language.startsWith('zh')) {
+            dayjs.locale('zh-cn');
+        }
+
         return (
             <Modal
                 title={this.props.createNew ? t('task-popup.add-task') : t('task-popup.edit-task')}
