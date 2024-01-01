@@ -68,12 +68,6 @@ class App extends Component<AppProps, AppStates> {
         i18n.changeLanguage(language);
     }
 
-    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<AppStates>, snapshot?: any) {
-        if (prevState.taskList !== this.state.taskList || prevState.selectionKey !== this.state.selectionKey) {
-            this.refreshModel();
-        }
-    }
-
     initializeModel = (obj: TaskData) => {
         this.model = new ModelAPI(obj.category, obj.taskList);
         this.model.writeToJson();

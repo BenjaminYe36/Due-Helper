@@ -78,10 +78,13 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
                     </div>
                 </Tooltip>
 
-                {this.state.displayColorPicker ? <div style={this.styles.popover}>
-                    <div style={this.styles.cover} onClick={this.handleClose}/>
-                    <SketchPicker color={this.props.color} onChange={this.handleChange} disableAlpha={true}/>
-                </div> : null}
+                {this.state.displayColorPicker ?
+                    <div style={this.styles.popover}>
+                        <div style={this.styles.cover} onClick={this.handleClose}/>
+                        <SketchPicker color={this.props.color} onChange={this.handleChange} disableAlpha={true}/>
+                    </div>
+                    : null
+                }
 
             </div>
         );

@@ -11,7 +11,7 @@ interface EditableTextCatProps extends WithTranslation {
 }
 
 interface EditableTextCatState {
-    toggle: boolean; // whether or not this component is editable or not (true means not editable)
+    toggle: boolean; // whether this component is editable or not (true means not editable)
     value: string; // current value in the input box
 }
 
@@ -62,7 +62,6 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
             this.props.model.replaceCatName(this.props.value, this.state.value);
             this.props.updateSelection('all-tasks');
             this.props.refreshModel();
-
         }
         if (isInvalid) {
             // revert back to original text
@@ -87,7 +86,7 @@ class EditableTextCat extends React.Component<EditableTextCatProps, EditableText
                 (<Input type="text"
                         value={this.state.value}
                         autoFocus
-                    // Select all when focused
+                        // Select all when focused
                         onFocus={(event) => {
                             event.target.select();
                         }}

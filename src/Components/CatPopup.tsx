@@ -38,7 +38,7 @@ class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
 
     componentDidUpdate(prevProps: Readonly<CatPopupProps>, prevState: Readonly<CatPopupState>, snapshot?: any) {
         if (!prevProps.catModalVisible && this.props.catModalVisible) {
-            // set auto focus when popup is displayed
+            // set autofocus when popup is displayed
             setTimeout(() => {
                 this.catInput.current!.focus({
                     cursor: 'end',
