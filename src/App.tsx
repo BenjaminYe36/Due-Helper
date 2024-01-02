@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Layout, ConfigProvider} from 'antd';
 import './App.css';
 import 'antd/dist/reset.css';
@@ -24,56 +24,48 @@ interface TaskData {
 interface AppProps extends WithTranslation {
 }
 
-interface AppStates {
-    category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
-    taskList: TaskInfo[]; // array of TaskInfo that represents a list of tasks user added under existing categories
-    selectionKey: string; // string representing the key of selected item in the sidebar menu
-}
-
 const defaultTaskData = '{"category":[],"taskList":[]}';
+
+let model: ModelAPI = new ModelAPI([], []);
 
 /**
  * The main application class of this task management software
  */
-class App extends Component<AppProps, AppStates> {
-    private model: ModelAPI;
+const App: React.FC<AppProps> = ({t}) => {
+    // array of strings that represents the user added categories for the tasks
+    const [category, setCategory] = useState<CategoryWithColor[]>([]);
+    // array of TaskInfo that represents a list of tasks user added under existing categories
+    const [taskList, setTaskList] = useState<TaskInfo[]>([]);
+    // string representing the key of selected item in the sidebar menu
+    const [selectionKey, setSelectionKey] = useState('all-tasks');
 
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            category: [],
-            taskList: [],
-            selectionKey: 'all-tasks',
-        };
-        this.model = new ModelAPI([], []);
-    }
-
-    async componentDidMount() {
+    useEffect(() => {
         readTextFile('Database/taskData.json', {dir: BaseDirectory.App})
             .then((contents) => {
                 console.log('found existing file');
                 let obj = JSON.parse(contents);
-                this.initializeModel(obj);
+                initializeModel(obj);
             })
             .catch((e) => {
                 // most likely file doesn't exist
                 console.log('no existing file found');
                 let obj = JSON.parse(defaultTaskData);
-                this.initializeModel(obj);
+                initializeModel(obj);
             });
         i18n.on('languageChanged', (lng) => {
             console.log(`language changed to ${lng}`);
         });
-        let language = await Settings.getLanguage();
-        i18n.changeLanguage(language);
-    }
+        Settings.getLanguage().then((language) => {
+            i18n.changeLanguage(language);
+        });
+    }, []);
 
-    initializeModel = (obj: TaskData) => {
-        this.model = new ModelAPI(obj.category, obj.taskList);
-        this.model.writeToJson();
-        this.refreshModel();
+    const initializeModel = (obj: TaskData) => {
+        model = new ModelAPI(obj.category, obj.taskList);
+        model.writeToJson();
+        refreshModel();
         // Set time out to refresh next update time (not available -> available, not urgent -> urgent)
-        let offset = Util.getTimeToNextUpdate(this.model.getTaskList());
+        let offset = Util.getTimeToNextUpdate(model.getTaskList());
         console.log(offset);
         setTimeout(() => {
             console.log('timeout callback called');
@@ -86,59 +78,50 @@ class App extends Component<AppProps, AppStates> {
 
     // methods relating to the sidebar menu states
 
-    updateSelectionKey = (key: string) => {
+    const updateSelectionKey = (key: string) => {
         console.log(`update select key called with ${key}`);
-        if (!key.startsWith('Cat') || (key.startsWith('Cat-') && this.model.hasCat(key.substring(4)))) {
-            this.setState({
-                selectionKey: key,
-            } as AppStates);
+        if (!key.startsWith('Cat') || (key.startsWith('Cat-') && model.hasCat(key.substring(4)))) {
+            setSelectionKey(key);
         }
-    }
+    };
 
     // methods of calling the model to update view in this App
 
-    refreshModel = () => {
-        this.setState({
-            category: this.model.getCat(),
-            taskList: this.model.getTaskList(),
-        } as AppStates);
-    }
+    const refreshModel = () => {
+        setCategory([...model.getCat()]);
+        setTaskList([...model.getTaskList()]);
+    };
 
-    render() {
-        const {t} = this.props;
-        return (
-            <ConfigProvider locale={i18n.language.startsWith('zh') ? zhCN : enUS}>
-                <Layout style={{minHeight: "100vh", overflow: "auto"}}>
+    return (
+        <ConfigProvider locale={i18n.language.startsWith('zh') ? zhCN : enUS}>
+            <Layout style={{minHeight: "100vh", overflow: "auto"}}>
 
-                    <SideBar category={this.state.category}
-                             model={this.model}
-                             selectionKey={this.state.selectionKey}
-                             refreshModel={this.refreshModel}
-                             updateSelection={this.updateSelectionKey}
-                    />
+                <SideBar category={category}
+                         model={model}
+                         selectionKey={selectionKey}
+                         refreshModel={refreshModel}
+                         updateSelection={updateSelectionKey}
+                />
 
-                    <Layout>
+                <Layout>
 
-                        <Scrollbars>
-                            {
-                                this.state.selectionKey === "helpAndInfo" ?
-                                    <HelpPage title={t('help-page.title')}/> :
-                                    <MainContent category={this.state.category} taskList={this.state.taskList}
-                                                 model={this.model} refreshModel={this.refreshModel}
-                                                 selection={this.state.selectionKey}/>
-                            }
-                        </Scrollbars>
-
-                    </Layout>
-
+                    <Scrollbars>
+                        {
+                            selectionKey === "helpAndInfo" ?
+                                <HelpPage title={t('help-page.title')}/> :
+                                <MainContent category={category} taskList={taskList}
+                                             model={model} refreshModel={refreshModel}
+                                             selection={selectionKey}/>
+                        }
+                    </Scrollbars>
 
                 </Layout>
-            </ConfigProvider>
-        );
-    }
 
 
-}
+            </Layout>
+        </ConfigProvider>
+    );
+};
 
 
 export default withTranslation()(App);

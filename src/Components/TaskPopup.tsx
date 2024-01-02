@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Modal, Input, Select, Switch, DatePicker, Button, Checkbox, message} from "antd";
 import Util from "../Model & Util/Util";
 import ModelAPI, {CategoryWithColor, SubtaskInfo, TaskInfo} from "../Model & Util/ModelAPI";
@@ -21,15 +21,10 @@ interface TaskPopupProps extends WithTranslation {
     handleCancel(): void; // callback for clicking cancel
 }
 
-interface TaskPopupState {
-    completed: boolean; // the completion state of this current task
-    categoryName: string | null; // the category name of this current task
-    description: string; // description of this current task
-    availableDate: string | null; // string in ISO date string
-    dueDate: string | null; // string in ISO date string
-    showAddTaskInput: boolean; // boolean that represents show the add task input or add task button
-    subtaskInputVal: string; // the description of the subtask in the add subtask input
-    subtaskList: SubtaskInfo[]; // subtaskList that is under this task, can be edited in this popup
+interface SubtaskProps {
+    subtask: SubtaskInfo;
+    subtaskList: SubtaskInfo[];
+    setSubtaskList: React.Dispatch<React.SetStateAction<SubtaskInfo[]>>;
 }
 
 const {Option} = Select;
@@ -38,338 +33,296 @@ const {TextArea} = Input;
 /**
  * A Popup to create new or edit existing tasks
  */
-class TaskPopup extends React.Component<TaskPopupProps, TaskPopupState> {
+const TaskPopup: React.FC<TaskPopupProps> = (props) => {
+    // the completion state of this current task
+    const [completed, setCompleted] = useState(false);
+    // the category name of this current task
+    const [categoryName, setCategoryName] = useState<string | null>(null);
+    // description of this current task
+    const [description, setDescription] = useState('');
+    // string in ISO date string
+    const [availableDate, setAvailableDate] = useState<string | null>(null);
+    // string in ISO date string
+    const [dueDate, setDueDate] = useState<string | null>(null);
+    // boolean that represents show the add task input or add task button
+    const [showAddTaskInput, setShowAddTaskInput] = useState(false);
+    // the description of the subtask in the add subtask input
+    const [subtaskInputVal, setSubtaskInputVal] = useState('');
+    // subtaskList that is under this task, can be edited in this popup
+    const [subtaskList, setSubtaskList] = useState<SubtaskInfo[]>([]);
 
-    constructor(props: TaskPopupProps) {
-        super(props);
-        this.state = {
-            completed: false,
-            categoryName: null,
-            description: '',
-            availableDate: null,
-            dueDate: null,
-            showAddTaskInput: false,
-            subtaskInputVal: '',
-            subtaskList: []
+    useEffect(() => {
+        if (!props.createNew && props.prefillTaskInfo !== null) {
+            setCompleted(props.prefillTaskInfo.completed);
+            setCategoryName('Cat-' + props.prefillTaskInfo.category.catName);
+            setDescription(props.prefillTaskInfo.description);
+            setAvailableDate(props.prefillTaskInfo.availableDate);
+            setDueDate(props.prefillTaskInfo.dueDate);
+            setSubtaskList(props.prefillTaskInfo.subtaskList ? props.prefillTaskInfo.subtaskList : []);
+            console.log('set prefilled state');
         }
-    }
+    }, [props.prefillTaskInfo]);
 
-    componentDidUpdate(prevProps: any) {
-        if (prevProps.prefillTaskInfo !== this.props.prefillTaskInfo) {
-            if (!this.props.createNew && this.props.prefillTaskInfo !== null) {
-                this.setState({
-                    completed: this.props.prefillTaskInfo.completed,
-                    categoryName: 'Cat-' + this.props.prefillTaskInfo.category.catName,
-                    description: this.props.prefillTaskInfo.description,
-                    availableDate: this.props.prefillTaskInfo.availableDate,
-                    dueDate: this.props.prefillTaskInfo.dueDate,
-                    subtaskList: this.props.prefillTaskInfo.subtaskList ? this.props.prefillTaskInfo.subtaskList : [],
-                } as TaskPopupState);
-                console.log('set prefilled state');
-            }
+    useEffect(() => {
+        if (props.createNew) {
+            setCategoryName(props.prefillCat === null ? null : "Cat-" + props.prefillCat);
         }
-        if (prevProps.prefillCat !== this.props.prefillCat) {
-            if (this.props.createNew) {
-                this.setState({
-                    categoryName: (this.props.prefillCat === null ? null : "Cat-" + this.props.prefillCat),
-                } as TaskPopupState);
-            }
-        }
-    }
+    }, [props.prefillCat]);
 
-    updateCompleted = (checked: boolean) => {
-        this.setState({
-            completed: checked,
-        } as TaskPopupState);
-    }
+    const updateCompleted = (checked: boolean) => {
+        setCompleted(checked);
+    };
 
-    updateCategoryName = (value: any) => {
-        this.setState({
-            categoryName: value,
-        } as TaskPopupState);
-    }
+    const updateCategoryName = (value: any) => {
+        setCategoryName(value);
+    };
 
-    clearCategoryName = () => {
-        this.setState({
-            categoryName: null,
-        } as TaskPopupState);
-    }
+    const clearCategoryName = () => {
+        setCategoryName(null);
+    };
 
-    updateDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        this.setState({
-            description: e.target.value,
-        } as TaskPopupState);
-    }
+    const updateDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setDescription(e.target.value);
+    };
 
-    updateAvailableDate = (date: any, dateString: string) => {
+    const updateAvailableDate = (date: any, dateString: string) => {
         if (date !== null) {
-            this.setState({
-                availableDate: date.toISOString(),
-            } as TaskPopupState);
+            setAvailableDate(date.toISOString());
         } else {
-            this.setState({
-                availableDate: null,
-            } as TaskPopupState);
+            setAvailableDate(null);
         }
-    }
+    };
 
-    updateDueDate = (date: any, dateString: string) => {
+    const updateDueDate = (date: any, dateString: string) => {
         if (date !== null) {
-            this.setState({
-                dueDate: date.toISOString(),
-            } as TaskPopupState);
+            setDueDate(date.toISOString());
         } else {
-            this.setState({
-                dueDate: null,
-            } as TaskPopupState);
+            setDueDate(null);
         }
-    }
+    };
 
-    updateSubtaskInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        this.setState({
-            subtaskInputVal: e.target.value
-        } as TaskPopupState);
-    }
+    const updateSubtaskInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setSubtaskInputVal(e.target.value);
+    };
 
-    toggleShowAddTaskInput = () => {
-        this.setState({
-            showAddTaskInput: !this.state.showAddTaskInput,
-            subtaskInputVal: ''
-        } as TaskPopupState);
-    }
+    const toggleShowAddTaskInput = () => {
+        setShowAddTaskInput(!showAddTaskInput);
+        setSubtaskInputVal('');
+    };
 
-    handleAddSubtask = () => {
-        if (this.state.subtaskInputVal.trim() === "") {
-            message.warning(this.props.t('warn.no-empty-desc'));
+    const handleAddSubtask = () => {
+        if (subtaskInputVal.trim() === "") {
+            message.warning(props.t('warn.no-empty-desc'));
             return;
         }
         let newSubtask: SubtaskInfo = {
             id: nanoid(),
-            description: this.state.subtaskInputVal,
+            description: subtaskInputVal,
             completed: false
         };
-        this.setState({
-            subtaskList: [...this.state.subtaskList, newSubtask],
-            subtaskInputVal: '',
-            showAddTaskInput: false
-        } as TaskPopupState);
+        setSubtaskList([...subtaskList, newSubtask]);
+        setSubtaskInputVal('');
+        setShowAddTaskInput(false);
+    };
+
+    const handleSubmit = () => {
+        // Shared validations
+        if (!Util.validateTaskInfo(categoryName, description,
+            availableDate, dueDate, completed, subtaskList)) {
+            // not valid should stop here
+            return;
+        }
+        const catWithColor: CategoryWithColor | undefined = props.category.find((cat =>
+            cat.catName === categoryName?.substring(4)));
+        if (props.createNew) { // New task popup
+            // @ts-ignore
+            props.model.addTask(catWithColor, description, availableDate,
+                dueDate, completed, subtaskList);
+            props.refreshModel();
+            reset();
+            props.handleOk();
+        } else { // Edit popup
+            // @ts-ignore
+            props.model.replaceTask(props.prefillTaskInfo.id,
+                // @ts-ignore
+                catWithColor, description,
+                availableDate, dueDate, completed, subtaskList);
+            props.refreshModel();
+            reset();
+            props.handleOk();
+        }
+    };
+
+    const reset = () => {
+        setCompleted(false);
+        setCategoryName(props.prefillCat === null ? null : "Cat-" + props.prefillCat);
+        setDescription('');
+        setAvailableDate(null);
+        setDueDate(null);
+        setShowAddTaskInput(false);
+        setSubtaskInputVal('');
+        setSubtaskList([]);
+    };
+
+    const {t} = props;
+    // For DatePicker localization
+    if (i18n.language.startsWith('en')) {
+        dayjs.locale('en');
+    } else if (i18n.language.startsWith('zh')) {
+        dayjs.locale('zh-cn');
     }
 
-    deleteSubtask = (id: string) => {
-        this.setState({
-            subtaskList: this.state.subtaskList.filter((subtask) => subtask.id !== id)
-        } as TaskPopupState);
-    }
+    return (
+        <Modal
+            title={props.createNew ? t('task-popup.add-task') : t('task-popup.edit-task')}
+            centered
+            open={props.taskModalVisible}
+            width="1000px"
+            onOk={handleSubmit}
+            onCancel={props.handleCancel}
+            okText={t('ok')}
+            cancelText={t('cancel')}
+        >
+            <Button icon={<ReloadOutlined/>} shape='round' onClick={reset} danger>
+                {t('task-popup.reset-all')}
+            </Button>
 
-    updateSubtaskChecked = (id: string, checked: boolean) => {
-        let newSubtaskList = this.state.subtaskList.map((subtask) => {
+            <br/>
+            <br/>
+
+            <span>{t('task-popup.complete-label')}</span>
+            <Switch checked={completed}
+                    checkedChildren={t('task-popup.completed')}
+                    unCheckedChildren={t('task-popup.incomplete')}
+                    onClick={updateCompleted}/>
+
+            <br/>
+            <br/>
+
+            <span>{t('task-popup.cat-label')}</span>
+            <Select placeholder={t('task-popup.cat-placeholder')}
+                    value={categoryName as any}
+                    popupMatchSelectWidth={false}
+                    showSearch
+                    allowClear
+                    onClear={clearCategoryName}
+                    onSelect={updateCategoryName}
+                    filterOption={(input, option) =>
+                        (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
+                    }>
+                {props.category.map((cat) =>
+                    <Option key={'Cat-' + cat.catName} value={'Cat-' + cat.catName}>{cat.catName}</Option>
+                )}
+            </Select>
+
+            <br/>
+            <br/>
+
+            <span>{t('task-popup.description')}</span>
+            <TextArea value={description} onChange={updateDescription} rows={3}/>
+
+            <br/>
+            <br/>
+
+            <span>{t('task-popup.subtask-label')}</span>
+            <div>
+                {
+                    subtaskList.map((subtask) =>
+                        <Subtask key={subtask.id} subtask={subtask} subtaskList={subtaskList}
+                                 setSubtaskList={setSubtaskList}/>)
+                }
+                {
+                    showAddTaskInput ?
+                        <div>
+                            <TextArea style={{marginBottom: "10px"}}
+                                      value={subtaskInputVal}
+                                      onChange={updateSubtaskInput}/>
+                            <br/>
+                            <Button className="button-right" type="primary" onClick={handleAddSubtask}>
+                                {t('task-popup.subtask-ok')}
+                            </Button>
+                            <Button className="button-right" onClick={toggleShowAddTaskInput}>
+                                {t('task-popup.subtask-cancel')}
+                            </Button>
+                        </div>
+                        :
+                        <Button icon={<PlusOutlined/>} onClick={toggleShowAddTaskInput}>
+                            {t('task-popup.add-subtask')}
+                        </Button>
+                }
+            </div>
+
+            <br/>
+
+            <span>{t('task-popup.available-label')}</span>
+            <DatePicker
+                onChange={updateAvailableDate}
+                value={availableDate === null ? null : dayjs(availableDate)}
+                showTime={{
+                    defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+                    format: "HH:mm"
+                }}
+                format={Util.getDateFormatString(navigator.language)}/>
+            <br/>
+            <br/>
+
+            <span>{t('task-popup.due-label')}</span>
+            <DatePicker
+                onChange={updateDueDate}
+                value={dueDate === null ? null : dayjs(dueDate)}
+                showTime={{
+                    defaultValue: dayjs("23:59:59", "HH:mm:ss"),
+                    format: "HH:mm"
+                }}
+                format={Util.getDateFormatString(navigator.language)}/>
+        </Modal>
+    );
+};
+
+// Subtask component (Special for TaskPopup only)
+const Subtask: React.FC<SubtaskProps> = (props) => {
+    const updateSubtaskChecked = (id: string, checked: boolean) => {
+        const newSubtaskList = props.subtaskList.map((subtask) => {
             if (subtask.id === id) {
                 return {...subtask, completed: checked};
             } else {
                 return subtask;
             }
         });
-        this.setState({
-            subtaskList: newSubtaskList
-        } as TaskPopupState);
-    }
+        props.setSubtaskList(newSubtaskList);
+    };
 
-    updateSubtaskDescription = (id: string, description: string) => {
-        let newSubtaskList = this.state.subtaskList.map((subtask) => {
+    const updateSubtaskDescription = (id: string, description: string) => {
+        const newSubtaskList = props.subtaskList.map((subtask) => {
             if (subtask.id === id) {
                 return {...subtask, description: description};
             } else {
                 return subtask;
             }
         });
-        this.setState({
-            subtaskList: newSubtaskList
-        } as TaskPopupState);
-    }
+        props.setSubtaskList(newSubtaskList);
+    };
 
-    // Subtask component
-    Subtask = (props: { subtask: SubtaskInfo }) => {
-        return (
-            <div className="center-subtask">
-                <Checkbox className="todo-checkbox" checked={props.subtask.completed}
-                          onChange={(e) => {
-                              this.updateSubtaskChecked(props.subtask.id, e.target.checked);
-                          }}/>
-                <TextArea style={{width: '50%', marginRight: '10px'}} size="small" value={props.subtask.description}
-                          onChange={(e) => {
-                              this.updateSubtaskDescription(props.subtask.id, e.target.value);
-                          }}/>
-                <Button shape="circle" icon={<DeleteOutlined/>} danger
-                        onClick={() => {
-                            this.deleteSubtask(props.subtask.id);
-                        }}/>
-            </div>
-        );
-    }
+    const deleteSubtask = (id: string) => {
+        props.setSubtaskList(props.subtaskList.filter((subtask) => subtask.id !== id));
+    };
 
-    handleSubmit = () => {
-        // Shared validations
-        if (!Util.validateTaskInfo(this.state.categoryName, this.state.description,
-            this.state.availableDate, this.state.dueDate, this.state.completed, this.state.subtaskList)) {
-            // not valid should stop here
-            return;
-        }
-
-        let catWithColor: CategoryWithColor | undefined = this.props.category.find((cat =>
-            cat.catName === this.state.categoryName?.substring(4)));
-        let completed = this.state.completed;
-        // handle subtask logic with main task completion
-        if (this.state.subtaskList.length > 0) {
-            // if all subtask complete -> main task complete, else main task not complete
-            completed = this.state.subtaskList.filter((subtask) => !subtask.completed).length === 0;
-        }
-        if (this.props.createNew) { // New task popup
-            // @ts-ignore
-            this.props.model.addTask(catWithColor, this.state.description, this.state.availableDate,
-                this.state.dueDate, completed, this.state.subtaskList);
-            this.props.refreshModel();
-            this.reset();
-            this.props.handleOk();
-        } else { // Edit popup
-            // @ts-ignore
-            this.props.model.replaceTask(this.props.prefillTaskInfo.id,
-                // @ts-ignore
-                catWithColor, this.state.description,
-                // @ts-ignore
-                this.state.availableDate, this.state.dueDate, completed, this.state.subtaskList);
-            this.props.refreshModel();
-            this.reset();
-            this.props.handleOk();
-        }
-    }
-
-    reset = () => {
-        this.setState({
-            completed: false,
-            categoryName: (this.props.prefillCat === null ? null : "Cat-" + this.props.prefillCat),
-            description: '',
-            availableDate: null,
-            dueDate: null,
-            showAddTaskInput: false,
-            subtaskInputVal: '',
-            subtaskList: []
-        });
-    }
-
-    render() {
-        const {t} = this.props;
-        // For DatePicker localization
-        if (i18n.language.startsWith('en')) {
-            dayjs.locale('en');
-        } else if (i18n.language.startsWith('zh')) {
-            dayjs.locale('zh-cn');
-        }
-
-        return (
-            <Modal
-                title={this.props.createNew ? t('task-popup.add-task') : t('task-popup.edit-task')}
-                centered
-                open={this.props.taskModalVisible}
-                width="1000px"
-                onOk={this.handleSubmit}
-                onCancel={this.props.handleCancel}
-                okText={t('ok')}
-                cancelText={t('cancel')}
-            >
-                <Button icon={<ReloadOutlined/>} shape='round' onClick={this.reset} danger>
-                    {t('task-popup.reset-all')}
-                </Button>
-
-                <br/>
-                <br/>
-
-                <span>{t('task-popup.complete-label')}</span>
-                <Switch checked={this.state.completed}
-                        checkedChildren={t('task-popup.completed')}
-                        unCheckedChildren={t('task-popup.incomplete')}
-                        onClick={this.updateCompleted}/>
-
-                <br/>
-                <br/>
-
-                <span>{t('task-popup.cat-label')}</span>
-                <Select placeholder={t('task-popup.cat-placeholder')}
-                        value={this.state.categoryName as any}
-                        popupMatchSelectWidth={false}
-                        showSearch
-                        allowClear
-                        onClear={this.clearCategoryName}
-                        onSelect={this.updateCategoryName}
-                        filterOption={(input, option) =>
-                            (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
-                        }>
-                    {this.props.category.map((cat) =>
-                        <Option key={'Cat-' + cat.catName} value={'Cat-' + cat.catName}>{cat.catName}</Option>
-                    )}
-                </Select>
-
-                <br/>
-                <br/>
-
-                <span>{t('task-popup.description')}</span>
-                <TextArea value={this.state.description} onChange={this.updateDescription} rows={3}/>
-
-                <br/>
-                <br/>
-
-                <span>{t('task-popup.subtask-label')}</span>
-                <div>
-                    {
-                        this.state.subtaskList.map((subtask) =>
-                            <this.Subtask key={subtask.id} subtask={subtask}/>)
-                    }
-                    {
-                        this.state.showAddTaskInput ?
-                            <div>
-                                <TextArea style={{marginBottom: "10px"}}
-                                          value={this.state.subtaskInputVal}
-                                          onChange={this.updateSubtaskInput}/>
-                                <br/>
-                                <Button className="button-right" type="primary" onClick={this.handleAddSubtask}>
-                                    {t('task-popup.subtask-ok')}
-                                </Button>
-                                <Button className="button-right" onClick={this.toggleShowAddTaskInput}>
-                                    {t('task-popup.subtask-cancel')}
-                                </Button>
-                            </div>
-                            :
-                            <Button icon={<PlusOutlined/>} onClick={this.toggleShowAddTaskInput}>
-                                {t('task-popup.add-subtask')}
-                            </Button>
-                    }
-                </div>
-
-                <br/>
-
-                <span>{t('task-popup.available-label')}</span>
-                <DatePicker
-                    onChange={this.updateAvailableDate}
-                    value={this.state.availableDate === null ? null : dayjs(this.state.availableDate)}
-                    showTime={{
-                        defaultValue: dayjs("00:00:00", "HH:mm:ss"),
-                        format: "HH:mm"
-                    }}
-                    format={Util.getDateFormatString(navigator.language)}/>
-                <br/>
-                <br/>
-
-                <span>{t('task-popup.due-label')}</span>
-                <DatePicker
-                    onChange={this.updateDueDate}
-                    value={this.state.dueDate === null ? null : dayjs(this.state.dueDate)}
-                    showTime={{
-                        defaultValue: dayjs("23:59:59", "HH:mm:ss"),
-                        format: "HH:mm"
-                    }}
-                    format={Util.getDateFormatString(navigator.language)}/>
-            </Modal>
-        );
-    }
-}
+    return (
+        <div className="center-subtask">
+            <Checkbox className="todo-checkbox" checked={props.subtask.completed}
+                      onChange={(e) => {
+                          updateSubtaskChecked(props.subtask.id, e.target.checked);
+                      }}/>
+            <TextArea style={{width: '50%', marginRight: '10px'}} size="small" value={props.subtask.description}
+                      onChange={(e) => {
+                          updateSubtaskDescription(props.subtask.id, e.target.value);
+                      }}/>
+            <Button shape="circle" icon={<DeleteOutlined/>} danger
+                    onClick={() => {
+                        deleteSubtask(props.subtask.id);
+                    }}/>
+        </div>
+    );
+};
 
 export default withTranslation()(TaskPopup);

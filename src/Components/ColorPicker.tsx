@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import reactCSS from 'reactcss';
 import {SketchPicker} from 'react-color';
 import {Tooltip} from 'antd';
@@ -9,86 +9,74 @@ interface ColorPickerProps extends WithTranslation {
     onChangeColor(color: any): void; // callback to change color of this color picker
 }
 
-interface ColorPickerState {
-    displayColorPicker: boolean; // the visibility of the actual color picker part
-}
+
+const colorPickerStyles: any = reactCSS({
+    'default': {
+        swatch: {
+            marginTop: '2.7px',
+            padding: '5px',
+            background: '#fff',
+            borderRadius: '1px',
+            boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+            display: 'inline-block',
+            cursor: 'pointer',
+        },
+        popover: {
+            position: 'absolute',
+            zIndex: '2',
+        },
+        cover: {
+            position: 'fixed',
+            top: '0px',
+            right: '0px',
+            bottom: '0px',
+            left: '0px',
+        },
+    },
+});
 
 /**
  * A Color picker using react-color component
  */
-class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
-    private styles: any;
+const ColorPicker: React.FC<ColorPickerProps> = ({t, color, onChangeColor}) => {
+    // the visibility of the actual color picker part
+    const [showColorPicker, setShowColorPicker] = useState(false);
 
-    constructor(props: ColorPickerProps) {
-        super(props);
-        this.state = {
-            displayColorPicker: false,
-        };
-        this.styles = reactCSS({
-            'default': {
-                swatch: {
-                    marginTop: '2.7px',
-                    padding: '5px',
-                    background: '#fff',
-                    borderRadius: '1px',
-                    boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-                    display: 'inline-block',
-                    cursor: 'pointer',
-                },
-                popover: {
-                    position: 'absolute',
-                    zIndex: '2',
-                },
-                cover: {
-                    position: 'fixed',
-                    top: '0px',
-                    right: '0px',
-                    bottom: '0px',
-                    left: '0px',
-                },
-            },
-        });
-    }
-
-    handleClick = () => {
-        this.setState({displayColorPicker: !this.state.displayColorPicker});
+    const handleClick = () => {
+        setShowColorPicker(!showColorPicker);
     };
 
-    handleClose = () => {
-        this.setState({displayColorPicker: false});
+    const handleClose = () => {
+        setShowColorPicker(false);
     };
 
-    handleChange = (color: any) => {
-        this.props.onChangeColor(color);
+    const handleChange = (color: any) => {
+        onChangeColor(color);
     };
 
-    render() {
-        const {t} = this.props;
+    return (
+        <div>
+            <Tooltip title={t('cat-popup.pick-tag-color')}>
+                <div style={colorPickerStyles.swatch} onClick={handleClick}>
+                    <div style={{
+                        width: '17px',
+                        height: '17px',
+                        borderRadius: '2px',
+                        background: color,
+                    }}/>
+                </div>
+            </Tooltip>
 
-        return (
-            <div>
-                <Tooltip title={t('cat-popup.pick-tag-color')}>
-                    <div style={this.styles.swatch} onClick={this.handleClick}>
-                        <div style={{
-                            width: '17px',
-                            height: '17px',
-                            borderRadius: '2px',
-                            background: this.props.color,
-                        }}/>
-                    </div>
-                </Tooltip>
+            {showColorPicker ?
+                <div style={colorPickerStyles.popover}>
+                    <div style={colorPickerStyles.cover} onClick={handleClose}/>
+                    <SketchPicker color={color} onChange={handleChange} disableAlpha={true}/>
+                </div>
+                : null
+            }
 
-                {this.state.displayColorPicker ?
-                    <div style={this.styles.popover}>
-                        <div style={this.styles.cover} onClick={this.handleClose}/>
-                        <SketchPicker color={this.props.color} onChange={this.handleChange} disableAlpha={true}/>
-                    </div>
-                    : null
-                }
-
-            </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 export default withTranslation()(ColorPicker);

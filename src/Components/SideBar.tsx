@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, Dropdown, Layout, Menu, Modal} from 'antd';
 import type {MenuProps} from 'antd';
 import ModelAPI, {CategoryWithColor} from "../Model & Util/ModelAPI";
@@ -24,12 +24,6 @@ interface SideBarProps extends WithTranslation {
     updateSelection(key: string): void; // callback for updating selected key value in the side menu
 }
 
-interface SideBarState {
-    newCatModalVisible: boolean; // boolean representing the visibility of the modal for adding new Categories
-    editCatModalVisible: boolean; // boolean representing the visibility of the modal for editing Categories
-    reorderModalVisible: boolean; // boolean representing the visibility of the modal for reordering Categories
-    prefillCat: CategoryWithColor | null; // prefilled data for edit category popup
-}
 
 const {Sider} = Layout;
 const {confirm} = Modal;
@@ -37,58 +31,39 @@ const {confirm} = Modal;
 /**
  * Sidebar of the main app, consists of all tasks, Time filtered views, and user created categories
  */
-class SideBar extends React.Component<SideBarProps, SideBarState> {
-
-    constructor(props: SideBarProps) {
-        super(props);
-        this.state = {
-            newCatModalVisible: false,
-            editCatModalVisible: false,
-            reorderModalVisible: false,
-            prefillCat: null,
-        };
-    }
+const SideBar: React.FC<SideBarProps> = (props) => {
+    // boolean representing the visibility of the modal for adding new Categories
+    const [newCatModalVisible, setNewCatModalVisible] = useState(false);
+    // boolean representing the visibility of the modal for editing Categories
+    const [editCatModalVisible, setEditCatModalVisible] = useState(false);
+    // boolean representing the visibility of the modal for reordering Categories
+    const [reorderCatModalVisible, setReorderCatModalVisible] = useState(false);
+    // prefilled data for edit category popup
+    const [prefillCat, setPrefillCat] = useState<CategoryWithColor | null>(null);
 
     // NewCatModal callback related functions
-
-    showNewCatModal = () => {
-        this.setNewCatModalVisible(true);
-    }
-
-    setNewCatModalVisible = (visible: boolean) => {
-        this.setState({
-            newCatModalVisible: visible,
-        } as SideBarState);
-    }
+    const showNewCatModal = () => {
+        setNewCatModalVisible(true);
+    };
 
     // EditCatModal callback related functions
-
-    showEditPopup = (cat: CategoryWithColor) => {
-        this.setState({
-            prefillCat: cat,
-        } as SideBarState);
-        this.setEditCatModalVisible(true);
-    }
-
-    setEditCatModalVisible = (visible: boolean) => {
-        this.setState({
-            editCatModalVisible: visible,
-        } as SideBarState);
-    }
+    const showEditCatModal = (cat: CategoryWithColor) => {
+        setPrefillCat(cat);
+        setEditCatModalVisible(true);
+    };
 
     // Delete popup confirm
 
-    showDeleteConfirm = (cat: CategoryWithColor) => {
-        let handleConfirm = this.handleConfirm;
+    const showDeleteConfirm = (cat: CategoryWithColor) => {
         confirm({
-            title: <span>{this.props.t('irr-warning')}<br/>
-                {this.props.t('delete-cat-confirm')}: {`[ ${cat.catName} ]?`}
+            title: <span>{props.t('irr-warning')}<br/>
+                {props.t('delete-cat-confirm')}: {`[ ${cat.catName} ]?`}
                    </span>,
             icon: <ExclamationCircleOutlined style={{color: "red"}}/>,
-            content: this.props.t('delete-cat-warning'),
-            okText: this.props.t('yes'),
+            content: props.t('delete-cat-warning'),
+            okText: props.t('yes'),
             okType: 'danger',
-            cancelText: this.props.t('no'),
+            cancelText: props.t('no'),
             width: 800,
 
             onOk() {
@@ -104,57 +79,52 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
 
     // ReorderModal callback related functions
 
-    showReorderModal = () => {
-        this.setReorderModalVisible(true);
-    }
-
-    setReorderModalVisible = (visible: boolean) => {
-        this.setState({
-            reorderModalVisible: visible,
-        } as SideBarState);
-    }
+    const showReorderCatModal = () => {
+        setReorderCatModalVisible(true);
+    };
 
     // Method that deals with delete confirm
 
-    handleConfirm = (name: string) => {
-        this.props.model.deleteCat(name);
-        this.props.updateSelection("all-tasks");
-        this.props.refreshModel();
-    }
+    const handleConfirm = (name: string) => {
+        props.model.deleteCat(name);
+        props.updateSelection("all-tasks");
+        props.refreshModel();
+    };
 
     // Context Menu handle function
 
-    handleContextMenu = (menuInfo: MenuInfo, cat: CategoryWithColor) => {
+    const handleContextMenu = (menuInfo: MenuInfo, cat: CategoryWithColor) => {
         console.log(menuInfo);
         if (menuInfo.key === "Context-Edit") {
             console.log('should pop up edit');
-            this.showEditPopup(cat);
+            showEditCatModal(cat);
         } else if (menuInfo.key === "Context-Del") {
             console.log('should pop up delete confirm');
-            this.showDeleteConfirm(cat);
+            showDeleteConfirm(cat);
         }
         console.log(cat);
-    }
+    };
 
-    getMenuItems(): MenuProps["items"] {
-        return this.props.category.map((cat) => {
-                const contextMenuItems: MenuProps['items'] = [
-                    {
-                        label: this.props.t('edit'),
-                        key: "Context-Edit",
-                        icon: <EditTwoTone twoToneColor='#8c8c8c'/>
-                    },
-                    {
-                        label: this.props.t('delete'),
-                        key: "Context-Del",
-                        icon: <DeleteOutlined/>,
-                        danger: true
-                    }
-                ];
+    const getMenuItems = (): MenuProps["items"] => {
+        const contextMenuItems: MenuProps['items'] = [
+            {
+                label: props.t('edit'),
+                key: "Context-Edit",
+                icon: <EditTwoTone twoToneColor='#8c8c8c'/>
+            },
+            {
+                label: props.t('delete'),
+                key: "Context-Del",
+                icon: <DeleteOutlined/>,
+                danger: true
+            }
+        ];
+
+        return props.category.map((cat) => {
                 const menuProps = {
                     items: contextMenuItems,
-                    onClick: (item: MenuInfo) => this.handleContextMenu(item, cat)
-                }
+                    onClick: (item: MenuInfo) => handleContextMenu(item, cat)
+                };
                 const innerNode =
                     (<Dropdown menu={menuProps} trigger={['contextMenu']}>
                         <div>
@@ -175,134 +145,130 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                             </div>
                             <EditableTextCat
                                 value={cat.catName}
-                                model={this.props.model}
-                                refreshModel={this.props.refreshModel}
-                                updateSelection={this.props.updateSelection}
+                                model={props.model}
+                                refreshModel={props.refreshModel}
+                                updateSelection={props.updateSelection}
                             />
                         </div>
                     </Dropdown>);
                 return ({label: innerNode, key: `Cat-${cat.catName}`});
             }
         );
-    }
+    };
 
-    render() {
-        const {t} = this.props;
-        const items: MenuProps['items'] = [
-            // First part: All Tasks View
-            {
-                label: t('side-bar.all-tasks'),
-                key: "all-tasks",
-                icon: <FileSearchOutlined style={{color: '#d9d9d9'}}/>
-            },
-            // Second part: Time Filtered Views
-            {
-                label: `[${t('side-bar.tasks-by-time')}]`,
-                key: "byTime",
-                type: "group",
-                children: [
-                    {
-                        label: t('side-bar.urgent'),
-                        key: "urgent",
-                        icon: <ExclamationCircleTwoTone twoToneColor='#cf1322'/>
-                    },
-                    {
-                        label: t('side-bar.current'),
-                        key: "current",
-                        icon: <CarryOutTwoTone twoToneColor='#faad14'/>
-                    },
-                    {
-                        label: t('side-bar.future'),
-                        key: "future",
-                        icon: <ClockCircleTwoTone twoToneColor='#a0d911'/>
-                    }
-                ]
-            },
-            // Third Part: User added categories
-            {
-                label: `[${t('side-bar.cat')}]`,
-                key: "byUserCat",
-                type: "group",
-                children: this.props.category.length > 0 ?
-                    this.getMenuItems() :
-                    [{
-                        label: <span style={{fontStyle: "italic"}}>{t('nothing')}</span>,
-                        key: "nothingYet",
-                        disabled: true
-                    }]
-            },
-            // Forth Part: Settings & Help
-            {
-                label: `[${t('side-bar.settings-and-help')}]`,
-                key: "settingsGroup",
-                type: "group",
-                children: [
-                    {
-                        label: t('side-bar.settings-and-help'),
-                        key: "helpAndInfo",
-                        icon: <InfoCircleTwoTone/>
-                    }
-                ]
-            }
-        ];
+    const {t} = props;
+    const items: MenuProps['items'] = [
+        // First part: All Tasks View
+        {
+            label: t('side-bar.all-tasks'),
+            key: "all-tasks",
+            icon: <FileSearchOutlined style={{color: '#d9d9d9'}}/>
+        },
+        // Second part: Time Filtered Views
+        {
+            label: `[${t('side-bar.tasks-by-time')}]`,
+            key: "byTime",
+            type: "group",
+            children: [
+                {
+                    label: t('side-bar.urgent'),
+                    key: "urgent",
+                    icon: <ExclamationCircleTwoTone twoToneColor='#cf1322'/>
+                },
+                {
+                    label: t('side-bar.current'),
+                    key: "current",
+                    icon: <CarryOutTwoTone twoToneColor='#faad14'/>
+                },
+                {
+                    label: t('side-bar.future'),
+                    key: "future",
+                    icon: <ClockCircleTwoTone twoToneColor='#a0d911'/>
+                }
+            ]
+        },
+        // Third Part: User added categories
+        {
+            label: `[${t('side-bar.cat')}]`,
+            key: "byUserCat",
+            type: "group",
+            children: props.category.length > 0 ?
+                getMenuItems() :
+                [{
+                    label: <span style={{fontStyle: "italic"}}>{t('nothing')}</span>,
+                    key: "nothingYet",
+                    disabled: true
+                }]
+        },
+        // Forth Part: Settings & Help
+        {
+            label: `[${t('side-bar.settings-and-help')}]`,
+            key: "settingsGroup",
+            type: "group",
+            children: [
+                {
+                    label: t('side-bar.settings-and-help'),
+                    key: "helpAndInfo",
+                    icon: <InfoCircleTwoTone/>
+                }
+            ]
+        }
+    ];
 
-        return (
-            <Sider
-                breakpoint="lg"
-                collapsedWidth="0"
-                width="250px"
-                onBreakpoint={broken => {
-                    console.log(broken);
-                }}
-                onCollapse={(collapsed, type) => {
-                    console.log(collapsed, type);
-                }}
-            >
-                <div className="logo"/>
-                <div className="modifyCatButtons" style={{textAlign: 'center'}}>
-                    <Button type="primary" shape="round"
-                            icon={<PlusOutlined/>}
-                            onClick={this.showNewCatModal}>{t('side-bar.new-cat')}</Button>
-                    <br/>
-                    <Button style={{marginTop: "10px"}} shape="round"
-                            onClick={this.showReorderModal}>{t('side-bar.reorder')}</Button>
-                </div>
-                <Menu theme="dark" mode="inline"
-                      selectedKeys={[this.props.selectionKey]}
-                      onClick={(item) => this.props.updateSelection(item.key)}
-                      items={items}/>
-                {/*New Cat Popup*/}
-                <CatPopup catModalVisible={this.state.newCatModalVisible}
-                          model={this.props.model}
-                          createNew={true}
-                          prefillCat={null}
-                          refreshModel={this.props.refreshModel}
-                          handleCatModalOk={() => this.setNewCatModalVisible(false)}
-                          handleCatModalCancel={() => this.setNewCatModalVisible(false)}
-                          updateSelection={this.props.updateSelection}/>
-                {/*Edit Cat Popup*/}
-                <CatPopup catModalVisible={this.state.editCatModalVisible}
-                          model={this.props.model}
-                          createNew={false}
-                          prefillCat={this.state.prefillCat}
-                          refreshModel={this.props.refreshModel}
-                          handleCatModalOk={() => this.setEditCatModalVisible(false)}
-                          handleCatModalCancel={() => {
-                              this.setEditCatModalVisible(false);
-                              this.setState({
-                                  prefillCat: null,
-                              } as SideBarState);
-                          }}
-                          updateSelection={this.props.updateSelection}/>
-                <ReorderPopup reorderModalVisible={this.state.reorderModalVisible}
-                              category={this.props.category}
-                              model={this.props.model}
-                              refreshModel={this.props.refreshModel}
-                              handleReorderModalOk={() => this.setReorderModalVisible(false)}
-                              handleReorderModalCancel={() => this.setReorderModalVisible(false)}/>
-            </Sider>
-        );
-    }
-}
+    return (
+        <Sider
+            breakpoint="lg"
+            collapsedWidth="0"
+            width="250px"
+            onBreakpoint={broken => {
+                console.log(broken);
+            }}
+            onCollapse={(collapsed, type) => {
+                console.log(collapsed, type);
+            }}
+        >
+            <div className="logo"/>
+            <div className="modifyCatButtons" style={{textAlign: 'center'}}>
+                <Button type="primary" shape="round"
+                        icon={<PlusOutlined/>}
+                        onClick={showNewCatModal}>{t('side-bar.new-cat')}</Button>
+                <br/>
+                <Button style={{marginTop: "10px"}} shape="round"
+                        onClick={showReorderCatModal}>{t('side-bar.reorder')}</Button>
+            </div>
+            <Menu theme="dark" mode="inline"
+                  selectedKeys={[props.selectionKey]}
+                  onClick={(item) => props.updateSelection(item.key)}
+                  items={items}/>
+            {/*New Cat Popup*/}
+            <CatPopup catModalVisible={newCatModalVisible}
+                      model={props.model}
+                      createNew={true}
+                      prefillCat={null}
+                      refreshModel={props.refreshModel}
+                      handleCatModalOk={() => setNewCatModalVisible(false)}
+                      handleCatModalCancel={() => setNewCatModalVisible(false)}
+                      updateSelection={props.updateSelection}/>
+            {/*Edit Cat Popup*/}
+            <CatPopup catModalVisible={editCatModalVisible}
+                      model={props.model}
+                      createNew={false}
+                      prefillCat={prefillCat}
+                      refreshModel={props.refreshModel}
+                      handleCatModalOk={() => setEditCatModalVisible(false)}
+                      handleCatModalCancel={() => {
+                          setEditCatModalVisible(false);
+                          setPrefillCat(null);
+                      }}
+                      updateSelection={props.updateSelection}/>
+            <ReorderPopup reorderModalVisible={reorderCatModalVisible}
+                          category={props.category}
+                          model={props.model}
+                          refreshModel={props.refreshModel}
+                          handleReorderModalOk={() => setReorderCatModalVisible(false)}
+                          handleReorderModalCancel={() => setReorderCatModalVisible(false)}/>
+        </Sider>
+    );
+};
 
 export default withTranslation()(SideBar);

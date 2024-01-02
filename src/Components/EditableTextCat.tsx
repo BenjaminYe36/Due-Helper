@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Input, message} from "antd";
 import ModelAPI from "../Model & Util/ModelAPI";
 import {withTranslation, WithTranslation} from 'react-i18next';
@@ -10,92 +10,72 @@ interface EditableTextCatProps extends WithTranslation {
     updateSelection(key: string): void; // callback for updating selected key value in the side menu
 }
 
-interface EditableTextCatState {
-    toggle: boolean; // whether this component is editable or not (true means not editable)
-    value: string; // current value in the input box
-}
 
 /**
- * A component with editable inner text by double clicking to toggle to edit
+ * A component with editable inner text by double-clicking to toggle to edit
  */
-class EditableTextCat extends React.Component<EditableTextCatProps, EditableTextCatState> {
+const EditableTextCat: React.FC<EditableTextCatProps> = (props) => {
+    // whether this component is editable or not
+    const [isEditable, setIsEditable] = useState(false);
+    // current value in the input box
+    const [value, setValue] = useState(props.value);
 
-    constructor(props: EditableTextCatProps) {
-        super(props);
-        this.state = {
-            toggle: true,
-            value: this.props.value,
-        }
-    }
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value);
+    };
 
-    handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-            value: event.target.value,
-        } as EditableTextCatState);
-    }
-
-    handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            this.saveEdit();
+            saveEdit();
         } else if (event.key === 'Escape') {
             // revert back to original text
-            this.setState({
-                toggle: true,
-                value: this.props.value,
-            });
+            setIsEditable(false);
+            setValue(props.value);
         }
-    }
+    };
 
-    saveEdit = () => {
+    const saveEdit = () => {
         let isInvalid = false;
-        this.setState({
-            toggle: true,
-        } as EditableTextCatState);
+        setIsEditable(false);
         // doesn't allow empty or duplicated category names
-        if (this.state.value.trim() === "") {
-            message.warning(this.props.t('warn.no-empty-cat'));
+        if (value.trim() === "") {
+            message.warning(props.t('warn.no-empty-cat'));
             isInvalid = true;
-        } else if (this.state.value !== this.props.value && this.props.model.hasCat(this.state.value)) {
-            message.warning(this.props.t('warn.no-duplicate-cat'));
+        } else if (value !== props.value && props.model.hasCat(value)) {
+            message.warning(props.t('warn.no-duplicate-cat'));
             isInvalid = true;
-        } else if (this.state.value !== this.props.value) {
-            this.props.model.replaceCatName(this.props.value, this.state.value);
-            this.props.updateSelection('all-tasks');
-            this.props.refreshModel();
+        } else if (value !== props.value) {
+            props.model.replaceCatName(props.value, value);
+            props.updateSelection('all-tasks');
+            props.refreshModel();
         }
         if (isInvalid) {
             // revert back to original text
-            this.setState({
-                value: this.props.value,
-            } as EditableTextCatState);
+            setValue(props.value);
         }
-    }
+    };
 
-    render() {
-        return (
-            this.state.toggle ?
-                (<span
-                    style={{
-                        paddingLeft: "10px"
+    return (
+        !isEditable ?
+            (<span
+                style={{
+                    paddingLeft: "10px"
+                }}
+                onDoubleClick={() => setIsEditable(true)}>
+                {value}
+            </span>) :
+            (<Input type="text"
+                    value={value}
+                    autoFocus
+                // Select all when focused
+                    onFocus={(event) => {
+                        event.target.select();
                     }}
-                    onDoubleClick={() => {
-                        this.setState({
-                            toggle: false,
-                        } as EditableTextCatState);
-                    }}>{this.state.value}</span>) :
-                (<Input type="text"
-                        value={this.state.value}
-                        autoFocus
-                        // Select all when focused
-                        onFocus={(event) => {
-                            event.target.select();
-                        }}
-                        onBlur={this.saveEdit}
-                        onChange={this.handleChange}
-                        onKeyDown={this.handleKeyDown}
-                />)
-        );
-    }
-}
+                    onBlur={saveEdit}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+            />)
+    );
+};
 
 export default withTranslation()(EditableTextCat);

@@ -102,30 +102,30 @@ class Util {
                             availableDate: string | null, dueDate: string | null, completed: boolean,
                             subtaskList: SubtaskInfo[]): boolean {
         if (category === null) {
-            // @ts-ignore
             message.warning(t('warn.must-choose-cat'));
             return false;
         }
         if (description.trim().length === 0) {
-            // @ts-ignore
             message.warning(t('warn.no-empty-desc'));
             return false;
         }
         if (dueDate === null) {
-            // @ts-ignore
             message.warning(t('warn.no-due'));
             return false;
         }
         if (availableDate !== null &&
             new Date(availableDate).getTime() > new Date(dueDate).getTime()) {
-            // @ts-ignore
             message.warning(t('warn.available-after-due'));
             return false;
         }
         if ((completed || subtaskList.some((subtask) => subtask.completed)) && availableDate !== null
             && new Date().getTime() < new Date(availableDate).getTime()) {
-            // @ts-ignore
             message.warning(t('warn.not-available-but-complete'));
+            return false;
+        }
+        if (subtaskList.length > 0 &&
+            ((subtaskList.filter((subtask) => !subtask.completed).length === 0) !== completed)) {
+            message.warning(t('warn.subtask-main-task-complete-not-match'));
             return false;
         }
         return true;

@@ -79,7 +79,8 @@
     "not-available-but-complete": "Invalid date and completeness, can't be completed before task is available!",
     "no-this-cat": "Does not has this category, please recheck category of this task!",
     "no-id": "Task id not found, can't perform this action",
-    "no-sub-id": "SubtaskId not found, can't perform this action"
+    "no-sub-id": "SubtaskId not found, can't perform this action",
+    "subtask-main-task-complete-not-match": "The completeness of Subtask(s) and Main Task don't match!"
   },
   "irr-warning": "Irrecoverable action.",
   "delete-cat-confirm": "Are you sure to delete category",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Checkbox, Dropdown, Tag, Tooltip} from "antd";
 import type {MenuProps} from 'antd';
 import {MenuInfo} from "rc-menu/lib/interface";
@@ -15,10 +15,6 @@ interface TodoProps extends WithTranslation {
     onEdit(task: TaskInfo): void; // callback to show edit popup with prefilled task info
 }
 
-interface TodoState {
-    availableTip: string; // string for tooltip for available date
-    dueTip: string; // string for tooltip for due date
-}
 
 /**
  * A component that represents a single record of task
@@ -26,191 +22,168 @@ interface TodoState {
  *  - contains category, description, available date (if any) and due date
  *  - contains tooltip on date tags for date differences to current date
  */
-class Todo extends React.Component<TodoProps, TodoState> {
+const Todo: React.FC<TodoProps> = ({t, task, model, refreshModel, onEdit}) => {
+    // string for tooltip for available date
+    const [availableTip, setAvailableTip] = useState('');
+    // string for tooltip for due date
+    const [dueTip, setDueTip] = useState('');
 
-    constructor(props: TodoProps) {
-        super(props);
-        this.state = {
-            availableTip: '',
-            dueTip: '',
-        };
-    }
-
-    setAvailableTip = () => {
+    const populateAvailableTip = () => {
         let tmpTip: string = '';
-        if (this.props.task.completed) {
-            tmpTip = this.props.t('todo.already-done');
-        } else if (Util.isAvailable(this.props.task)) {
-            tmpTip = this.props.t('todo.available-now');
-        } else if (this.props.task.availableDate !== null) {
-            let diffInMinutes = Util.getDateDifferenceInMinutes(new Date().toISOString(), this.props.task.availableDate);
-            tmpTip = `${this.props.t('todo.will-available-text')} ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
+        if (task.completed) {
+            tmpTip = t('todo.already-done');
+        } else if (Util.isAvailable(task)) {
+            tmpTip = t('todo.available-now');
+        } else if (task.availableDate !== null) {
+            let diffInMinutes = Util.getDateDifferenceInMinutes(new Date().toISOString(), task.availableDate);
+            tmpTip = `${t('todo.will-available-text')} ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
         }
-        this.setState({
-            availableTip: tmpTip,
-        } as TodoState);
-    }
+        setAvailableTip(tmpTip);
+    };
 
-    handleAvailableDateTipVisible = (visible: boolean) => {
-        if (visible) {
-            this.setAvailableTip();
-        }
-    }
-
-    setDueDateTip = () => {
+    const populateDueDateTip = () => {
         let tmpTip: string;
-        if (this.props.task.completed) {
-            tmpTip = this.props.t('todo.already-done');
+        if (task.completed) {
+            tmpTip = t('todo.already-done');
         } else {
-            let diffInMinutes = Util.getDateDifferenceInMinutes(new Date().toISOString(), this.props.task.dueDate);
+            let diffInMinutes = Util.getDateDifferenceInMinutes(new Date().toISOString(), task.dueDate);
             if (diffInMinutes >= 0) {
-                tmpTip = `${this.props.t('todo.due-in')} ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
+                tmpTip = `${t('todo.due-in')} ${Util.getTimeStringFromMinutes(diffInMinutes)}`;
             } else {
-                tmpTip = `${this.props.t('todo.past-due')} ${Util.getTimeStringFromMinutes(-diffInMinutes)}`;
+                tmpTip = `${t('todo.past-due')} ${Util.getTimeStringFromMinutes(-diffInMinutes)}`;
             }
         }
-        this.setState({
-            dueTip: tmpTip,
-        } as TodoState);
-    }
+        setDueTip(tmpTip);
+    };
 
-    handleDueDateTipVisible = (visible: boolean) => {
-        if (visible) {
-            this.setDueDateTip();
-        }
-    }
-
-    handleContextMenu = (menuInfo: MenuInfo, id: string) => {
+    const handleContextMenu = (menuInfo: MenuInfo, id: string) => {
         console.log(menuInfo);
         if (menuInfo.key === "Context-Edit") {
             console.log('should pop up edit');
-            this.props.onEdit(this.props.task);
+            onEdit(task);
         } else if (menuInfo.key === "Context-Del") {
             console.log('should delete this task');
-            this.deleteTask(id);
+            deleteTask(id);
         }
         console.log(id);
-    }
+    };
 
-    handleCheck = (e: CheckboxChangeEvent) => {
+    const handleCheck = (e: CheckboxChangeEvent) => {
         console.log(`handle task check called: ${e.target.checked}`);
-        this.props.model.checkTask(this.props.task.id);
-        this.props.refreshModel();
-    }
+        model.checkTask(task.id);
+        refreshModel();
+    };
 
-    deleteTask = (id: string) => {
+    const deleteTask = (id: string) => {
         console.log(`delete ${id} called`);
-        this.props.model.deleteTask(id);
-        this.props.refreshModel();
-    }
+        model.deleteTask(id);
+        refreshModel();
+    };
 
     // Subtask component
-    Subtask = (props: { subtask: SubtaskInfo }) => {
+    const Subtask: React.FC<{ subtask: SubtaskInfo }> = ({subtask}) => {
         const handleSubtaskCheck = (e: CheckboxChangeEvent) => {
             console.log(`handle subtask check called: ${e.target.checked}`);
-            this.props.model.checkSubtask(this.props.task.id, props.subtask.id);
-            this.props.refreshModel();
+            model.checkSubtask(task.id, subtask.id);
+            refreshModel();
         }
 
         return (
             <div className="todo-subtask">
-                <Checkbox checked={props.subtask.completed}
+                <Checkbox checked={subtask.completed}
                           className="todo-checkbox"
                           onChange={handleSubtaskCheck}
-                          disabled={!Util.isAvailable(this.props.task)}/>
+                          disabled={!Util.isAvailable(task)}/>
                 <span style={{
-                    color: props.subtask.completed || !Util.isAvailable(this.props.task)
+                    color: subtask.completed || !Util.isAvailable(task)
                         ? '#aaaaaa' : 'black',
-                    textDecoration: props.subtask.completed ? 'line-through' : 'none',
+                    textDecoration: subtask.completed ? 'line-through' : 'none',
                 }}>
-                    {props.subtask.description}
+                    {subtask.description}
                 </span>
             </div>
         );
-    }
+    };
 
-    render() {
-        const {t} = this.props;
-        const items: MenuProps["items"] = [
-            {
-                label: t('edit'),
-                key: "Context-Edit",
-                icon: <EditTwoTone twoToneColor='#8c8c8c'/>
-            },
-            {
-                label: t('delete'),
-                key: "Context-Del",
-                icon: <DeleteOutlined/>,
-                danger: true
-            }
-        ];
-        const menuProps = {
-            items,
-            onClick: (item: MenuInfo) => this.handleContextMenu(item, this.props.task.id)
-        };
+    const items: MenuProps["items"] = [
+        {
+            label: t('edit'),
+            key: "Context-Edit",
+            icon: <EditTwoTone twoToneColor='#8c8c8c'/>
+        },
+        {
+            label: t('delete'),
+            key: "Context-Del",
+            icon: <DeleteOutlined/>,
+            danger: true
+        }
+    ];
+    const menuProps = {
+        items,
+        onClick: (item: MenuInfo) => handleContextMenu(item, task.id)
+    };
 
-        return (
-            // Context menu
-            <li id={this.props.task?.id}>
-                <Dropdown
-                    menu={menuProps}
-                    trigger={['contextMenu']}
-                >
+    return (
+        // Context menu
+        <li>
+            <Dropdown
+                menu={menuProps}
+                trigger={['contextMenu']}
+            >
 
-                    {/*inner contents of task display*/}
-                    <div className='todo-container'>
-                        <div>
-                            <Checkbox checked={this.props.task.completed}
-                                      className="todo-checkbox"
-                                      onChange={this.handleCheck}
-                                      disabled={!Util.isAvailable(this.props.task)}
-                            />
+                {/*inner contents of task display*/}
+                <div className='todo-container'>
+                    <div>
+                        <Checkbox checked={task.completed}
+                                  className="todo-checkbox"
+                                  onChange={handleCheck}
+                                  disabled={!Util.isAvailable(task)}
+                        />
 
-                            <Tag color={this.props.task.category.color}>{
-                                this.props.task.category.catName}</Tag>
+                        <Tag color={task.category.color}>
+                            {task.category.catName}
+                        </Tag>
 
-                            <span
-                                style={{
-                                    color: this.props.task.completed || !Util.isAvailable(this.props.task)
-                                        ? '#aaaaaa' : 'black',
-                                    textDecoration: this.props.task.completed ? 'line-through' : 'none',
-                                }}>
-                            {this.props.task?.description}
+                        <span
+                            style={{
+                                color: task.completed || !Util.isAvailable(task)
+                                    ? '#aaaaaa' : 'black',
+                                textDecoration: task.completed ? 'line-through' : 'none',
+                            }}>
+                            {task?.description}
                         </span>
 
-                            <Tooltip title={<span>{this.state.dueTip}</span>}
-                                     onOpenChange={this.handleDueDateTipVisible}>
-                                <Tag
-                                    color={this.props.task.completed ? 'green' :
-                                        (Util.isUrgent(this.props.task) ? 'red' : 'cyan')}
-                                    style={{float: 'right'}}>
-                                    {t('todo.due')}: {Util.getLocalDate(this.props.task.dueDate)}
+                        <Tooltip title={<span>{dueTip}</span>}
+                                 onOpenChange={(visible) => visible && populateDueDateTip()}>
+                            <Tag
+                                color={task.completed ? 'green' :
+                                    (Util.isUrgent(task) ? 'red' : 'cyan')}
+                                style={{float: 'right'}}>
+                                {t('todo.due')}: {Util.getLocalDate(task.dueDate)}
+                            </Tag>
+                        </Tooltip>
+                        {task?.availableDate === null ?
+                            null :
+                            <Tooltip title={<span>{availableTip}</span>}
+                                     onOpenChange={(visible) => visible && populateAvailableTip()}>
+                                <Tag color={task.completed ? 'default' :
+                                    (Util.isAvailable(task) ? 'green' : 'orange')}
+                                     style={{float: 'right'}}>
+                                    {t('todo.available-text')}: {Util.getLocalDate(task.availableDate)}
                                 </Tag>
                             </Tooltip>
-                            {this.props.task?.availableDate === null ?
-                                null :
-                                <Tooltip title={<span>{this.state.availableTip}</span>}
-                                         onOpenChange={this.handleAvailableDateTipVisible}>
-                                    <Tag color={this.props.task.completed ? 'default' :
-                                        (Util.isAvailable(this.props.task) ? 'green' : 'orange')}
-                                         style={{float: 'right'}}>
-                                        {t('todo.available-text')}: {Util.getLocalDate(this.props.task.availableDate)}
-                                    </Tag>
-                                </Tooltip>
-                            }
-                        </div>
-                        {
-                            this.props.task.subtaskList &&
-                            this.props.task.subtaskList.map((subtask: SubtaskInfo) =>
-                                <this.Subtask key={subtask.id} subtask={subtask}/>
-                            )
                         }
                     </div>
-                </Dropdown>
-            </li>
-        );
-    }
-
-}
+                    {
+                        task.subtaskList &&
+                        task.subtaskList.map((subtask: SubtaskInfo) =>
+                            <Subtask key={subtask.id} subtask={subtask}/>
+                        )
+                    }
+                </div>
+            </Dropdown>
+        </li>
+    );
+};
 
 export default withTranslation()(Todo);

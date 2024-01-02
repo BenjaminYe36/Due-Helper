@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Content} from "antd/es/layout/layout";
 import {Button, Divider, Input, message, Select, Tooltip, Space} from "antd";
 import {CopyOutlined, FolderOpenOutlined} from "@ant-design/icons";
@@ -13,106 +13,92 @@ interface HelpPageProps extends WithTranslation {
     title: string; // title of the Help page to display
 }
 
-interface HelpPageState {
-    dataPath: string; // data path that stores taskData and other data (if added in future updates)
-}
-
 const {Option} = Select;
 
-class HelpPage extends React.Component<HelpPageProps, HelpPageState> {
+const HelpPage: React.FC<HelpPageProps> = ({t, title}) => {
+    // data path that stores taskData and other data (if added in future updates)
+    const [dataPath, setDataPath] = useState('');
 
-    constructor(props: HelpPageProps) {
-        super(props);
-        this.state = {
-            dataPath: ""
-        };
-    }
-
-    async componentDidMount() {
+    useEffect(() => {
         appDataDir()
             .then((dir) => {
-                this.setState({
-                    dataPath: dir + "Database"
-                });
+                setDataPath(dir + "Database");
             })
             .catch((e) => {
                 console.log(e);
             });
-    }
+    }, []);
 
     // Handles language change
-    handleLanguageChange = async (val: string) => {
+    const handleLanguageChange = async (val: string) => {
         await Settings.changeLanguage(val);
     };
 
     // Handles copy folder location
-    handleCopy = async () => {
-        writeText(this.state.dataPath)
+    const handleCopy = async () => {
+        writeText(dataPath)
             .then(() => {
-                message.success(this.props.t('help-page.clip-success'));
+                message.success(t('help-page.clip-success'));
             })
             .catch((e) => {
-                message.error(this.props.t('help-page.clip-fail'));
+                message.error(t('help-page.clip-fail'));
                 console.log(e);
             });
-    }
+    };
 
     // Handles open folder in default explorer app
-    handleOpenFolder = async () => {
-        shell.open(this.state.dataPath)
+    const handleOpenFolder = async () => {
+        shell.open(dataPath)
             .catch((e) => {
-                message.error(this.props.t('help-page.open-folder-fail'));
+                message.error(t('help-page.open-folder-fail'));
                 console.log(e);
             });
-    }
+    };
 
-    handleOpenWiki = async () => {
+    const handleOpenWiki = async () => {
         await shell.open("https://github.com/BenjaminYe36/Due-Helper/wiki");
-    }
+    };
 
-    handleOpenIssues = async () => {
+    const handleOpenIssues = async () => {
         await shell.open("https://github.com/BenjaminYe36/Due-Helper/issues");
-    }
+    };
 
-    render() {
-        const {t} = this.props;
-        return (
-            <Content className="main-content">
-                <div className="site-layout-background">
-                    <h1 className="main-title">{this.props.title}</h1>
-                    <div className="help-page-inner">
-                        <Divider/>
-                        <span>{t('help-page.select-language')}</span>
-                        <Select value={i18n.language.substring(0, 2) as any}
-                                popupMatchSelectWidth={false}
-                                onSelect={this.handleLanguageChange}>
-                            <Option value="en">English</Option>
-                            <Option value="zh">简体中文</Option>
-                        </Select>
-                        <Divider/>
-                        <span>{t('help-page.data-store-location')}</span>
-                        <Space.Compact block>
-                            <Input value={this.state.dataPath} style={{
-                                width: `${this.state.dataPath.length}ch`,
-                                maxWidth: '400px'
-                            }}/>
-                            <Tooltip title={t('help-page.copy-path')}>
-                                <Button icon={<CopyOutlined/>} onClick={this.handleCopy}/>
-                            </Tooltip>
-                            <Tooltip title={t('help-page.open-folder')}>
-                                <Button icon={<FolderOpenOutlined/>} onClick={this.handleOpenFolder}/>
-                            </Tooltip>
-                        </Space.Compact>
-                        <Divider/>
-                        <div className="grouped-buttons">
-                            <Button type="primary" onClick={this.handleOpenWiki}>{t('help-page.usage-help')}</Button>
-                            <Button onClick={this.handleOpenIssues}>{t('help-page.issue-and-suggestion')}</Button>
-                        </div>
+    return (
+        <Content className="main-content">
+            <div className="site-layout-background">
+                <h1 className="main-title">{title}</h1>
+                <div className="help-page-inner">
+                    <Divider/>
+                    <span>{t('help-page.select-language')}</span>
+                    <Select value={i18n.language.substring(0, 2) as any}
+                            popupMatchSelectWidth={false}
+                            onSelect={handleLanguageChange}>
+                        <Option value="en">English</Option>
+                        <Option value="zh">简体中文</Option>
+                    </Select>
+                    <Divider/>
+                    <span>{t('help-page.data-store-location')}</span>
+                    <Space.Compact block>
+                        <Input value={dataPath} style={{
+                            width: `${dataPath.length}ch`,
+                            maxWidth: '400px'
+                        }}/>
+                        <Tooltip title={t('help-page.copy-path')}>
+                            <Button icon={<CopyOutlined/>} onClick={handleCopy}/>
+                        </Tooltip>
+                        <Tooltip title={t('help-page.open-folder')}>
+                            <Button icon={<FolderOpenOutlined/>} onClick={handleOpenFolder}/>
+                        </Tooltip>
+                    </Space.Compact>
+                    <Divider/>
+                    <div className="grouped-buttons">
+                        <Button type="primary" onClick={handleOpenWiki}>{t('help-page.usage-help')}</Button>
+                        <Button onClick={handleOpenIssues}>{t('help-page.issue-and-suggestion')}</Button>
                     </div>
                 </div>
-            </Content>
-        );
-    }
-}
+            </div>
+        </Content>
+    );
+};
 
 export default withTranslation()(HelpPage);

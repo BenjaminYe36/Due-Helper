@@ -79,7 +79,8 @@
     "not-available-but-complete": "无效的日期和完成状况，在任务可开始前不可标记为已完成！",
     "no-this-cat": "没有此类别，请检查此任务的类别再重试！",
     "no-id": "未找到此任务ID, 无法进行此操作！",
-    "no-sub-id": "未找到此子任务ID，无法进行此操作！"
+    "no-sub-id": "未找到此子任务ID，无法进行此操作！",
+    "subtask-main-task-complete-not-match": "子任务与主任务的完成情况不匹配！"
   },
   "irr-warning": "不可恢复！",
   "delete-cat-confirm": "是否确认删除类别",

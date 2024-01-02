@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Col, Input, message, Modal, Row} from "antd";
 import type {InputRef} from 'antd';
 import ColorPicker from "./ColorPicker";
@@ -16,131 +16,113 @@ interface CatPopupProps extends WithTranslation {
     updateSelection(key: string): void; // callback for updating selected key value in the side menu
 }
 
-interface CatPopupState {
-    catValue: string; // string representing the input of category name from user
-    color: string; // default color for color picker (hex)
-}
 
 /**
  * A Popup with an input box and color picker to enable users to add new categories or edit existing categories
  */
-class CatPopup extends React.Component<CatPopupProps, CatPopupState> {
-    private readonly catInput: React.RefObject<InputRef>; // Ref of input to enable auto focus when popup is opened
+const CatPopup: React.FC<CatPopupProps> = (props) => {
+    // Ref of input to enable autofocus when popup is opened
+    const catInputRef = useRef<InputRef>(null);
+    // string representing the input of category name from user
+    const [catValue, setCatValue] = useState("");
+    // default color for color picker (hex)
+    const [color, setColor] = useState('#85a5ff');
 
-    constructor(props: CatPopupProps) {
-        super(props);
-        this.state = {
-            catValue: "",
-            color: '#85a5ff',
-        };
-        this.catInput = React.createRef<InputRef>();
-    }
-
-    componentDidUpdate(prevProps: Readonly<CatPopupProps>, prevState: Readonly<CatPopupState>, snapshot?: any) {
-        if (!prevProps.catModalVisible && this.props.catModalVisible) {
+    useEffect(() => {
+        if (props.catModalVisible) {
             // set autofocus when popup is displayed
             setTimeout(() => {
-                this.catInput.current!.focus({
+                catInputRef.current!.focus({
                     cursor: 'end',
                 });
             }, 200);
         }
-        if (prevProps.prefillCat !== this.props.prefillCat) {
-            if (!this.props.createNew && this.props.prefillCat !== null) {
-                this.setState({
-                    catValue: this.props.prefillCat.catName,
-                    color: this.props.prefillCat.color,
-                });
-                console.log('set prefilled state');
-            }
-        }
-    }
+    }, [props.catModalVisible]);
 
-    handleCatModalOk = () => {
+    useEffect(() => {
+        if (!props.createNew && props.prefillCat !== null) {
+            setCatValue(props.prefillCat.catName)
+            setColor(props.prefillCat.color);
+            console.log('set prefilled state');
+        }
+    }, [props.prefillCat]);
+
+    const handleCatModalOk = () => {
         // Validations first
-        if (this.state.catValue.trim() === "") {
-            message.warning(this.props.t('warn.no-empty-cat'));
+        if (catValue.trim() === "") {
+            message.warning(props.t('warn.no-empty-cat'));
             return;
         }
-        if (this.props.createNew) { // New cat popup
-            this.props.model.addCat(this.state.catValue, this.state.color);
-            this.props.refreshModel();
-            this.reset();
-            this.props.handleCatModalOk();
+        if (props.createNew) { // New cat popup
+            props.model.addCat(catValue, color);
+            props.refreshModel();
+            reset();
+            props.handleCatModalOk();
         } else { // Edit cat popup
-            // @ts-ignore
-            this.props.model.replaceCat(this.props.prefillCat?.catName,
-                this.state.catValue, this.state.color);
-            if (this.state.catValue !== this.props.prefillCat?.catName) {
-                this.props.updateSelection('all-tasks');
+            props.model.replaceCat(props.prefillCat!.catName, catValue, color);
+            if (catValue !== props.prefillCat?.catName) {
+                props.updateSelection('Cat-' + catValue);
             }
-            this.props.refreshModel();
-            this.reset();
-            this.props.handleCatModalOk();
+            props.refreshModel();
+            reset();
+            props.handleCatModalOk();
         }
-    }
+    };
 
-    handleCatModalCancel = () => {
-        this.reset();
-        this.props.handleCatModalCancel();
-    }
+    const handleCatModalCancel = () => {
+        reset();
+        props.handleCatModalCancel();
+    };
 
-    updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-            catValue: event.target.value,
-        } as CatPopupState);
-    }
+    const updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setCatValue(event.target.value);
+    };
 
-    updateColor = (color: any) => {
-        this.setState({
-            color: color.hex,
-        } as CatPopupState);
-    }
+    const updateColor = (color: any) => {
+        setColor(color.hex);
+    };
 
-    reset = () => {
-        this.setState({
-            catValue: "",
-            color: '#85a5ff',
-        });
-    }
+    const reset = () => {
+        setCatValue("");
+        setColor('#85a5ff');
+    };
 
-    render() {
-        const {t} = this.props;
-        return (
-            <Modal
-                title={this.props.createNew ? t('cat-popup.add-cat') : t('cat-popup.edit-cat')}
-                centered
-                open={this.props.catModalVisible}
-                onOk={this.handleCatModalOk}
-                onCancel={this.handleCatModalCancel}
-                okText={t('ok')}
-                cancelText={t('cancel')}
-            >
-                <span>{t('cat-popup.cat-name')}:</span>
+    const {t} = props;
 
-                <Row gutter={16}>
-                    <Col className="gutter-row" span={18}>
-                        <Input value={this.state.catValue}
-                               onChange={this.updateInput}
-                               autoFocus
-                               ref={this.catInput}
-                               onKeyDown={(event) => {
-                                   if (event.key === 'Enter') {
-                                       this.handleCatModalOk();
-                                   }
-                               }}
-                        />
-                    </Col>
+    return (
+        <Modal
+            title={props.createNew ? t('cat-popup.add-cat') : t('cat-popup.edit-cat')}
+            centered
+            open={props.catModalVisible}
+            onOk={handleCatModalOk}
+            onCancel={handleCatModalCancel}
+            okText={t('ok')}
+            cancelText={t('cancel')}
+        >
+            <span>{t('cat-popup.cat-name')}:</span>
 
-                    <Col>
-                        <ColorPicker color={this.state.color}
-                                     onChangeColor={this.updateColor}/>
-                    </Col>
-                </Row>
+            <Row gutter={16}>
+                <Col className="gutter-row" span={18}>
+                    <Input value={catValue}
+                           onChange={updateInput}
+                           autoFocus
+                           ref={catInputRef}
+                           onKeyDown={(event) => {
+                               if (event.key === 'Enter') {
+                                   handleCatModalOk();
+                               }
+                           }}
+                    />
+                </Col>
 
-            </Modal>
-        );
-    }
-}
+                <Col>
+                    <ColorPicker color={color}
+                                 onChangeColor={updateColor}/>
+                </Col>
+            </Row>
+
+        </Modal>
+    );
+};
 
 export default withTranslation()(CatPopup);
