@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Checkbox, Dropdown, Tag, Tooltip} from "antd";
 import type {MenuProps} from 'antd';
 import {MenuInfo} from "rc-menu/lib/interface";
@@ -6,6 +6,7 @@ import {DeleteOutlined, EditTwoTone} from "@ant-design/icons";
 import ModelAPI, {SubtaskInfo, TaskInfo} from "../Model & Util/ModelAPI";
 import {CheckboxChangeEvent} from "antd/es/checkbox";
 import Util from "../Model & Util/Util";
+import RunAtDate from "../Model & Util/RunAtDate";
 import {withTranslation, WithTranslation} from 'react-i18next';
 
 interface TodoProps extends WithTranslation {
@@ -27,6 +28,39 @@ const Todo: React.FC<TodoProps> = ({t, task, model, refreshModel, onEdit}) => {
     const [availableTip, setAvailableTip] = useState('');
     // string for tooltip for due date
     const [dueTip, setDueTip] = useState('');
+    // placeholder state to force re-render of this component only
+    const [, forceRender] = useState({});
+
+    // Force a re-render when time changes from not urgent to urgent
+    useEffect(() => {
+        const urgentDate = new Date(task.dueDate);
+        urgentDate.setDate(urgentDate.getDate() - Util.getUrgentDay());
+        const runAtDateObj = new RunAtDate(urgentDate, () => {
+            console.log("due date urgent reached, force re-render");
+            forceRender({});
+        });
+
+        return () => {
+            console.log('dueDate timeout cleaned up');
+            clearTimeout(runAtDateObj.getTimeoutID())
+        };
+    }, [task.dueDate]);
+
+    // Force a rerender when time changes from not available to available
+    useEffect(() => {
+        if (task.availableDate !== null) {
+            const availableDate = new Date(task.availableDate);
+            const runAtDateObj = new RunAtDate(availableDate, () => {
+                console.log("available date reached, force re-render");
+                forceRender({});
+            });
+
+            return () => {
+                console.log('availableDate timeout cleaned up');
+                clearTimeout(runAtDateObj.getTimeoutID())
+            };
+        }
+    }, [task.availableDate]);
 
     const populateAvailableTip = () => {
         let tmpTip: string = '';

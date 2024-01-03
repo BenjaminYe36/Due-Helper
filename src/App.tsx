@@ -6,7 +6,6 @@ import SideBar from "./Components/SideBar";
 import ModelAPI, {CategoryWithColor, TaskInfo} from "./Model & Util/ModelAPI";
 import MainContent from "./Components/MainContent";
 import {Scrollbars} from 'react-custom-scrollbars-2';
-import Util from "./Model & Util/Util";
 import {BaseDirectory, readTextFile} from "@tauri-apps/api/fs";
 import HelpPage from "./Components/HelpPage";
 import {withTranslation, WithTranslation} from 'react-i18next';
@@ -64,16 +63,6 @@ const App: React.FC<AppProps> = ({t}) => {
         model = new ModelAPI(obj.category, obj.taskList);
         model.writeToJson();
         refreshModel();
-        // Set time out to refresh next update time (not available -> available, not urgent -> urgent)
-        let offset = Util.getTimeToNextUpdate(model.getTaskList());
-        console.log(offset);
-        setTimeout(() => {
-            console.log('timeout callback called');
-            // TODO Improve the logic that triggers the next update in tasks
-            // @ts-ignore
-            window.location.reload(false);
-        }, offset);
-        console.log('set timeout complete');
     };
 
     // methods relating to the sidebar menu states

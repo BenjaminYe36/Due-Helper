@@ -142,6 +142,10 @@ class Util {
             this.getDateDifferenceInMinutes(new Date().toISOString(), task.dueDate) <= urgentDay * 24 * 60;
     }
 
+    static getUrgentDay(): number {
+        return urgentDay;
+    }
+
     static async existsFile(path: string): Promise<boolean> {
         return readTextFile(path, {dir: BaseDirectory.App})
             .then((contents) => {
