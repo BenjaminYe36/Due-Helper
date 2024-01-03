@@ -46,7 +46,7 @@ const EditableTextCat: React.FC<EditableTextCatProps> = (props) => {
             isInvalid = true;
         } else if (value !== props.value) {
             props.model.replaceCatName(props.value, value);
-            props.updateSelection('all-tasks');
+            props.updateSelection('Cat-' + value);
             props.refreshModel();
         }
         if (isInvalid) {
