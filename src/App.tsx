@@ -6,7 +6,6 @@ import SideBar from "./Components/SideBar";
 import ModelAPI, {CategoryWithColor, TaskInfo} from "./Model & Util/ModelAPI";
 import MainContent from "./Components/MainContent";
 import {Scrollbars} from 'react-custom-scrollbars-2';
-import {BaseDirectory, readTextFile} from "@tauri-apps/api/fs";
 import HelpPage from "./Components/HelpPage";
 import {withTranslation, WithTranslation} from 'react-i18next';
 import i18n from "./i18n/config";
@@ -39,29 +38,23 @@ const App: React.FC<AppProps> = ({t}) => {
     const [selectionKey, setSelectionKey] = useState('all-tasks');
 
     useEffect(() => {
-        readTextFile('Database/taskData.json', {dir: BaseDirectory.App})
-            .then((contents) => {
-                console.log('found existing file');
-                let obj = JSON.parse(contents);
-                initializeModel(obj);
-            })
-            .catch((e) => {
-                // most likely file doesn't exist
-                console.log('no existing file found');
-                let obj = JSON.parse(defaultTaskData);
-                initializeModel(obj);
-            });
+        const tmpResult = localStorage.getItem("taskData");
+        if (tmpResult !== null) {
+            console.log('found existing task data in local storage');
+            initializeModel(JSON.parse(tmpResult));
+        } else { // no task data stored in local storage case
+            console.log('no existing task data found');
+            initializeModel(JSON.parse(defaultTaskData));
+        }
         i18n.on('languageChanged', (lng) => {
             console.log(`language changed to ${lng}`);
         });
-        Settings.getLanguage().then((language) => {
-            i18n.changeLanguage(language);
-        });
+        const curLanguage = Settings.getLanguage();
+        i18n.changeLanguage(curLanguage);
     }, []);
 
     const initializeModel = (obj: TaskData) => {
         model = new ModelAPI(obj.category, obj.taskList);
-        model.writeToJson();
         refreshModel();
     };
 
@@ -97,7 +90,8 @@ const App: React.FC<AppProps> = ({t}) => {
                     <Scrollbars>
                         {
                             selectionKey === "helpAndInfo" ?
-                                <HelpPage title={t('help-page.title')}/> :
+                                <HelpPage title={t('help-page.title')}
+                                          model={model} refreshModel={refreshModel}/> :
                                 <MainContent category={category} taskList={taskList}
                                              model={model} refreshModel={refreshModel}
                                              selection={selectionKey}/>

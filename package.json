@@ -1,22 +1,19 @@
 {
   "name": "due-helper",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@ant-design/icons": "^5.2.6",
-    "@tauri-apps/cli": "^1.3.1",
     "@types/node": "^20.10.5",
     "@types/react": "^18.0.15",
     "@types/react-color": "^3.0.6",

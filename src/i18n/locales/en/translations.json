@@ -2,7 +2,10 @@
   "help-page": {
     "title": "Settings, Help & Info",
     "help-and-info": "Help & Info",
-    "data-store-location": "Data Stored location:",
+    "data-store-info": "Data Stored info:",
+    "data-occupied": "Current data occupied",
+    "clear-data": "Clear all data stored",
+    "clear-success": "All data has been cleared!",
     "copy-path": "Copy Path",
     "open-folder": "Open Folder",
     "usage-help": "Usage Help",

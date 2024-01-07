@@ -1,6 +1,5 @@
 import {message} from "antd";
 import {SubtaskInfo, TaskInfo} from "./ModelAPI";
-import {BaseDirectory, readTextFile} from "@tauri-apps/api/fs";
 import i18n from '../i18n/config';
 
 // Urgent day boundary, less than or equal to will be classified as urgent
@@ -144,16 +143,6 @@ class Util {
 
     static getUrgentDay(): number {
         return urgentDay;
-    }
-
-    static async existsFile(path: string): Promise<boolean> {
-        return readTextFile(path, {dir: BaseDirectory.App})
-            .then((contents) => {
-                return true;
-            })
-            .catch((e) => {
-                return false;
-            });
     }
 }
 

@@ -1,66 +1,47 @@
 import React, {useEffect, useState} from "react";
 import {Content} from "antd/es/layout/layout";
-import {Button, Divider, Input, message, Select, Tooltip, Space} from "antd";
-import {CopyOutlined, FolderOpenOutlined} from "@ant-design/icons";
-import {appDataDir} from "@tauri-apps/api/path";
-import {writeText} from "@tauri-apps/api/clipboard";
-import {shell} from "@tauri-apps/api";
+import {Button, Divider, Select, message, Popconfirm} from "antd";
 import {withTranslation, WithTranslation} from 'react-i18next';
 import i18n from '../i18n/config';
 import Settings from "../Model & Util/Settings";
+import {DeleteOutlined} from "@ant-design/icons";
+import ModelAPI from "../Model & Util/ModelAPI";
 
 interface HelpPageProps extends WithTranslation {
     title: string; // title of the Help page to display
+    model: ModelAPI; // Reference to the fake backend Api
+    refreshModel(): void; // callback to refresh from backend after modifying
 }
 
 const {Option} = Select;
 
-const HelpPage: React.FC<HelpPageProps> = ({t, title}) => {
-    // data path that stores taskData and other data (if added in future updates)
-    const [dataPath, setDataPath] = useState('');
+const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
+    const [dataSize, setDataSize] = useState(0);
 
     useEffect(() => {
-        appDataDir()
-            .then((dir) => {
-                setDataPath(dir + "Database");
-            })
-            .catch((e) => {
-                console.log(e);
-            });
+        setDataSize(new Blob(Object.values(localStorage)).size);
     }, []);
 
     // Handles language change
     const handleLanguageChange = async (val: string) => {
         await Settings.changeLanguage(val);
+        setDataSize(new Blob(Object.values(localStorage)).size);
     };
 
-    // Handles copy folder location
-    const handleCopy = async () => {
-        writeText(dataPath)
-            .then(() => {
-                message.success(t('help-page.clip-success'));
-            })
-            .catch((e) => {
-                message.error(t('help-page.clip-fail'));
-                console.log(e);
-            });
+    const handleClearData = () => {
+        localStorage.clear();
+        setDataSize(new Blob(Object.values(localStorage)).size);
+        model.clear();
+        refreshModel();
+        message.success(t('help-page.clear-success'));
     };
 
-    // Handles open folder in default explorer app
-    const handleOpenFolder = async () => {
-        shell.open(dataPath)
-            .catch((e) => {
-                message.error(t('help-page.open-folder-fail'));
-                console.log(e);
-            });
+    const handleOpenWiki = () => {
+        window.open("https://github.com/BenjaminYe36/Due-Helper/wiki", "_blank", "noreferrer");
     };
 
-    const handleOpenWiki = async () => {
-        await shell.open("https://github.com/BenjaminYe36/Due-Helper/wiki");
-    };
-
-    const handleOpenIssues = async () => {
-        await shell.open("https://github.com/BenjaminYe36/Due-Helper/issues");
+    const handleOpenIssues = () => {
+        window.open("https://github.com/BenjaminYe36/Due-Helper/issues", "_blank", "noreferrer");
     };
 
     return (
@@ -77,19 +58,13 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title}) => {
                         <Option value="zh">简体中文</Option>
                     </Select>
                     <Divider/>
-                    <span>{t('help-page.data-store-location')}</span>
-                    <Space.Compact block>
-                        <Input value={dataPath} style={{
-                            width: `${dataPath.length}ch`,
-                            maxWidth: '400px'
-                        }}/>
-                        <Tooltip title={t('help-page.copy-path')}>
-                            <Button icon={<CopyOutlined/>} onClick={handleCopy}/>
-                        </Tooltip>
-                        <Tooltip title={t('help-page.open-folder')}>
-                            <Button icon={<FolderOpenOutlined/>} onClick={handleOpenFolder}/>
-                        </Tooltip>
-                    </Space.Compact>
+                    <h3>{t('help-page.data-store-info')}</h3>
+                    <p>{`${t('help-page.data-occupied')} ${dataSize} Bytes`}</p>
+                    <Popconfirm title={t('help-page.clear-data')} onConfirm={handleClearData}>
+                        <Button danger icon={<DeleteOutlined/>}>
+                            {t('help-page.clear-data')}
+                        </Button>
+                    </Popconfirm>
                     <Divider/>
                     <div className="grouped-buttons">
                         <Button type="primary" onClick={handleOpenWiki}>{t('help-page.usage-help')}</Button>

@@ -1,6 +1,5 @@
 import {message} from "antd";
 import {nanoid} from "nanoid";
-import {BaseDirectory, createDir, writeTextFile} from "@tauri-apps/api/fs";
 import Util from "./Util";
 import i18n from '../i18n/config';
 
@@ -247,24 +246,18 @@ class ModelAPI {
         }
     }
 
+    public clear(): void {
+        this.category = [];
+        this.taskList = [];
+    }
+
     public writeToJson() {
-        createDir('Database', {dir: BaseDirectory.App, recursive: true})
-            .then(() => {
-                console.log("create dir success");
-                writeTextFile('Database/taskData.json', JSON.stringify({
-                    category: this.category,
-                    taskList: this.taskList
-                }), {dir: BaseDirectory.App})
-                    .then(() => {
-                        console.log('write to json success');
-                    })
-                    .catch((e) => {
-                        console.log(e);
-                    });
-            })
-            .catch((e) => {
-                console.log(e);
-            });
+        try {
+            localStorage.setItem("taskData", JSON.stringify({category: this.category, taskList: this.taskList}));
+        } catch (e) {
+            console.log(e);
+            alert("Out of storage space or denied permission for storage!");
+        }
         console.log(JSON.stringify({category: this.category, taskList: this.taskList}));
     }
 }
