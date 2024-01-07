@@ -9,13 +9,18 @@
 English | [简体中文](./README-zh_CN.md)
 
 ## Big Changes
-- Switched from Electron to Tauri for reduced executable size (From 193 MB down to less than 3 MB (on Windows))
-- Added localization support for zh-CN
+- Now Due Helper has a Web App version! (which means you can try out or use without any installation)
+- Link: [https://benjaminye36.github.io/Due-Helper/](https://benjaminye36.github.io/Due-Helper/)
+- **IMPORTANT NOTE**: The Web App relies on browser localStorage to persist data, using incognito mode or clearing the browsing data
+  will make the task data go away.
 
 ## Screenshots
-[![en-1.png](https://s1.ax1x.com/2022/08/21/vyQ2uR.png)](https://imgse.com/i/vyQ2uR)
-[![en-2.png](https://s1.ax1x.com/2022/08/21/vyQRD1.png)](https://imgse.com/i/vyQRD1)
-[![en-3.png](https://s1.ax1x.com/2022/08/21/vyQcv9.png)](https://imgse.com/i/vyQcv9)
+[![en-1.png](https://i.ibb.co/J7Pk8VD/due-helper-2-3-0-en-1.png)](https://ibb.co/wW168V5)
+[![en-2.png](https://i.ibb.co/0Gb5qXD/due-helper-2-3-0-en-2.png)](https://ibb.co/BCMkLPz)
+[![en-3.png](https://i.ibb.co/4Nc7BvM/due-helper-2-3-0-en-3-local.png)](https://ibb.co/RH19LrP)
+
+## Web App Page
+[See deployed Web App here](https://benjaminye36.github.io/Due-Helper/)
 
 ## Download page
 [See release here](https://github.com/BenjaminYe36/Due-Helper/releases)

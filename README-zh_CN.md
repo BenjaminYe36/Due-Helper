@@ -9,13 +9,17 @@
 [English](./README.md) | 简体中文
 
 ## 近期大改动
-- 从 Electron 架构换到 Tauri 以减少程序体积 (从 193 MB 减少至 3 MB (在Windows系统上))
-- 为简体中文提供本地化支持
+- Due Helper 现已推出网页应用! (点击下方链接即可尝试或使用，无需任何安装)
+- 链接: [https://benjaminye36.github.io/Due-Helper/](https://benjaminye36.github.io/Due-Helper/)
+- **重要提示**: 此网页应用依赖于浏览器的 localStorage 来储存数据，使用无痕模式或清理浏览器数据会使应用数据消失。
 
 ## 软件截图
-[![zh-1.png](https://s1.ax1x.com/2022/08/21/vyQMHP.png)](https://imgse.com/i/vyQMHP)
-[![zh-2.png](https://s1.ax1x.com/2022/08/21/vyQlAf.png)](https://imgse.com/i/vyQlAf)
-[![zh-3.png](https://s1.ax1x.com/2022/08/21/vyQKBt.png)](https://imgse.com/i/vyQKBt)
+[![zh-1.png](https://i.ibb.co/4dmG5xn/due-helper-2-3-0-zh-1.png)](https://ibb.co/Kw0k3Hp)
+[![zh-2.png](https://i.ibb.co/kMVv07k/due-helper-2-3-0-zh-2.png)](https://ibb.co/XVfMpQN)
+[![zh-3.png](https://i.ibb.co/R9W1H1d/due-helper-2-3-0-zh-3-local.png)](https://ibb.co/zrw1f1D)
+
+## 网页应用页面
+[点此查看已部署的网页应用](https://benjaminye36.github.io/Due-Helper/)
 
 ## 下载页面
 [点击此处跳转](https://github.com/BenjaminYe36/Due-Helper/releases)
