@@ -2,8 +2,11 @@
   "name": "due-helper",
   "private": true,
   "version": "2.3.0",
+  "homepage": "https://benjaminye36.github.io/Due-Helper",
   "type": "module",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
@@ -21,6 +24,7 @@
     "@types/reactcss": "^1.2.6",
     "@vitejs/plugin-react": "^4.0.0",
     "antd": "^5.12.5",
+    "gh-pages": "^6.1.1",
     "i18next": "^23.7.11",
     "react-color": "^2.19.3",
     "react-custom-scrollbars-2": "^4.5.0",
