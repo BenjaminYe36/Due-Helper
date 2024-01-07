@@ -144,6 +144,24 @@ class Util {
     static getUrgentDay(): number {
         return urgentDay;
     }
+
+    static downloadFile(fileName: string, contents: Object) {
+        // create file in browser
+        const json = JSON.stringify(contents);
+        const blob = new Blob([json], {type: "application/json"});
+        const href = URL.createObjectURL(blob);
+
+        // create "a" HTML element with href to file
+        const link = document.createElement("a");
+        link.href = href;
+        link.download = fileName + ".json";
+        document.body.appendChild(link);
+        link.click();
+
+        // clean up "a" element & remove ObjectURL
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+    }
 }
 
 export default Util;

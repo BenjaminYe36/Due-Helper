@@ -251,6 +251,11 @@ class ModelAPI {
         this.taskList = [];
     }
 
+    public importFromObj(otherModel: ModelAPI): void {
+        this.category = [...otherModel.category];
+        this.taskList = [...otherModel.taskList];
+    }
+
     public writeToJson() {
         try {
             localStorage.setItem("taskData", JSON.stringify({category: this.category, taskList: this.taskList}));

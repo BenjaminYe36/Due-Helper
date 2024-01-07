@@ -38,7 +38,7 @@
     display: inline-block;
 }
 
-.grouped-buttons > button:not(:last-child) {
+.grouped-buttons button {
     margin-right: 10px;
 }
 

@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {Content} from "antd/es/layout/layout";
-import {Button, Divider, Select, message, Popconfirm} from "antd";
+import {Button, Divider, Select, message, Popconfirm, Upload} from "antd";
 import {withTranslation, WithTranslation} from 'react-i18next';
 import i18n from '../i18n/config';
 import Settings from "../Model & Util/Settings";
-import {DeleteOutlined} from "@ant-design/icons";
+import {DeleteOutlined, DownloadOutlined, UploadOutlined} from "@ant-design/icons";
 import ModelAPI from "../Model & Util/ModelAPI";
+import type {RcFile} from 'antd/es/upload/interface';
+import Util from "../Model & Util/Util";
 
 interface HelpPageProps extends WithTranslation {
     title: string; // title of the Help page to display
@@ -36,6 +38,26 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
         message.success(t('help-page.clear-success'));
     };
 
+    const handleImport = async (file: RcFile) => {
+        const fileText = await file.text();
+        try {
+            const tmpObj = JSON.parse(fileText);
+            if (tmpObj.taskList === undefined || tmpObj.category === undefined) {
+                throw new Error('Task data has missing properties');
+            }
+            model.importFromObj(tmpObj);
+            refreshModel();
+            message.success(t('help-page.import-success'));
+        } catch (e) {
+            console.log(e);
+            message.error(t('help-page.invalid-json'));
+        }
+    };
+
+    const handleExport = () => {
+        Util.downloadFile("taskData", {category: model.getCat(), taskList: model.getTaskList()});
+    };
+
     const handleOpenWiki = () => {
         window.open("https://github.com/BenjaminYe36/Due-Helper/wiki", "_blank", "noreferrer");
     };
@@ -60,11 +82,23 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
                     <Divider/>
                     <h3>{t('help-page.data-store-info')}</h3>
                     <p>{`${t('help-page.data-occupied')} ${dataSize} Bytes`}</p>
-                    <Popconfirm title={t('help-page.clear-data')} onConfirm={handleClearData}>
-                        <Button danger icon={<DeleteOutlined/>}>
-                            {t('help-page.clear-data')}
+                    <div className="grouped-buttons">
+                        <Popconfirm title={t('help-page.clear-data')} onConfirm={handleClearData}>
+                            <Button danger icon={<DeleteOutlined/>}>
+                                {t('help-page.clear-data')}
+                            </Button>
+                        </Popconfirm>
+                        <Upload showUploadList={false} accept=".json"
+                                beforeUpload={(file) => {
+                                    handleImport(file);
+                                    return false;
+                                }}>
+                            <Button icon={<UploadOutlined/>}>{t('help-page.import-data')}</Button>
+                        </Upload>
+                        <Button type="primary" icon={<DownloadOutlined/>} onClick={handleExport}>
+                            {t('help-page.export-data')}
                         </Button>
-                    </Popconfirm>
+                    </div>
                     <Divider/>
                     <div className="grouped-buttons">
                         <Button type="primary" onClick={handleOpenWiki}>{t('help-page.usage-help')}</Button>
