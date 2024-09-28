@@ -8,14 +8,13 @@
 
 English | [简体中文](./README-zh_CN.md)
 
-<p align="left">
-  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/benjaminye36/due-helper?logo=github">
-  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/benjaminye36/due-helper/.github%2Fworkflows%2Fbuild-on-3-platforms.yml?logo=Tauri&label=Build%20on%203%20platforms">
-  <img alt="GitHub deployments" src="https://img.shields.io/github/deployments/benjaminye36/due-helper/github-pages?logo=React&label=Github%20Pages%20Deployment">
-  <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/benjaminye36/due-helper/total">
-  <img alt="GitHub commit activity (branch)" src="https://img.shields.io/github/commit-activity/t/benjaminye36/due-helper/main-tauri">
-  <img alt="GitHub License" src="https://img.shields.io/github/license/benjaminye36/due-helper">
-</p>
+[comment]: <> (The start of badges part)
+[![GitHub Release](https://img.shields.io/github/v/release/benjaminye36/due-helper?logo=github)](https://github.com/BenjaminYe36/Due-Helper/releases/latest)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/benjaminye36/due-helper/.github%2Fworkflows%2Fbuild-on-3-platforms.yml?logo=Tauri&label=Build%20on%203%20platforms)](https://github.com/BenjaminYe36/Due-Helper/actions/workflows/build-on-3-platforms.yml)
+[![GitHub deployments](https://img.shields.io/github/deployments/benjaminye36/due-helper/github-pages?logo=React&label=Github%20Pages%20Deployment)](https://benjaminye36.github.io/Due-Helper/)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/benjaminye36/due-helper/total)](https://github.com/BenjaminYe36/Due-Helper/releases)
+[![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/benjaminye36/due-helper/main-tauri)](https://github.com/BenjaminYe36/Due-Helper/commits/main-tauri/)
+[![GitHub License](https://img.shields.io/github/license/benjaminye36/due-helper)](https://github.com/BenjaminYe36/Due-Helper/blob/main-tauri/LICENSE)
 
 ## Big Changes
 - Now Due Helper has a Web App version! (which means you can try out or use without any installation)
