@@ -8,15 +8,25 @@
 
 [English](./README.md) | 简体中文
 
+[comment]: <> (The start of badges part)
+[![GitHub Release](https://img.shields.io/github/v/release/benjaminye36/due-helper?logo=github)](https://github.com/BenjaminYe36/Due-Helper/releases/latest)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/benjaminye36/due-helper/.github%2Fworkflows%2Fbuild-on-3-platforms.yml?logo=Tauri&label=Build%20on%203%20platforms)](https://github.com/BenjaminYe36/Due-Helper/actions/workflows/build-on-3-platforms.yml)
+[![GitHub deployments](https://img.shields.io/github/deployments/benjaminye36/due-helper/github-pages?logo=React&label=Github%20Pages%20Deployment)](https://benjaminye36.github.io/Due-Helper/)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/benjaminye36/due-helper/total)](https://github.com/BenjaminYe36/Due-Helper/releases)
+[![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/benjaminye36/due-helper/main-webapp)](https://github.com/BenjaminYe36/Due-Helper/commits/main-webapp/)
+[![GitHub License](https://img.shields.io/github/license/benjaminye36/due-helper)](https://github.com/BenjaminYe36/Due-Helper/blob/main-webapp/LICENSE)
+
 ## 近期大改动
 - Due Helper 现已推出网页应用! (点击下方链接即可尝试或使用，无需任何安装)
 - 链接: [https://benjaminye36.github.io/Due-Helper/](https://benjaminye36.github.io/Due-Helper/)
 - **重要提示**: 此网页应用依赖于浏览器的 localStorage 来储存数据，使用无痕模式或清理浏览器数据会使应用数据消失。
 
 ## 软件截图
-[![zh-1.png](https://i.ibb.co/4dmG5xn/due-helper-2-3-0-zh-1.png)](https://ibb.co/Kw0k3Hp)
-[![zh-2.png](https://i.ibb.co/kMVv07k/due-helper-2-3-0-zh-2.png)](https://ibb.co/XVfMpQN)
-[![zh-3.png](https://i.ibb.co/y5xngp9/due-helper-2-3-0-zh-3-web.png)](https://ibb.co/HY9DGCS)
+<p align="left">
+  <img alt='Due Helper Screenshot zh 1' src='/public/due-helper-2-3-0-zh-1.png'/>
+  <img alt='Due Helper Screenshot zh 2' src='/public/due-helper-2-3-0-zh-2.png'/>
+  <img alt='Due Helper Screenshot zh 3' src='/public/due-helper-2-3-0-zh-3.png'/>
+</p>
 
 ## 网页应用页面
 [点此查看已部署的网页应用](https://benjaminye36.github.io/Due-Helper/)

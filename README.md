@@ -8,6 +8,14 @@
 
 English | [简体中文](./README-zh_CN.md)
 
+[comment]: <> (The start of badges part)
+[![GitHub Release](https://img.shields.io/github/v/release/benjaminye36/due-helper?logo=github)](https://github.com/BenjaminYe36/Due-Helper/releases/latest)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/benjaminye36/due-helper/.github%2Fworkflows%2Fbuild-on-3-platforms.yml?logo=Tauri&label=Build%20on%203%20platforms)](https://github.com/BenjaminYe36/Due-Helper/actions/workflows/build-on-3-platforms.yml)
+[![GitHub deployments](https://img.shields.io/github/deployments/benjaminye36/due-helper/github-pages?logo=React&label=Github%20Pages%20Deployment)](https://benjaminye36.github.io/Due-Helper/)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/benjaminye36/due-helper/total)](https://github.com/BenjaminYe36/Due-Helper/releases)
+[![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/benjaminye36/due-helper/main-webapp)](https://github.com/BenjaminYe36/Due-Helper/commits/main-webapp/)
+[![GitHub License](https://img.shields.io/github/license/benjaminye36/due-helper)](https://github.com/BenjaminYe36/Due-Helper/blob/main-webapp/LICENSE)
+
 ## Big Changes
 - Now Due Helper has a Web App version! (which means you can try out or use without any installation)
 - Link: [https://benjaminye36.github.io/Due-Helper/](https://benjaminye36.github.io/Due-Helper/)
@@ -15,9 +23,11 @@ English | [简体中文](./README-zh_CN.md)
 will make the task data go away.
 
 ## Screenshots
-[![en-1.png](https://i.ibb.co/J7Pk8VD/due-helper-2-3-0-en-1.png)](https://ibb.co/wW168V5)
-[![en-2.png](https://i.ibb.co/0Gb5qXD/due-helper-2-3-0-en-2.png)](https://ibb.co/BCMkLPz)
-[![en-3.png](https://i.ibb.co/pdxQXfj/due-helper-2-3-0-en-3-web.png)](https://ibb.co/jDTz4yk)
+<p align="left">
+  <img alt='Due Helper Screenshot en 1' src='/public/due-helper-2-3-0-en-1.png'/>
+  <img alt='Due Helper Screenshot en 2' src='/public/due-helper-2-3-0-en-2.png'/>
+  <img alt='Due Helper Screenshot en 3' src='/public/due-helper-2-3-0-en-3.png'/>
+</p>
 
 ## Web App Page
 [See deployed Web App here](https://benjaminye36.github.io/Due-Helper/)
