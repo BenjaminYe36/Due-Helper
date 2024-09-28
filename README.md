@@ -8,6 +8,15 @@
 
 English | [简体中文](./README-zh_CN.md)
 
+<p align="left">
+  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/benjaminye36/due-helper?logo=github">
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/benjaminye36/due-helper/.github%2Fworkflows%2Fbuild-on-3-platforms.yml?logo=Tauri&label=Build%20on%203%20platforms">
+  <img alt="GitHub deployments" src="https://img.shields.io/github/deployments/benjaminye36/due-helper/github-pages?logo=React&label=Github%20Pages%20Deployment">
+  <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/benjaminye36/due-helper/total">
+  <img alt="GitHub commit activity (branch)" src="https://img.shields.io/github/commit-activity/t/benjaminye36/due-helper/main-tauri">
+  <img alt="GitHub License" src="https://img.shields.io/github/license/benjaminye36/due-helper">
+</p>
+
 ## Big Changes
 - Now Due Helper has a Web App version! (which means you can try out or use without any installation)
 - Link: [https://benjaminye36.github.io/Due-Helper/](https://benjaminye36.github.io/Due-Helper/)
@@ -15,9 +24,11 @@ English | [简体中文](./README-zh_CN.md)
   will make the task data go away.
 
 ## Screenshots
-[![en-1.png](https://i.ibb.co/J7Pk8VD/due-helper-2-3-0-en-1.png)](https://ibb.co/wW168V5)
-[![en-2.png](https://i.ibb.co/0Gb5qXD/due-helper-2-3-0-en-2.png)](https://ibb.co/BCMkLPz)
-[![en-3.png](https://i.ibb.co/4Nc7BvM/due-helper-2-3-0-en-3-local.png)](https://ibb.co/RH19LrP)
+<p align="left">
+  <img alt='Due Helper Screenshot en 1' src='/public/due-helper-2-3-0-en-1.png'/>
+  <img alt='Due Helper Screenshot en 2' src='/public/due-helper-2-3-0-en-2.png'/>
+  <img alt='Due Helper Screenshot en 3' src='/public/due-helper-2-3-0-en-3.png'/>
+</p>
 
 ## Web App Page
 [See deployed Web App here](https://benjaminye36.github.io/Due-Helper/)
