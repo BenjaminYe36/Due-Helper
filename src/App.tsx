@@ -12,7 +12,7 @@ import {withTranslation, WithTranslation} from 'react-i18next';
 import i18n from "./i18n/config";
 import zhCN from "antd/es/locale/zh_CN";
 import enUS from "antd/es/locale/en_US";
-import Settings from "./Model & Util/Settings";
+import Settings, {defaultPostponeTImeStr, SettingsObj} from "./Model & Util/Settings";
 
 
 interface TaskData {
@@ -26,6 +26,7 @@ interface AppProps extends WithTranslation {
 const defaultTaskData = '{"category":[],"taskList":[]}';
 
 let model: ModelAPI = new ModelAPI([], []);
+let settings: Settings = new Settings(navigator.language, defaultPostponeTImeStr);
 
 /**
  * The main application class of this task management software
@@ -54,15 +55,30 @@ const App: React.FC<AppProps> = ({t}) => {
         i18n.on('languageChanged', (lng) => {
             console.log(`language changed to ${lng}`);
         });
-        Settings.getLanguage().then((language) => {
-            i18n.changeLanguage(language);
-        });
+        readTextFile('Database/Settings.json', {dir: BaseDirectory.App})
+            .then((contents) => {
+                console.log('found settings file');
+                let obj = JSON.parse(contents);
+                initializeSettings(obj);
+            })
+            .catch((e) => {
+                // most likely file doesn't exist
+                // use default language from navigator
+                console.log("no settings file found");
+                initializeSettings({language: navigator.language, postponeTimeStr: defaultPostponeTImeStr});
+            });
     }, []);
 
     const initializeModel = (obj: TaskData) => {
         model = new ModelAPI(obj.category, obj.taskList);
         model.writeToJson();
         refreshModel();
+    };
+
+    const initializeSettings = (obj: SettingsObj) => {
+      settings = new Settings(obj.language, obj.postponeTimeStr);
+      settings.writeSettingsToJson();
+      i18n.changeLanguage(obj.language);
     };
 
     // methods relating to the sidebar menu states
@@ -97,10 +113,10 @@ const App: React.FC<AppProps> = ({t}) => {
                     <Scrollbars>
                         {
                             selectionKey === "helpAndInfo" ?
-                                <HelpPage title={t('help-page.title')}/> :
+                                <HelpPage title={t('help-page.title')} settings={settings}/> :
                                 <MainContent category={category} taskList={taskList}
                                              model={model} refreshModel={refreshModel}
-                                             selection={selectionKey}/>
+                                             selection={selectionKey} settings={settings}/>
                         }
                     </Scrollbars>
 

@@ -98,6 +98,22 @@ class Util {
         return Math.min(maxDelay, minTime - curTime + 1000);
     }
 
+    // Split the input string by commas, trim spaces, and map each part to a pair of number and time unit
+    static parseCommaSeparatedTimeString(timeString: string): [number, string][] {
+        return timeString
+            .split(',')
+            .map(part => part.trim()) // Trim spaces for each part
+            .map(part => {
+                // Match number followed by space and time unit
+                const match = part.match(/^(\d+)\s+(\w+)$/);
+                if (!match) {
+                    throw new Error(`Invalid format: ${part}`);
+                }
+                const [, numberStr, unit] = match;
+                return [parseInt(numberStr), unit];
+            });
+    }
+
     static validateTaskInfo(category: string | null, description: string,
                             availableDate: string | null, dueDate: string | null, completed: boolean,
                             subtaskList: SubtaskInfo[]): boolean {
