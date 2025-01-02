@@ -29,19 +29,23 @@ const HelpPage: React.FC<HelpPageProps> = ({
     const [postponeTimeStr, setPostponeTimeStr] = useState(defaultPostponeTImeStr);
 
     useEffect(() => {
-        setDataSize(new Blob(Object.values(localStorage)).size);
+        updateStorageSize();
         setPostponeTimeStr(settings.getPostponeTimeStr());
     }, []);
+
+    const updateStorageSize = () => {
+        setDataSize(new Blob(Object.values(localStorage)).size);
+    }
 
     // Handles language change
     const handleLanguageChange = async (val: string) => {
         await settings.changeLanguage(val);
-        setDataSize(new Blob(Object.values(localStorage)).size);
+        updateStorageSize();
     };
 
     const handleClearData = () => {
         localStorage.clear();
-        setDataSize(new Blob(Object.values(localStorage)).size);
+        updateStorageSize();
         model.clear();
         refreshModel();
         settings.reset();
@@ -57,7 +61,9 @@ const HelpPage: React.FC<HelpPageProps> = ({
                 throw new Error('Task data has missing properties');
             }
             model.importFromObj(tmpObj);
+            model.writeToJson();
             refreshModel();
+            updateStorageSize();
             message.success(t('help-page.import-success'));
         } catch (e) {
             console.log(e);
@@ -74,7 +80,7 @@ const HelpPage: React.FC<HelpPageProps> = ({
             settings.changePostponeStr(postponeTimeStr);
             // valid input
             message.success(t('help-page.save-success'));
-            setDataSize(new Blob(Object.values(localStorage)).size);
+            updateStorageSize();
         } catch (e) {
             // invalid input
             message.error(t('help-page.wrong-format'));
