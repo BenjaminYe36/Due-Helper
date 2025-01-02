@@ -39,7 +39,8 @@ const App: React.FC<AppProps> = ({t}) => {
     const [selectionKey, setSelectionKey] = useState('all-tasks');
 
     useEffect(() => {
-        const tmpResult = localStorage.getItem("taskData");
+        // Task data part
+        let tmpResult = localStorage.getItem("taskData");
         if (tmpResult !== null) {
             console.log('found existing task data in local storage');
             initializeModel(JSON.parse(tmpResult));
@@ -47,11 +48,18 @@ const App: React.FC<AppProps> = ({t}) => {
             console.log('no existing task data found');
             initializeModel(JSON.parse(defaultTaskData));
         }
+        // Settings part
         i18n.on('languageChanged', (lng) => {
             console.log(`language changed to ${lng}`);
         });
-        const curLanguage = Settings.getLanguage();
-        i18n.changeLanguage(curLanguage);
+        tmpResult = localStorage.getItem("Settings");
+        if (tmpResult !== null) {
+            console.log('found settings data');
+            initializeSettings(JSON.parse(tmpResult));
+        } else {
+            console.log("no settings data found");
+            initializeSettings({language: navigator.language, postponeTimeStr: defaultPostponeTImeStr});
+        }
     }, []);
 
     const initializeModel = (obj: TaskData) => {
@@ -60,8 +68,8 @@ const App: React.FC<AppProps> = ({t}) => {
     };
 
     const initializeSettings = (obj: SettingsObj) => {
-      settings = new Settings(obj.language, obj.postponeTimeStr);
-      i18n.changeLanguage(obj.language);
+        settings = new Settings(obj.language, obj.postponeTimeStr);
+        i18n.changeLanguage(obj.language);
     };
 
     // methods relating to the sidebar menu states

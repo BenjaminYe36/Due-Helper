@@ -25,21 +25,10 @@ class Settings {
         }
     }
 
-    public getLanguage(): string {
-        const tmpResult = localStorage.getItem("Settings");
-        if (tmpResult !== null) {
-            console.log('found settings data');
-            return JSON.parse(tmpResult).language;
-        } else {
-            console.log("no settings data found");
-            return navigator.language;
-        }
-    }
-
     public async changeLanguage(lng: string) {
         await i18n.changeLanguage(lng);
         this.language = lng;
-        await this.writeSettingsToJson();
+        this.writeSettingsToJson();
     }
 
     public getTimePairs(): [number, string][] {
@@ -59,6 +48,11 @@ class Settings {
         Util.parseCommaSeparatedTimeString(postponeStr);
         this.postponeTimeStr = postponeStr;
         this.writeSettingsToJson();
+    }
+
+    public reset() {
+        this.language = navigator.language;
+        this.postponeTimeStr = defaultPostponeTImeStr;
     }
 
     public writeSettingsToJson() {

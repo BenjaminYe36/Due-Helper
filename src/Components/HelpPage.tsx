@@ -2,9 +2,6 @@ import React, {useEffect, useState} from "react";
 import {Content} from "antd/es/layout/layout";
 import {Button, Divider, Input, message, Select, Tooltip, Space, Typography, Popconfirm, Upload} from "antd";
 import {DeleteOutlined, DownloadOutlined, UploadOutlined, SaveOutlined} from "@ant-design/icons";
-import {appDataDir} from "@tauri-apps/api/path";
-import {writeText} from "@tauri-apps/api/clipboard";
-import {shell} from "@tauri-apps/api";
 import {withTranslation, WithTranslation} from 'react-i18next';
 import i18n from '../i18n/config';
 import ModelAPI from "../Model & Util/ModelAPI";
@@ -22,7 +19,10 @@ interface HelpPageProps extends WithTranslation {
 const {Option} = Select;
 const {Title} = Typography;
 
-const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
+const HelpPage: React.FC<HelpPageProps> = ({
+                                               t, title,
+                                               model, refreshModel, settings
+                                           }) => {
     const [dataSize, setDataSize] = useState(0);
     // Variable that tracks the input of customizable postpone time string
     // in the format of "[number] [time unit],..."
@@ -44,7 +44,8 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
         setDataSize(new Blob(Object.values(localStorage)).size);
         model.clear();
         refreshModel();
-        // TODO find a way to clear settings
+        settings.reset();
+        setPostponeTimeStr(defaultPostponeTImeStr);
         message.success(t('help-page.clear-success'));
     };
 
@@ -73,8 +74,8 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
             settings.changePostponeStr(postponeTimeStr);
             // valid input
             message.success(t('help-page.save-success'));
-        }
-        catch (e) {
+            setDataSize(new Blob(Object.values(localStorage)).size);
+        } catch (e) {
             // invalid input
             message.error(t('help-page.wrong-format'));
         }
@@ -102,7 +103,7 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
                         <Option value="zh">简体中文</Option>
                     </Select>
                     <Divider/>
-                    <Titile level={3}>{t('help-page.data-store-info')}</Titile>
+                    <Title level={5}>{t('help-page.data-store-info')}</Title>
                     <p>{`${t('help-page.data-occupied')} ${dataSize} Bytes`}</p>
                     <div className="grouped-buttons">
                         <Popconfirm title={t('help-page.clear-data')} onConfirm={handleClearData}>
