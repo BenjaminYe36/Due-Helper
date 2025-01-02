@@ -7,6 +7,7 @@ import {PlusOutlined} from "@ant-design/icons";
 import TaskPopup from "./TaskPopup";
 import {withTranslation, WithTranslation} from 'react-i18next';
 import Util from "../Model & Util/Util";
+import Settings from "../Model & Util/Settings";
 
 interface MainContentProps extends WithTranslation {
     category: CategoryWithColor[]; // array of strings that represents the user added categories for the tasks
@@ -14,6 +15,7 @@ interface MainContentProps extends WithTranslation {
     model: ModelAPI; // Reference to the fake backend Api
     selection: string; // Selection on the sidebar menu
     refreshModel(): void; // callback to refresh from backend after modifying
+    settings: Settings;
 }
 
 
@@ -145,7 +147,8 @@ const MainContent: React.FC<MainContentProps> = (props) => {
                             <Todo key={task.id} task={task}
                                   model={props.model}
                                   refreshModel={props.refreshModel}
-                                  onEdit={showEditPopup}/>
+                                  onEdit={showEditPopup}
+                                  settings={props.settings}/>
                         )}
                     </ul>,
             }
@@ -191,7 +194,8 @@ const MainContent: React.FC<MainContentProps> = (props) => {
                                     <Todo key={task.id} task={task}
                                           model={props.model}
                                           refreshModel={props.refreshModel}
-                                          onEdit={showEditPopup}/>
+                                          onEdit={showEditPopup}
+                                          settings={props.settings}/>
                                 )}
                             </ul>)
                         : <Empty description={<span>{t('no-task')}</span>}/>

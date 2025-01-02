@@ -17,7 +17,11 @@
     "clip-success": "Copied to clipboard successfully",
     "clip-fail": "Copy to clipboard failed",
     "open-folder-fail": "Open folder failed",
-    "select-language": "Select the display language: "
+    "select-language": "Select the display language: ",
+    "postpone-dates": "Customize the postpone dates: (enter in the format of comma separated \"[number] [time unit]\") (ex. 1 day, 2 week, 3 month)",
+    "save-edit": "Save edit",
+    "save-success": "Saved successfully",
+    "wrong-format": "Input format invalid, please try again (not saved)"
   },
   "side-bar": {
     "new-cat": "New Category",
@@ -52,7 +56,10 @@
     "day": "day",
     "hour": "hour",
     "minute": "minute",
-    "s": "s"
+    "s": "s",
+    "week": "week",
+    "month": "month",
+    "year": "year"
   },
   "main": {
     "new-task": "New Task",
@@ -98,6 +105,7 @@
   "cancel": "Cancel",
   "edit": "Edit",
   "delete": "Delete",
+  "postpone": "Postpone",
   "nothing": "Nothing yet",
   "no-cat": "No Category Yet",
   "no-task": "No Task Yet"

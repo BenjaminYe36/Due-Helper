@@ -23,14 +23,14 @@
     "@types/react-dom": "^18.0.6",
     "@types/reactcss": "^1.2.6",
     "@vitejs/plugin-react": "^4.0.0",
-    "antd": "^5.12.5",
+    "antd": "5.20.6",
     "gh-pages": "^6.1.1",
     "i18next": "^23.7.11",
     "react-color": "^2.19.3",
     "react-custom-scrollbars-2": "^4.5.0",
-    "react-i18next": "^14.0.0",
+    "react-i18next": "^15.4.0",
     "react-movable": "^3.0.4",
     "typescript": "^5.0.4",
-    "vite": "^5.0.10"
+    "vite": "^6.0.0"
   }
 }

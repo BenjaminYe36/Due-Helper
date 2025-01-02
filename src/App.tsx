@@ -11,7 +11,7 @@ import {withTranslation, WithTranslation} from 'react-i18next';
 import i18n from "./i18n/config";
 import zhCN from "antd/es/locale/zh_CN";
 import enUS from "antd/es/locale/en_US";
-import Settings from "./Model & Util/Settings";
+import Settings, {defaultPostponeTImeStr, SettingsObj} from "./Model & Util/Settings";
 
 
 interface TaskData {
@@ -25,6 +25,7 @@ interface AppProps extends WithTranslation {
 const defaultTaskData = '{"category":[],"taskList":[]}';
 
 let model: ModelAPI = new ModelAPI([], []);
+let settings: Settings = new Settings(navigator.language, defaultPostponeTImeStr);
 
 /**
  * The main application class of this task management software
@@ -56,6 +57,11 @@ const App: React.FC<AppProps> = ({t}) => {
     const initializeModel = (obj: TaskData) => {
         model = new ModelAPI(obj.category, obj.taskList);
         refreshModel();
+    };
+
+    const initializeSettings = (obj: SettingsObj) => {
+      settings = new Settings(obj.language, obj.postponeTimeStr);
+      i18n.changeLanguage(obj.language);
     };
 
     // methods relating to the sidebar menu states
@@ -91,10 +97,10 @@ const App: React.FC<AppProps> = ({t}) => {
                         {
                             selectionKey === "helpAndInfo" ?
                                 <HelpPage title={t('help-page.title')}
-                                          model={model} refreshModel={refreshModel}/> :
+                                          model={model} refreshModel={refreshModel} settings={settings}/> :
                                 <MainContent category={category} taskList={taskList}
                                              model={model} refreshModel={refreshModel}
-                                             selection={selectionKey}/>
+                                             selection={selectionKey} settings={settings}/>
                         }
                     </Scrollbars>
 

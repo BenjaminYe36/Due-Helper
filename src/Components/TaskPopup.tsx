@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Modal, Input, Select, Switch, DatePicker, Button, Checkbox, message} from "antd";
+import {Modal, Input, Select, Switch, DatePicker, Button, Checkbox, message, DatePickerProps} from "antd";
 import Util from "../Model & Util/Util";
 import ModelAPI, {CategoryWithColor, SubtaskInfo, TaskInfo} from "../Model & Util/ModelAPI";
 import dayjs from 'dayjs';
@@ -85,7 +85,7 @@ const TaskPopup: React.FC<TaskPopupProps> = (props) => {
         setDescription(e.target.value);
     };
 
-    const updateAvailableDate = (date: any, dateString: string) => {
+    const updateAvailableDate: DatePickerProps["onChange"] = (date, dateString) => {
         if (date !== null) {
             setAvailableDate(date.toISOString());
         } else {
@@ -93,7 +93,7 @@ const TaskPopup: React.FC<TaskPopupProps> = (props) => {
         }
     };
 
-    const updateDueDate = (date: any, dateString: string) => {
+    const updateDueDate: DatePickerProps["onChange"] = (date, dateString) => {
         if (date !== null) {
             setDueDate(date.toISOString());
         } else {

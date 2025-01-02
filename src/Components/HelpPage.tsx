@@ -1,32 +1,41 @@
 import React, {useEffect, useState} from "react";
 import {Content} from "antd/es/layout/layout";
-import {Button, Divider, Select, message, Popconfirm, Upload} from "antd";
+import {Button, Divider, Input, message, Select, Tooltip, Space, Typography, Popconfirm, Upload} from "antd";
+import {DeleteOutlined, DownloadOutlined, UploadOutlined, SaveOutlined} from "@ant-design/icons";
+import {appDataDir} from "@tauri-apps/api/path";
+import {writeText} from "@tauri-apps/api/clipboard";
+import {shell} from "@tauri-apps/api";
 import {withTranslation, WithTranslation} from 'react-i18next';
 import i18n from '../i18n/config';
-import Settings from "../Model & Util/Settings";
-import {DeleteOutlined, DownloadOutlined, UploadOutlined} from "@ant-design/icons";
 import ModelAPI from "../Model & Util/ModelAPI";
 import type {RcFile} from 'antd/es/upload/interface';
 import Util from "../Model & Util/Util";
+import Settings, {defaultPostponeTImeStr} from "../Model & Util/Settings";
 
 interface HelpPageProps extends WithTranslation {
     title: string; // title of the Help page to display
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying
+    settings: Settings;
 }
 
 const {Option} = Select;
+const {Title} = Typography;
 
 const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
     const [dataSize, setDataSize] = useState(0);
+    // Variable that tracks the input of customizable postpone time string
+    // in the format of "[number] [time unit],..."
+    const [postponeTimeStr, setPostponeTimeStr] = useState(defaultPostponeTImeStr);
 
     useEffect(() => {
         setDataSize(new Blob(Object.values(localStorage)).size);
+        setPostponeTimeStr(settings.getPostponeTimeStr());
     }, []);
 
     // Handles language change
     const handleLanguageChange = async (val: string) => {
-        await Settings.changeLanguage(val);
+        await settings.changeLanguage(val);
         setDataSize(new Blob(Object.values(localStorage)).size);
     };
 
@@ -35,6 +44,7 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
         setDataSize(new Blob(Object.values(localStorage)).size);
         model.clear();
         refreshModel();
+        // TODO find a way to clear settings
         message.success(t('help-page.clear-success'));
     };
 
@@ -58,6 +68,18 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
         Util.downloadFile("taskData", {category: model.getCat(), taskList: model.getTaskList()});
     };
 
+    const handlePostponeStrSave = () => {
+        try {
+            settings.changePostponeStr(postponeTimeStr);
+            // valid input
+            message.success(t('help-page.save-success'));
+        }
+        catch (e) {
+            // invalid input
+            message.error(t('help-page.wrong-format'));
+        }
+    };
+
     const handleOpenWiki = () => {
         window.open("https://github.com/BenjaminYe36/Due-Helper/wiki", "_blank", "noreferrer");
     };
@@ -72,7 +94,7 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
                 <h1 className="main-title">{title}</h1>
                 <div className="help-page-inner">
                     <Divider/>
-                    <span>{t('help-page.select-language')}</span>
+                    <Title level={5}>{t('help-page.select-language')}</Title>
                     <Select value={i18n.language.substring(0, 2) as any}
                             popupMatchSelectWidth={false}
                             onSelect={handleLanguageChange}>
@@ -80,7 +102,7 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
                         <Option value="zh">简体中文</Option>
                     </Select>
                     <Divider/>
-                    <h3>{t('help-page.data-store-info')}</h3>
+                    <Titile level={3}>{t('help-page.data-store-info')}</Titile>
                     <p>{`${t('help-page.data-occupied')} ${dataSize} Bytes`}</p>
                     <div className="grouped-buttons">
                         <Popconfirm title={t('help-page.clear-data')} onConfirm={handleClearData}>
@@ -99,6 +121,15 @@ const HelpPage: React.FC<HelpPageProps> = ({t, title, model, refreshModel}) => {
                             {t('help-page.export-data')}
                         </Button>
                     </div>
+                    <Divider/>
+                    <Title level={5}>{t('help-page.postpone-dates')}</Title>
+                    <Space.Compact block>
+                        <Input value={postponeTimeStr} style={{width: `${postponeTimeStr.length + 5}ch`}}
+                               onChange={(e) => setPostponeTimeStr(e.target.value)}/>
+                        <Tooltip title={t('help-page.save-edit')}>
+                            <Button icon={<SaveOutlined/>} onClick={handlePostponeStrSave}/>
+                        </Tooltip>
+                    </Space.Compact>
                     <Divider/>
                     <div className="grouped-buttons">
                         <Button type="primary" onClick={handleOpenWiki}>{t('help-page.usage-help')}</Button>

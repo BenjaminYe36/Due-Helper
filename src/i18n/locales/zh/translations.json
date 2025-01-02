@@ -17,7 +17,11 @@
     "clip-success": "已成功复制到剪贴板",
     "clip-fail": "复制到剪贴板失败",
     "open-folder-fail": "打开文件夹失败",
-    "select-language": "选择显示语言："
+    "select-language": "选择显示语言：",
+    "postpone-dates": "自定义推迟时间：（请用逗号隔开的\"[数字] [时间单位]\"格式输入）（如： 1 day, 2 week, 3 month)",
+    "save-edit": "保存更改",
+    "save-success": "成功保存",
+    "wrong-format": "输入格式无效，请重试（未保存）"
   },
   "side-bar": {
     "new-cat": "新建类别",
@@ -52,7 +56,10 @@
     "day": "天",
     "hour": "小时",
     "minute": "分",
-    "s": ""
+    "s": "",
+    "week": "周",
+    "month": "月",
+    "year": "年"
   },
   "main": {
     "new-task": "新建任务",
@@ -97,6 +104,7 @@
   "ok": "确定",
   "edit": "编辑",
   "delete": "删除",
+  "postpone": "推迟",
   "cancel": "取消",
   "nothing": "暂无",
   "no-cat": "暂无类别",
