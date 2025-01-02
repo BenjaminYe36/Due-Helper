@@ -3,6 +3,7 @@ import {nanoid} from "nanoid";
 import {BaseDirectory, createDir, writeTextFile} from "@tauri-apps/api/fs";
 import Util from "./Util";
 import i18n from '../i18n/config';
+import dayjs from "dayjs";
 
 export interface CategoryWithColor {
     catName: string; // the name of the category
@@ -245,6 +246,19 @@ class ModelAPI {
             this.writeToJson();
             console.log(this.taskList);
         }
+    }
+
+    public postponeTask(id: string, num: number, unit: string) {
+        let targetIndex = this.taskList.findIndex((t) => t.id === id);
+        if (targetIndex === -1) {
+            // @ts-ignore
+            message.warning(t('warn.no-id'));
+            return;
+        }
+        this.taskList[targetIndex].dueDate = dayjs(this.taskList[targetIndex].dueDate)
+            .add(num, unit as any).toISOString();
+        this.writeToJson();
+        console.log(this.taskList);
     }
 
     public writeToJson() {

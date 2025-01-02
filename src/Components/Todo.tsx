@@ -2,18 +2,20 @@ import React, {useEffect, useState} from "react";
 import {Checkbox, Dropdown, Tag, Tooltip} from "antd";
 import type {MenuProps} from 'antd';
 import {MenuInfo} from "rc-menu/lib/interface";
-import {DeleteOutlined, EditTwoTone} from "@ant-design/icons";
+import {DeleteOutlined, EditTwoTone, FieldTimeOutlined} from "@ant-design/icons";
 import ModelAPI, {SubtaskInfo, TaskInfo} from "../Model & Util/ModelAPI";
 import {CheckboxChangeEvent} from "antd/es/checkbox";
 import Util from "../Model & Util/Util";
 import RunAtDate from "../Model & Util/RunAtDate";
 import {withTranslation, WithTranslation} from 'react-i18next';
+import Settings from "../Model & Util/Settings";
 
 interface TodoProps extends WithTranslation {
     task: TaskInfo; // an object contains all the information of a task (see interface for details)
     model: ModelAPI; // Reference to the fake backend Api
     refreshModel(): void; // callback to refresh from backend after modifying
     onEdit(task: TaskInfo): void; // callback to show edit popup with prefilled task info
+    settings: Settings;
 }
 
 
@@ -23,7 +25,10 @@ interface TodoProps extends WithTranslation {
  *  - contains category, description, available date (if any) and due date
  *  - contains tooltip on date tags for date differences to current date
  */
-const Todo: React.FC<TodoProps> = ({t, task, model, refreshModel, onEdit}) => {
+const Todo: React.FC<TodoProps> = ({
+                                       t, task,
+                                       model, refreshModel, onEdit, settings
+                                   }) => {
     // string for tooltip for available date
     const [availableTip, setAvailableTip] = useState('');
     // string for tooltip for due date
@@ -98,6 +103,10 @@ const Todo: React.FC<TodoProps> = ({t, task, model, refreshModel, onEdit}) => {
         } else if (menuInfo.key === "Context-Del") {
             console.log('should delete this task');
             deleteTask(id);
+        } else if (menuInfo.key.startsWith('Postpone')) {
+            console.log('should postpone task');
+            const [, num, unit] = menuInfo.key.split('-');
+            postponeTask(id, parseInt(num), unit);
         }
         console.log(id);
     };
@@ -111,6 +120,12 @@ const Todo: React.FC<TodoProps> = ({t, task, model, refreshModel, onEdit}) => {
     const deleteTask = (id: string) => {
         console.log(`delete ${id} called`);
         model.deleteTask(id);
+        refreshModel();
+    };
+
+    const postponeTask = (id: string, num: number, unit: string) => {
+        console.log(`postpone ${id} by ${num} ${unit} called`);
+        model.postponeTask(id, num, unit);
         refreshModel();
     };
 
@@ -139,6 +154,11 @@ const Todo: React.FC<TodoProps> = ({t, task, model, refreshModel, onEdit}) => {
         );
     };
 
+    const subMenuItems = settings.getTimePairs()
+        .map((pair) => {
+            return {key: `Postpone-${pair[0]}-${pair[1]}`, label: `${pair[0]} ${t(`time.${pair[1]}`)}`};
+        });
+
     const items: MenuProps["items"] = [
         {
             label: t('edit'),
@@ -150,6 +170,12 @@ const Todo: React.FC<TodoProps> = ({t, task, model, refreshModel, onEdit}) => {
             key: "Context-Del",
             icon: <DeleteOutlined/>,
             danger: true
+        },
+        {
+            label: t('postpone'),
+            key: 'Context-Postpone',
+            icon: <FieldTimeOutlined/>,
+            children: subMenuItems
         }
     ];
     const menuProps = {

@@ -1,37 +1,65 @@
-import {BaseDirectory, createDir, readTextFile, writeTextFile} from "@tauri-apps/api/fs";
+import {BaseDirectory, createDir, writeTextFile} from "@tauri-apps/api/fs";
 import i18n from "../i18n/config";
+import Util from "./Util";
 
-interface SettingsObj {
+export interface SettingsObj {
     language: string; // language locale string
+    postponeTimeStr: string; // the postpone time string, in the format of "[number] [time unit],..."
 }
 
+export const defaultPostponeTImeStr = '1 day,1 week,1 month';
+
 class Settings {
-    static async getLanguage(): Promise<string> {
-        return readTextFile('Database/Settings.json', {dir: BaseDirectory.App})
-            .then((contents) => {
-                console.log('found settings file');
-                let obj = JSON.parse(contents);
-                return obj.language;
-            })
-            .catch((e) => {
-                // most likely file doesn't exist
-                // use default language from navigator
-                console.log("no settings file found");
-                this.writeSettingsToJson({language: navigator.language});
-                return navigator.language;
-            });
+    private language: string;
+    private postponeTimeStr: string;
+
+    constructor(language: string, postponeTimeStr: string) {
+        if (language) {
+            this.language = language;
+        } else {
+            this.language = navigator.language;
+        }
+        if (postponeTimeStr) {
+            this.postponeTimeStr = postponeTimeStr;
+        } else {
+            this.postponeTimeStr = defaultPostponeTImeStr;
+        }
     }
 
-    static async changeLanguage(lng: string) {
+    public async changeLanguage(lng: string) {
         await i18n.changeLanguage(lng);
-        await this.writeSettingsToJson({language: lng});
+        this.language = lng;
+        await this.writeSettingsToJson();
     }
 
-    static async writeSettingsToJson(settings: SettingsObj) {
-        await createDir('Database', {dir: BaseDirectory.App, recursive: true})
+    public getTimePairs(): [number, string][] {
+        try {
+            return Util.parseCommaSeparatedTimeString(this.postponeTimeStr);
+        }
+        catch (e) {
+            return [];
+        }
+    }
+
+    public getPostponeTimeStr() {
+        return this.postponeTimeStr;
+    }
+
+    public changePostponeStr(postponeStr: string) {
+        // just call once to validate, if invalid will throw error
+        Util.parseCommaSeparatedTimeString(postponeStr);
+        this.postponeTimeStr = postponeStr;
+        this.writeSettingsToJson();
+    }
+
+    public writeSettingsToJson() {
+        createDir('Database', {dir: BaseDirectory.App, recursive: true})
             .then(() => {
                 console.log("create dir success");
-                writeTextFile('Database/Settings.json', JSON.stringify(settings),
+                writeTextFile('Database/Settings.json', JSON.stringify({
+                        language: this.language,
+                        postponeTimeStr: this.postponeTimeStr
+                    }),
                     {dir: BaseDirectory.App})
                     .then(() => {
                         console.log('write to settings json success');
