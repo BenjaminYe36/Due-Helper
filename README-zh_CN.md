@@ -21,11 +21,14 @@
 - 链接: [https://benjaminye36.github.io/Due-Helper/](https://benjaminye36.github.io/Due-Helper/)
 - **重要提示**: 此网页应用依赖于浏览器的 localStorage 来储存数据，使用无痕模式或清理浏览器数据会使应用数据消失。
 
+## 近期新增
+- 添加了一个可自定义的推迟任务右键菜单功能（见下截图）
+
 ## 软件截图
 <p align="left">
-  <img alt='Due Helper Screenshot zh 1' src='/public/due-helper-2-3-0-zh-1.png'/>
-  <img alt='Due Helper Screenshot zh 2' src='/public/due-helper-2-3-0-zh-2.png'/>
-  <img alt='Due Helper Screenshot zh 3' src='/public/due-helper-2-3-0-zh-3.png'/>
+  <img alt='Due Helper Screenshot zh 1' src='/public/due-helper-2-4-0-zh-1.png'/>
+  <img alt='Due Helper Screenshot zh 2' src='/public/due-helper-2-4-0-zh-2.png'/>
+  <img alt='Due Helper Screenshot zh 3' src='/public/due-helper-2-4-0-zh-3.png'/>
 </p>
 
 ## 网页应用页面

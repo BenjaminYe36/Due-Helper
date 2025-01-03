@@ -22,11 +22,14 @@ English | [简体中文](./README-zh_CN.md)
 - **IMPORTANT NOTE**: The Web App relies on browser localStorage to persist data, using incognito mode or clearing the browsing data
 will make the task data go away.
 
+## Recent Changes
+- Added a customizable postpone tasks context menu feature (see screenshots below)
+
 ## Screenshots
 <p align="left">
-  <img alt='Due Helper Screenshot en 1' src='/public/due-helper-2-3-0-en-1.png'/>
-  <img alt='Due Helper Screenshot en 2' src='/public/due-helper-2-3-0-en-2.png'/>
-  <img alt='Due Helper Screenshot en 3' src='/public/due-helper-2-3-0-en-3.png'/>
+  <img alt='Due Helper Screenshot en 1' src='/public/due-helper-2-4-0-en-1.png'/>
+  <img alt='Due Helper Screenshot en 2' src='/public/due-helper-2-4-0-en-2.png'/>
+  <img alt='Due Helper Screenshot en 3' src='/public/due-helper-2-4-0-en-3.png'/>
 </p>
 
 ## Web App Page

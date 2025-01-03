@@ -1,7 +1,7 @@
 {
   "name": "due-helper",
   "private": true,
-  "version": "2.3.0",
+  "version": "2.4.0",
   "homepage": "https://benjaminye36.github.io/Due-Helper",
   "type": "module",
   "scripts": {
